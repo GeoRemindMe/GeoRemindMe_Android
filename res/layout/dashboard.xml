@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+  <!-- Layout for title bar -->
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/titlebar"
+		android:orientation="horizontal"
+		android:layout_margin="10dip">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="40dip"
+			android:layout_weight="1.0"
+			android:id="@+id/logo"
+			android:layout_gravity="left"
+			android:src="@drawable/logo"
+			android:adjustViewBounds="true"></ImageView>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:id="@+id/modebutton"
+			android:text="Mode"
+			android:layout_gravity="center"
+			android:gravity="center"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"></Button>
+	</LinearLayout>
+  
+  <!-- Layout for buttons -->
+	<LinearLayout
+		android:id="@+id/buttonsplace"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1.0"
+		android:orientation="vertical"
+		android:padding="6dip">
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1">
+			<Button
+				style="@style/DashboardButton"
+				android:id="@+id/createalertButton"
+				android:text="New Alert"></Button>
+			<Button
+				style="@style/DashboardButton"
+				android:id="@+id/preferencesbutton"
+				android:text="Settings"></Button>
+		</LinearLayout>
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1">
+			<Button
+				style="@style/DashboardButton"
+				android:id="@+id/mapbutton"
+				android:text="Map"></Button>
+
+			<Button
+				style="@style/DashboardButton"
+				android:id="@+id/listbutton"
+				android:text="List"></Button>
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	
+	<!-- Main window -->
+	<style name="Theme.Window" parent="android:style/Theme.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+	
+	<!-- Buttons -->
+	 <style name="DashboardButton">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@null</item>
+    </style>
+	<!-- Settings -->
+	<style
+		name="SettingsTitle"
+		parent="@android:style/TextAppearance.Medium">
+		<item
+			name="android:background">#000</item>
+		<item
+			name="android:layout_width">fill_parent</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+		<item
+			name="android:paddingLeft">12sp</item>
+		<item
+			name="android:textColor">#CCC</item>
+		<item
+			name="android:textSize">15.5sp</item>
+		<item
+			name="android:textStyle">bold</item>
+	</style>
+
+	<!-- textview -->
+	<style
+		name="textview"
+		parent="@android:style/TextAppearance">
+		<item
+			name="android:layout_width">wrap_content</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+		<item
+			name="android:layout_marginLeft">13dip</item>
+	</style>
+
+	<!-- edittext -->
+	<style
+		name="edittext"
+		parent="@android:style/Widget.EditText">
+		<item
+			name="android:layout_margin">13dip</item>
+		<item
+			name="android:layout_width">fill_parent</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+	</style>
+
+	<!-- datepicker -->
+	<style
+		name="AddAlertDialog_datepicker">
+		<item
+			name="android:layout_margin">13dip</item>
+		<item
+			name="android:layout_width">wrap_content</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+		<item
+			name="android:layout_centerHorizontal">true</item>
+	</style>
+
+	<!-- timepicker -->
+	<style
+		name="AddAlertDialog_timepicker">
+		<item
+			name="android:layout_width">wrap_content</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+	</style>
+
+	<!-- checkbox -->
+	<style
+		name="checkbox"
+		parent="@android:style/Widget.CompoundButton.CheckBox">
+		<item
+			name="android:layout_width">wrap_content</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+		<item
+			name="android:layout_margin">13dip</item>
+	</style>
+
+	<!-- button -->
+	<style
+		name="Button"
+		parent="@android:style/Widget.Button">
+		<item
+			name="android:layout_width">fill_parent</item>
+		<item
+			name="android:layout_height">wrap_content</item>
+		<item
+			name="android:layout_margin">13dip</item>
+
+	</style>
+
+	<!-- TasksList -->
+		<!-- tasklist top text -->
+		<style
+			name="TaskList_top_textview"
+			parent="@android:style/Widget.TextView">
+			<item
+				name="android:layout_width">wrap_content</item>
+			<item
+				name="android:layout_height">wrap_content</item>
+			<item
+				name="android:layout_margin">20dip</item>
+			<item
+				name="android:textSize">23dip</item>
+			<item
+				name="android:textStyle">bold</item>
+	
+			<item
+				name="android:layout_gravity">center</item>
+	
+		</style>
+	
+		<!-- tasklist top button -->
+		<style
+			name="TaskList_top_button"
+			parent="@android:style/Widget.Button">
+			<item
+				name="android:padding">15dip</item>
+			<item
+				name="android:layout_margin">9dip</item>
+			<item
+				name="android:textSize">17dip</item>
+			<item
+				name="android:textStyle">bold</item>
+		</style>
+	
+		<!-- tasklist item big text -->
+		<style
+			name="TaskList_item_big_text"
+			parent="@android:style/Widget.TextView">
+			<item
+				name="android:textSize">17dip</item>
+			<item
+				name="android:textStyle">bold</item>
+			<item
+				name="android:textColor">@color/white</item>
+			<item
+				name="android:layout_margin">9dip</item>
+		</style>
+	
+		<!-- tasklist item medium text -->
+		<style
+			name="TaskList_item_medium_text"
+			parent="@android:style/Widget.TextView">
+			<item
+				name="android:layout_marginLeft">12dip</item>
+			<item
+				name="android:textSize">14dip</item>
+		
+			<item
+				name="android:textColor">@color/white</item>
+			<item
+				name="android:padding">10dip</item>
+		</style>
+	
+		<!-- help big text -->
+		<style
+			name="Help_big_text"
+			parent="@android:style/Widget.TextView">
+			<item
+				name="android:layout_width">fill_parent</item>
+			<item
+				name="android:layout_height">wrap_content</item>
+		</style>
+		
+		<!-- help small text -->
+		<style
+			name="Help_small_text"
+			parent="@android:style/Widget.TextView">
+			<item
+				name="android:layout_width">fill_parent</item>
+			<item
+				name="android:layout_height">wrap_content</item>
+		</style>
+		
+		<!-- help link text -->
+		<style
+			name="Help_link_text"
+			parent="@android:style/Widget.TextView">
+			<item
+				name="android:layout_width">fill_parent</item>
+			<item
+				name="android:layout_height">wrap_content</item>
+			<item
+				name="android:textColor">@color/red</item>
+		</style>
+		
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="horizontal">
+  <LinearLayout
+  	android:orientation="vertical"
+  	android:layout_width="wrap_content"
+  	android:layout_height="fill_parent"
+  	android:layout_weight="1"
+  >
+  <TextView
+  	android:id="@+id/alert_name"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:textSize="20dip"
+  	android:text="This is the text"
+  ></TextView>
+  <TextView
+  	android:id="@+id/alert_description"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:text="This is the description"
+  ></TextView>
+  </LinearLayout>
+  <CheckBox
+  	android:id="@+id/alert_done"
+  	android:layout_width="wrap_content"
+  	android:layout_height="fill_parent"
+  ></CheckBox>
+</LinearLayout>
