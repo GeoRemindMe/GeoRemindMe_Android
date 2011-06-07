@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+			<TextView
+				style="@style/textview"
+				android:text="Alert name"></TextView>
+			<EditText
+				android:id="@+id/edittext_name"
+				style="@style/edittext">
+			</EditText>
+
+			<TextView
+				style="@style/textview"
+				android:text="Alert description"></TextView>
+			<EditText
+				android:id="@+id/edittext_description"
+				style="@style/edittext">
+			</EditText>
+
+			<TextView
+				style="@style/textview"
+				android:text="@string/adress"></TextView>
+			<EditText
+				android:id="@+id/edittext_address"
+				android:inputType="number"
+				style="@style/edittext"></EditText>
+
+			<CheckBox
+				android:id="@+id/checkbox_done"
+				style="@style/checkbox"
+				android:text="@string/checkdone"
+				android:layout_gravity="center_horizontal"></CheckBox>
+
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>

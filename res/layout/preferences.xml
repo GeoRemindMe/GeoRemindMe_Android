@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:key="PREFS"> 
+	
+    <!-- Map -->
+	<PreferenceCategory
+		android:title="@string/settings_map">
+
+         <!--
+		<ListPreference
+			android:id="@+id/pref_default_zoom_level"
+			android:key="PREF_DEFAULT_ZOOM_LEVEL"
+			android:title="@string/settings_default_zoom_level_title"
+			android:summary="@string/settings_default_zoom_level_summary"
+			android:entries="@array/default_zoom_levels"
+			android:entryValues="@array/default_zoom_levels"
+			android:defaultValue="1"/>
+			
+			 -->
+		<CheckBoxPreference
+			android:id="@+id/pref_show_satellite"
+			android:key="PREF_SHOW_SATELLITE"
+			android:title="@string/settings_satellite_title"
+			android:defaultValue="false"/>
+
+		<CheckBoxPreference
+			android:id="@+id/pref_show_traffic"
+			android:key="PREF_SHOW_TRAFFIC"
+			android:title="@string/settings_traffic_title"
+			android:defaultValue="false"/>
+
+		<org.georemindme.community.view.custom.HorizontalSlider
+			android:key="PREF_DEFAULT_ZOOM_LEVEL"
+			android:defaultValue="1"
+			android:title="Zoom level"/>
+	</PreferenceCategory>
+
+    
+    <!-- Location -->
+	<PreferenceCategory
+		android:title="@string/settings_location">
+		<ListPreference
+			android:id="@+id/pref_location_update_radius"
+			android:key="PREF_LOCATION_UPDATE_RADIUS"
+			android:title="@string/settings_location_update_radius_title"
+			android:summary="@string/settings_location_update_radius_summary"
+			android:entries="@array/location_update_radius"
+			android:entryValues="@array/location_update_radius_values"
+			android:defaultValue="10"/>
+		<ListPreference
+			android:id="@+id/pref_location_rate"
+			android:key="PREF_LOCATION_UPDATE_RATE"
+			android:title="@string/settings_location_update_rate_title"
+			android:summary="@string/settings_location_update_rate_summary"
+			android:entries="@array/location_update_rate"
+			android:entryValues="@array/location_update_rate_values"
+			android:defaultValue="1000"/>
+
+		<PreferenceScreen
+			android:key="LOCATIONPREFERENCES"
+			android:title="@string/settings_location_providers"
+			android:summary="@string/settings_location_providers_summary">
+			<ListPreference
+				android:id="@+id/pref_location_provider_accuracy"
+				android:key="PREF_LOCATION_PROVIDER_ACCURACY"
+				android:title="@string/settings_location_provider_accuracy_title"
+				android:summary="@string/settings_location_provider_accuracy_summary"
+				android:entries="@array/location_providers_accuracy"
+				android:entryValues="@array/location_providers_accuracy_values"
+				android:defaultValue="ACCURACY_FINE"/>
+
+			<ListPreference
+				android:id="@+id/pref_location_provider_power"
+				android:key="PREF_LOCATION_PROVIDER_POWER"
+				android:title="@string/settings_location_provider_power_title"
+				android:summary="@string/settings_location_provider_power_summary"
+				android:entries="@array/location_providers_power"
+				android:entryValues="@array/location_providers_power_values"
+				android:defaultValue="POWER_MEDIUM"/>
+			<!--  
+			<CheckBoxPreference
+				android:id="@+id/pref_network_location"
+				android:key = "PREF_NETWORK_LOCATION"
+				android:title="@string/settings_3g_location"
+				android:summary="@string/settings_3g_location_summary"
+				android:defaultValue="false"
+			/>
+			-->
+		</PreferenceScreen>
+	</PreferenceCategory>
+
+	<!-- Services -->
+	<PreferenceCategory
+		android:title="@string/settings_services">
+		<CheckBoxPreference
+			android:id="@+id/pref_autoupdate"
+			android:key="PREF_AUTOUPDATE"
+			android:title="@string/settings_autoupdate"
+			android:summary="@string/settings_autoupdate_summary"
+			android:defaultValue="false"/>
+		<CheckBoxPreference
+			android:id="@+id/pref_sync_on_boot"
+			android:key="PREF_SYNC_ON_BOOT"
+			android:title="@string/settings_sync_on_boot"
+			android:summary="@string/settings_sync_on_boot_summary"
+			android:defaultValue="false"
+			android:dependency="PREF_AUTOUPDATE"/>
+		<ListPreference
+			android:id="@+id/pref_sync_rate"
+			android:key="PREF_SYNC_RATE"
+			android:title="@string/settings_sync_rate"
+			android:summary="@string/settings_sync_rate_summary"
+			android:entries="@array/sync_update_rate"
+			android:entryValues="@array/sync_update_rate_values"
+			android:defaultValue="60"
+			android:dependency="PREF_AUTOUPDATE"/>
+	</PreferenceCategory>
+</PreferenceScreen>

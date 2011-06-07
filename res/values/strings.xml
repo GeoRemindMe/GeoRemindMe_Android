@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string
+		name="app_name">GeoRemindMe</string>
+
+	<string
+		name="OK">Ok</string>
+		
+	<!-- Menu items -->
+	<string
+		name="menu_item_help">Help</string>
+
+	<string
+		name="menu_item_preferences">Preferences</string>
+
+	<string
+		name="menu_item_filter">Filter</string>
+    
+    <!-- Settings -->
+	<string
+		name="settings">Settings</string>
+	<string
+		name="settings_location">Location</string>
+	<string
+		name="settings_alerts">Alerts</string>
+	<string
+		name="settings_map">Map</string>
+	<string
+		name="settings_services">Services</string>
+	<string
+		name="settings_autoupdate">Autoupdate</string>
+	<string
+		name="settings_autoupdate_summary">Check if you want to auto-update the data from the cloud.
+	</string>
+	<string
+		name="settings_sync_on_boot">Start on boot</string>
+	<string
+		name="settings_sync_on_boot_summary">Sync Service will start automatically.</string>
+	<string
+		name="settings_sync_rate">Frecuency for updates</string>
+	<string
+		name="settings_sync_rate_summary">Minimum distance, in minutes, to update the data</string>
+	<string
+		name="settings_default_zoom_level_title">Default zoom level</string>
+	<string
+		name="settings_default_zoom_level_summary">Zoom level of the first presentation of the map</string>
+	<string
+		name="settings_satellite_title">Satellite view</string>
+	<string
+		name="settings_traffic_title">Traffic</string>
+	<string
+		name="settings_fullscreen_title">Fullscreen</string>
+	<string
+		name="settings_alert_radius_title">Alert radius</string>
+	<string
+		name="settings_location_update_radius_title">Location update radius</string>
+	<string
+		name="settings_location_update_radius_summary">Minimum distance, in meters, to update the current location
+	</string>
+	<string
+		name="settings_location_update_rate_title">Location update rate</string>
+	<string
+		name="settings_location_update_rate_summary">Time, in minutes, to update the current location</string>
+	<string name = "settings_location_providers">Location providers</string>
+	<string name = "settings_location_providers_summary">Set up accuracy and power patterns</string>
+	<string
+		name="settings_location_provider_accuracy_title">Accuracy</string>
+
+	<string
+		name="settings_location_provider_accuracy_summary">Set how much accuracy you would like to have</string>
+		
+	<string name="settings_location_provider_power_title">Power</string>
+	<string name="settings_location_provider_power_summary">Set how much power you would like to use</string>
+	
+	<string name="settings_3g_location">Use 3G connection</string>
+	<string name="settings_3g_location_summary">This option will consume 3G data to find out where you are</string>
+	<string
+		name="location_provider_not_enabled_title">Problem with location</string>
+
+	<string
+		name="location_provider_not_enabled_message">Your default location provider is not enabled right now. Do you
+		want to check it? If you do not do it
+		the program might will not work
+		properly</string>
+    
+    <!-- Tasklist View -->
+	<string
+		name="tasklist_therearenotaskstoshow">There are no tasks to show</string>
+	<string
+		name="tasklist_tasks_string">Tasks</string>
+		
+	<!-- Help activity -->
+	<string
+		name="help">Help</string>
+	<string
+		name="help_whatis">What is GeoRemindMe?</string>
+	<string
+		name="help_whatis_description">[Description goes in here]</string>
+	<string
+		name="help_howuseit">How can i use it?</string>
+	<string
+		name="help_howuseit_description">[Description goes in here]</string>
+		
+	<!-- View/modify/delete task -->
+	<string
+		name="textname">Task name</string>
+	<string
+		name="textdescription">Task description</string>
+	<string
+		name="adress">Address</string>
+	<string
+		name="radius">Action radius</string>
+	<string
+		name="checkdone">Is it done?</string>
+	<string
+		name="buttonmap">Map</string>
+	<string
+		name="buttondelete">Delete it</string>
+	<string
+		name="buttonsave">Save it</string>
+	<string
+		name="viewsaved">Done!</string>
+	<string
+		name="viewdeleted">Task removed!</string>
+	<string
+		name="viewdelete_ask">Your task is going to be delete it, are you sure?</string>
+		
+		
+	<!-- MapActivity -->
+	<string
+		name="searchaddress">Find address</string>
+		
+	<!-- Add task -->
+	<string
+		name="textname_hint">Set task name</string>
+	<string
+		name="textdescription_hint">Set task description</string>
+	<string
+		name="adress_hint">Set task address</string>
+	<string
+		name="radius_hint">Set task action radius</string>
+	<string
+		name="deletebutton_add">Clean all</string>
+</resources>

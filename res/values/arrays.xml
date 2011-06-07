@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+	<string-array
+		name="default_zoom_levels">
+		<item>1</item>
+		<item>6</item>
+		<item>11</item>
+		<item>16</item>
+		<item>18</item>
+	</string-array>
+
+	<string-array
+		name="location_update_radius">
+		<item>10 meters</item>
+		<item>50 meters</item>
+		<item>100 meters</item>
+		<item>500 meters</item>
+		<item>1000 meters</item>
+	</string-array>
+
+	<string-array
+		name="location_update_rate">
+		<item>1 minutes</item>
+		<item>10 minutes</item>
+		<item>30 minutes</item>
+		<item>60 minutes</item>
+		<item>120 minutes</item>
+	</string-array>
+
+
+	<string-array
+		name="sync_update_rate">
+		<item>5 minutes</item>
+		<item>10 minutes</item>
+		<item>15 minutes</item>
+		<item>30 minutes</item>
+		<item>60 minutes</item>
+		<item>90 minutes</item>
+		<item>120 minutes</item>
+		<item>180 minutes</item>
+	</string-array>
+    
+    <!-- miliseconds -->
+	<string-array
+		name="location_update_rate_values">
+		<item>1000</item>
+		<item>10000</item>
+		<item>30000</item>
+		<item>60000</item>
+		<item>120000</item>
+	</string-array>
+	
+	<string-array
+		name="location_update_radius_values">
+		<item>10</item>
+		<item>50</item>
+		<item>100</item>
+		<item>500</item>
+		<item>1000</item>
+	</string-array>
+
+	<string-array
+		name="location_providers_accuracy">
+		<item>High Precision</item>
+		<item>Low Precision</item>
+	</string-array>
+
+	<string-array
+		name="location_providers_accuracy_values">
+		<item>ACCURACY_FINE</item>
+		<item>ACCURACY_COARSE</item>
+	</string-array>
+
+	<string-array
+		name="location_providers_power">
+		<item>High consume</item>
+		<item>Medium consume</item>
+		<item>Low consume</item>
+	</string-array>
+
+	<string-array
+		name="location_providers_power_values">
+		<item>POWER_HIGH</item>
+		<item>POWER_MEDIUM</item>
+		<item>POWER_LOW</item>
+	</string-array>
+
+
+
+	<string-array
+		name="sync_update_rate_values">
+		<item>5</item>
+		<item>10</item>
+		<item>15</item>
+		<item>30</item>
+		<item>60</item>
+		<item>90</item>
+		<item>120</item>
+		<item>180</item>
+	</string-array>
+</resources> 

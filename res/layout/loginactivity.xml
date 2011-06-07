@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+  
+  <!-- Linear layout to hold the ActionBar if exists -->
+	<LinearLayout
+		android:orientation="horizontal"
+		android:id="@+id/actionBar"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>
+
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1.0">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Name"
+		/>
+		<EditText
+			android:id="@+id/name"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+		/>
+		
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Password"
+		/>
+		
+		<EditText
+			android:id="@+id/pass"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"
+		/>
+	</LinearLayout>
+
+	<Button
+		android:id="@+id/okButton"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Log in"/>
+</LinearLayout>
