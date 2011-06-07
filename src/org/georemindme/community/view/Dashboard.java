@@ -28,6 +28,7 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 	private Button				map;
 	private Button				list;
 	private Button				settings;
+	private Button addAlertButton;
 	
 	private Dialog				loginDialog;
 	
@@ -50,6 +51,8 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		list.setOnClickListener(this);
 		settings = (Button) findViewById(R.id.preferencesbutton);
 		settings.setOnClickListener(this);
+		addAlertButton = (Button) findViewById(R.id.createalertButton);
+		addAlertButton.setOnClickListener(this);
 		
 		// Create login dialog.
 		loginDialog = new Dialog(Dashboard.this);
@@ -103,6 +106,10 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 			case R.id.preferencesbutton:
 				i = new Intent(getApplicationContext(), Settings.class);
 				startActivity(i);
+				break;
+			case R.id.createalertButton:
+				Intent intent = new Intent(getApplicationContext(), AddAlarmActivity.class);
+				startActivity(intent);
 				break;
 		}
 	}

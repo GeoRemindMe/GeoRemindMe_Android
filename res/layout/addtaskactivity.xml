@@ -3,7 +3,8 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:padding="6dip">
   <!-- ActionBar -->
 	<LinearLayout
 		android:layout_width="fill_parent"
@@ -20,7 +21,8 @@
 	<ScrollView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_weight="1.0">
+		android:layout_weight="1.0"
+		android:scrollbars="none">
 		<LinearLayout
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
@@ -42,6 +44,11 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Active Period"
+			></TextView>
 			<LinearLayout
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
@@ -58,6 +65,48 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_weight="1.0"></Button>
+			</LinearLayout>
+			
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Map'n Address"
+			></TextView>
+			<org.georemindme.community.view.custom.DummyMap
+				android:id="@+id/dummymap"
+				android:layout_width="fill_parent"
+				android:layout_height = "130dip"
+				android:apiKey="0lxXQNB__9B6gvGoNVuub-_MNnJ9hsY0uTdG83Q"
+				android:clickable="true"
+			>
+			</org.georemindme.community.view.custom.DummyMap>
+			<TextView
+				android:id="@+id/addressTextView"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Address: XYZ"
+			></TextView>
+			
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+			>
+				<Button
+					android:id="@+id/okButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1.0"
+					android:text ="Save it!"
+				></Button>
+				
+				<Button
+					android:id="@+id/resetButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1.0"
+					android:text="Reset"
+				></Button>
 			</LinearLayout>
 		</LinearLayout>
 </ScrollView>
