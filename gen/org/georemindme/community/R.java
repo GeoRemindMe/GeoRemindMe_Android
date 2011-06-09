@@ -99,10 +99,8 @@ public final class R {
         public static final int mapdialogactitivy_address=0x7f0a0024;
         public static final int mapdialogactivity_map=0x7f0a0023;
         public static final int mapdialogactivity_okbutton=0x7f0a0025;
-        public static final int menu_item_list=0x7f0a003a;
-        public static final int menu_item_location=0x7f0a0037;
-        public static final int menu_item_preferences=0x7f0a0038;
-        public static final int menu_item_sync=0x7f0a0039;
+        public static final int menu_item_exit=0x7f0a0038;
+        public static final int menu_item_sync=0x7f0a0037;
         public static final int modebutton=0x7f0a000e;
         public static final int name=0x7f0a0015;
         public static final int nameEditText=0x7f0a0001;

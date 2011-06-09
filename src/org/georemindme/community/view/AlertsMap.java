@@ -121,38 +121,7 @@ public class AlertsMap extends MapActivity implements OnGestureListener,
 	}
 	
 
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		super.onOptionsItemSelected(item);
-		
-		switch (item.getItemId())
-		{
-			case (R.id.menu_item_preferences):
-			{
-				Intent i = new Intent(this, org.georemindme.community.view.Settings.class);
-				startActivity(i);
-				break;
-			}
-				
-			case (R.id.menu_item_location):
-			{
-				setMyPosition();
-				break;
-			}
-			case (R.id.menu_item_sync):
-			{
-								break;
-			}
-			case (R.id.menu_item_list):
-			{
-				Intent i = new Intent(this, org.georemindme.community.view.AlertList.class);
-				startActivity(i);
-				break;
-			}
-				
-		}
-		return true;
-	}
+	
 	
 
 	private void refreshLocationManager()

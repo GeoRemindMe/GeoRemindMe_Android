@@ -80,7 +80,8 @@ public class ReadyState implements ControllerState
 						controller.restartLocationServer();
 						break;
 					case P_AUTOUPDATE_CHANGED:
-						
+					case P_SYNC_RATE_CHANGED:
+						controller.setPeriodicalUpdates();
 						break;
 				}
 				

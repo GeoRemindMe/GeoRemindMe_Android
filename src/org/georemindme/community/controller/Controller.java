@@ -188,6 +188,10 @@ public class Controller
 			Log.v("UPDATE", "TIME: " + time);
 			alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), time * 1000, alarmManagerPendingIntent);
 		}
+		else
+		{
+			cancelPeriodicalUpdates();
+		}
 	}
 	
 

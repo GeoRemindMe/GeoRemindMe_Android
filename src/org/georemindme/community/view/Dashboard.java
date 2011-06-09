@@ -17,6 +17,9 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -210,4 +213,36 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		return false;
 	}
 	
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		super.onCreateOptionsMenu(menu);
+		
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		
+		return true;
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		super.onOptionsItemSelected(item);
+		
+		switch (item.getItemId())
+		{
+			case (R.id.menu_item_sync):
+			{
+				controller.getInboxHandler().obtainMessage(V_REQUEST_UPDATE).sendToTarget();
+				break;
+			}
+				
+			case (R.id.menu_item_exit):
+			{
+				controller.getInboxHandler().obtainMessage(V_REQUEST_UPDATE).sendToTarget();
+				System.exit(0);
+				break;
+			}
+		
+		}
+		return true;
+	}
 }

@@ -67,9 +67,7 @@ public class Server implements Serializable
 	{
 		this.controllerInbox = controllerInbox;
 		
-		connection = JSONRPCClient.create(Server.URL);
-		connection.setConnectionTimeout(Server.connectionTimeout);
-		connection.setSoTimeout(Server.connectionTimeout);
+		//openConnection();
 		
 		db = Database.getDatabaseInstance(context);
 		// Elimino la apertura ya que cada llamada a la base de datos a abre
@@ -79,6 +77,18 @@ public class Server implements Serializable
 	}
 	
 
+	private void openConnection()
+	{
+		connection = JSONRPCClient.create(Server.URL);
+		connection.setConnectionTimeout(Server.connectionTimeout);
+		connection.setSoTimeout(Server.connectionTimeout);
+	}
+	
+	private void closeConnection()
+	{
+		connection = null;
+	}
+	
 	String getURL()
 	{
 		return URL;
@@ -122,10 +132,12 @@ public class Server implements Serializable
 			{
 				try
 				{
+					openConnection();
 					user.setName(user.getName().toLowerCase());
 					sessionId = connection.callString("login", user.getName(), user.getPass());
 					if (user != null)
 						db.setUser(user);
+					closeConnection();
 				}
 				catch (JSONRPCException e)
 				{
@@ -268,9 +280,9 @@ public class Server implements Serializable
 									int c_active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
 									boolean c_active_processed;
 									if(c_active == 0)
-										c_active_processed = false;
-									else
 										c_active_processed = true;
+									else
+										c_active_processed = false;
 									obj.put("active", c_active_processed);
 									
 									long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
@@ -300,7 +312,9 @@ public class Server implements Serializable
 						Log.v("Creando datos a subir", dictionary.toJSONString());
 						
 						// Process data from server to local database.
+						openConnection();
 						String data = connection.callString("sync", sessionId, since_last_sync, dictionary.toJSONString());
+						closeConnection();
 						JSONParser parser = new JSONParser();
 						
 						Log.v("DATA lenght", ":" + data.length());
@@ -369,6 +383,8 @@ public class Server implements Serializable
 						//controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, e);
 					}
 				}
+				
+			
 				
 			};
 			

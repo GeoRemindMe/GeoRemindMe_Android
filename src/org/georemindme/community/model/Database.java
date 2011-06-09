@@ -344,7 +344,7 @@ public class Database
 		
 		Cursor c = db.rawQuery(sql, null);
 		// Log.v("DATABASE - getmodifiedAlerts", c.getCount() + "");
-		this.close();
+		//this.close();
 		return c;
 	}
 	
