@@ -68,31 +68,31 @@ public class Logger
 
 	public static void write(Object o, String message)
 	{
-		Log.v("LOGGER", message);
-		StringBuilder stb = new StringBuilder();
-		stb.append(o.getClass().getName() + "\t");
-		stb.append(new Date());
-		stb.append("\t");
-		stb.append(message);
-		stb.append("\n");
-		
-		try
+		if (writter != null && buffer != null)
 		{
-			if (writter != null && buffer != null)
+			Log.v("LOGGER", message);
+			StringBuilder stb = new StringBuilder();
+			stb.append(o.getClass().getName() + "\t");
+			stb.append(new Date());
+			stb.append("\t");
+			stb.append(message);
+			stb.append("\n");
+			
+			try
 			{
 				buffer.write(stb.toString());
 				buffer.flush();
+				
 			}
-			else
-				Log.e("LOGGER", "I cannot write to the file. is null");
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+				
+				Log.e("Error writing to private logger", e.getCause().getLocalizedMessage());
+			}
 		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			
-			Log.e("Error writing to private logger", e.getCause().getLocalizedMessage());
-		}
-		
+		else
+			Log.e("LOGGER", "I cannot write to the file. is null");
 	}
 }

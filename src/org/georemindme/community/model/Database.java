@@ -116,6 +116,7 @@ public class Database
 	public static final String	ALERT_MODIFY							= "alert_modify";
 	public static final String	ALERT_DONE								= "alert_done";
 	public static final String	ALERT_PRIORITY							= "alert_priority";
+	public static final String	ALERT_ACTIVE							= "alert_active";
 	public static final String	ALERT_RANGE								= "alert_range";
 	public static final String	ALERT_X									= "alert_x";
 	public static final String	ALERT_Y									= "alert_y";
@@ -147,22 +148,6 @@ public class Database
 	 * 
 	 * @author fj.
 	 */
-	private static final String	CREATE_POINT_TABLE						= "create table "
-																				+ POINT_TABLE
-																				+ "( "
-																				+ _ID
-																				+ " integer primary key autoincrement, "
-																				+ POINT_X
-																				+ " real not null, "
-																				+ POINT_Y
-																				+ " real not null, "
-																				+ POINT_NAME
-																				+ " text not null, "
-																				+ POINT_BOOKMARKED
-																				+ " integer, "
-																				+ POINT_PHYSICALADDRESS
-																				+ " text not null"
-																				+ ")";
 	private static final String	CREATE_USER_TABLE						= "create table "
 																				+ USER_TABLE
 																				+ "( "
@@ -183,7 +168,7 @@ public class Database
 																				+ _ID
 																				+ " integer primary key autoincrement, "
 																				+ SERVER_ID
-																				+ " real not null unique, "
+																				+ " real not null, "
 																				+ ALERT_START
 																				+ " real not null, "
 																				+ ALERT_END
@@ -194,6 +179,8 @@ public class Database
 																				+ " real not null, "
 																				+ ALERT_MODIFY
 																				+ " real not null, "
+																				+ ALERT_ACTIVE
+																				+ " integer not null default 0, "
 																				+ ALERT_DONE
 																				+ " real not null, "
 																				+ ALERT_NAME
@@ -362,7 +349,8 @@ public class Database
 	}
 	
 
-	public synchronized Cursor getNearestAlertsUndone(double latE6, double lngE6, int meters)
+	public synchronized Cursor getNearestAlertsUndone(double latE6,
+			double lngE6, int meters)
 	{
 		this.open();
 		Cursor c = null;
@@ -375,6 +363,8 @@ public class Database
 		// Log.v("Latitude", latE6 + "");
 		// Log.v("Longitude", lngE6 + "");
 		
+		// PROBABLEMENTE ESTE METODO FALLE. TENDRÉ QUE USAR METODOS MATEMÁTICOS
+		// DE SQLITE3
 		String sql = "Select *, " + "(" + latE6 + " - " + POINT_X + ") * ("
 				+ latE6 + " - " + POINT_X + ") +" + "(" + lngE6 + " - "
 				+ POINT_Y + ") * (" + lngE6 + " - " + POINT_Y
@@ -424,8 +414,6 @@ public class Database
 		long result = 0;
 		String sql = "Select " + USER_LASTSYNC + " from " + USER_TABLE;
 		
-		
-		
 		Cursor c = db.rawQuery(sql, null);
 		if (c != null)
 		{
@@ -450,7 +438,7 @@ public class Database
 	}
 	
 
-	private synchronized void refreshAlert(Alert a)
+	public synchronized void refreshAlert(Alert a)
 	{
 		this.open();
 		
@@ -478,6 +466,16 @@ public class Database
 			cv.put(ALERT_DONE, 0);
 			// Log.v("ALERT_DONE", "La alerta está sin hacer");
 		}
+		
+		if (a.isActive())
+		{
+			cv.put(ALERT_ACTIVE, 0);
+		}
+		else
+		{
+			cv.put(ALERT_ACTIVE, 1);
+		}
+		
 		cv.put(ALERT_NAME, a.getName());
 		cv.put(POINT_X, a.getLatitude());
 		cv.put(POINT_Y, a.getLongitude());
@@ -537,8 +535,6 @@ public class Database
 		}
 		cv.put(ALERT_MODIFY, time);
 		
-		
-		
 		db.update(ALERT_TABLE, cv, SERVER_ID + " = " + id_server, null);
 		
 		this.close();
@@ -562,6 +558,48 @@ public class Database
 		
 		this.close();
 		
+	}
+	
+
+	public synchronized void addAlert(Alert a)
+	{
+		this.open();
+		
+		ContentValues cv = new ContentValues();
+		
+		cv.put(SERVER_ID, a.getId());
+		cv.put(ALERT_START, a.getStarts());
+		cv.put(ALERT_END, a.getEnds());
+		cv.put(ALERT_DESCRIPTION, a.getDescription());
+		cv.put(ALERT_CREATE, a.getCreated());
+		cv.put(ALERT_MODIFY, a.getModified());
+		if (a.isDone())
+		{
+			cv.put(ALERT_DONE, a.getDone_when());
+			// Log.v("ALERT_DONE", "La alerta está hecha");
+		}
+		else
+		{
+			cv.put(ALERT_DONE, 0);
+			// Log.v("ALERT_DONE", "La alerta está sin hacer");
+		}
+		
+		if (a.isActive())
+		{
+			cv.put(ALERT_ACTIVE, 0);
+		}
+		else
+		{
+			cv.put(ALERT_ACTIVE, 1);
+		}
+		
+		cv.put(ALERT_NAME, a.getName());
+		cv.put(POINT_X, a.getLatitude());
+		cv.put(POINT_Y, a.getLongitude());
+		
+		db.insert(ALERT_TABLE, null, cv);
+		
+		this.close();
 	}
 	
 

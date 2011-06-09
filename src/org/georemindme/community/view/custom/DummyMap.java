@@ -1,7 +1,12 @@
 package org.georemindme.community.view.custom;
 
 
+import org.georemindme.community.controller.PreferencesController;
+import org.georemindme.community.view.AddAlarmActivity;
+import org.georemindme.community.view.MapDialogActivity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -16,6 +21,8 @@ public class DummyMap extends MapView
 {
 	private Context			context;
 	private GestureDetector	gestureDetector;
+	
+	private AddAlarmActivity parentActivity;
 	
 	public DummyMap(Context context, String apiKey)
 	{
@@ -40,9 +47,17 @@ public class DummyMap extends MapView
 		_init(context);
 	}
 	
-	private void _init(Context context)
+	public void addParentActivity(AddAlarmActivity activity)
+	{
+		parentActivity = activity;
+	}
+	
+	private void _init(final Context context)
 	{
 		this.context = context;
+		this.setTraffic(PreferencesController.isTraffic());
+		this.setSatellite(PreferencesController.isSatellite());
+		
 		gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener()
 		{
 			public void onLongPress(MotionEvent e)
@@ -59,6 +74,7 @@ public class DummyMap extends MapView
 			public boolean onSingleTapUp(MotionEvent e)
 			{
 				Log.v("MAP", "onSingleTapUp");
+				parentActivity.launchMapActivity();
 				return super.onDown(e);
 			}
 		}

@@ -11,6 +11,13 @@ public interface ControllerProtocol
 	int	V_REQUEST_QUIT_PERIODICAL_UPDATES		= 106;	// empty
 	int	V_REQUEST_UPDATE						= 107;	// empty
 	int	V_REQUEST_IS_LOGGED						= 108;
+	int	V_REQUEST_LAST_LOCATION					= 109;
+	int	V_RESET_LOCATION_PROVIDERS				= 110;
+	int	V_REQUEST_LAST_KNOWN_ADDRESS			= 111;
+	int	V_REQUEST_ADDRESS						= 112;	// obj = new
+														// Double[latitude,
+														// longitude]
+	int	V_REQUEST_SAVE_ALERT					= 113; // obj = (Alert) new alert.
 	
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty
@@ -23,7 +30,11 @@ public interface ControllerProtocol
 	int	C_UPDATE_FAILED							= 209;
 	int	C_IS_LOGGED								= 210;	// obj = (User) data
 	int	C_IS_NOT_LOGGED							= 211;
-	
+	int	C_NO_LAST_LOCATION_AVAILABLE			= 212;
+	int	C_LAST_LOCATION							= 213;	// obj = (Location)
+														// lastlocation
+	int C_ALERT_SAVED = 214;
+														
 	int	S_REQUEST_UPDATE						= 301;	// empty
 														
 	int	P_PREFERENCE_CHANGED					= 401;	// obj = (Integer)
@@ -38,8 +49,12 @@ public interface ControllerProtocol
 	int	P_SYNC_RATE_CHANGED						= 408;
 	int	P_START_ON_BOOT_CHANGED					= 409;
 	int	P_AUTOUPDATE_CHANGED					= 410;
-	int P_3G_LOCATION = 411;
+	int	P_3G_LOCATION							= 411;
 	
-	int LS_LOCATION_CHANGED = 501;
-	int LS_NO_PROVIDER_AVAILABLE = 502;
+	int	LS_LOCATION_CHANGED						= 501;	// obj = (Location)
+														// lastKnownLocation
+	int	LS_NO_PROVIDER_AVAILABLE				= 502;
+	int	LS_GETTING_ADDRESS_STARTED				= 503;
+	int	LS_GETTING_ADDRESS_FAILED				= 504;
+	int	LS_GETTING_ADDRESS_FINISHED				= 505;
 }

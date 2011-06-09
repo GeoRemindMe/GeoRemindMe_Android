@@ -9,6 +9,7 @@ import java.util.List;
 import org.georemindme.community.controller.appserver.Server;
 import org.georemindme.community.controller.appserver.UpdateService;
 import org.georemindme.community.controller.location.LocationServer;
+import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.User;
 import org.georemindme.community.tools.Logger;
 
@@ -17,6 +18,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
+import android.location.Location;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -59,21 +61,17 @@ public class Controller
 	{
 		
 		this.context = context;
+		preferencesController = new PreferencesController(context);
 		
-		locationServer = locationServer.getInstance(context);
+		
 		Log.v("Iniciando location server", "STARTING");
-		int millis = PreferencesController.getTime() * 1000; //Falta multiplicarlo por 60
+		int millis = PreferencesController.getTime(); //Falta multiplicarlo por 60
 		int meters = PreferencesController.getRadius();
-		
-		millis = 10000;
-		meters = 0;
 		
 		Log.i("Millis: ", "" + millis);
 		Log.i("Meters: ", "" + meters);
 		
-		locationServer.startTrackingPosition(millis, meters, 
-				PreferencesController.getLocationProviderAccuracy(), PreferencesController.getLocationProviderPower(),
-				PreferencesController.is3Location());
+		
 		
 		inboxHandlerThread = new HandlerThread("Controller Inbox");
 		inboxHandlerThread.start();
@@ -90,11 +88,14 @@ public class Controller
 		
 		server = Server.getInstance(context, inboxHandler);
 		
+		locationServer = locationServer.getInstance(this);
+		locationServer.startTrackingPosition();
+		
 		alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManagerIntent = new Intent(context, UpdateService.class);
 		alarmManagerPendingIntent = PendingIntent.getService(context, 0, alarmManagerIntent, 0);
 		
-		preferencesController = new PreferencesController(context);
+		
 	}
 	
 
@@ -109,6 +110,10 @@ public class Controller
 		}
 	}
 	
+	public Context getContext()
+	{
+		return context;
+	}
 
 	public final Handler getInboxHandler()
 	{
@@ -168,6 +173,7 @@ public class Controller
 	final void dispose()
 	{
 		inboxHandlerThread.getLooper().quit();
+		locationServer.stopTrackingPosition();
 	}
 	
 
@@ -192,13 +198,7 @@ public class Controller
 			alarmManager.cancel(alarmManagerPendingIntent);
 		}
 	}
-	
 
-	final boolean isUserlogin()
-	{
-		return server.isUserlogin();
-	}
-	
 
 	final void preferencesChanged(Integer obj)
 	{
@@ -245,11 +245,12 @@ public class Controller
 
 	void isLogged()
 	{
-		if (!isUserlogin())
-			notifyOutboxHandlers(C_IS_NOT_LOGGED, 0, 0, null);
+		if (server.isUserlogin())
+			notifyOutboxHandlers(C_IS_LOGGED, 0, 0, server.getUser());
 		else
 		{
-			notifyOutboxHandlers(C_IS_LOGGED, 0, 0, server.getUser());
+			notifyOutboxHandlers(C_IS_NOT_LOGGED, 0, 0, server.getDatabaseUser());
+			
 		}
 	}
 
@@ -258,6 +259,46 @@ public class Controller
 	{
 		// TODO Auto-generated method stub
 		return server;
+	}
+
+
+	public void getLastLocation()
+	{
+		// TODO Auto-generated method stub
+		Location l = locationServer.getLastKnownLocation();
+		if(l == null)
+			notifyOutboxHandlers(C_NO_LAST_LOCATION_AVAILABLE, 0, 0, null);
+		else
+			notifyOutboxHandlers(C_LAST_LOCATION, 0, 0, l);
+	}
+
+
+	public final void restartLocationServer()
+	{
+		// TODO Auto-generated method stub
+		locationServer.stopTrackingPosition();
+		locationServer.startTrackingPosition();
+	}
+
+
+	public void getLastKnownAddress()
+	{
+		// TODO Auto-generated method stub
+		notifyOutboxHandlers(V_REQUEST_LAST_KNOWN_ADDRESS, 0, 0, null);
+	}
+
+
+	void getAddress(Double double1, Double double2)
+	{
+		// TODO Auto-generated method stub
+		locationServer.getAddress(double1, double2);
+	}
+
+
+	void saveAlert(Alert alert)
+	{
+		// TODO Auto-generated method stub
+		server.saveAlert(alert);
 	}
 	
 }

@@ -23,16 +23,16 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 
 public class LoginActivity extends Activity implements Callback
 {
-	private static final String LOG = "Login-Debug";
+	private static final String	LOG			= "Login-Debug";
 	
-	private Controller	controller;
-	private Handler		controllerInbox;
-	private Handler		myHandler;
+	private Controller			controller;
+	private Handler				controllerInbox;
+	private Handler				myHandler;
 	
-	private Button		okButton;
-	private EditText	name, pass;
+	private Button				okButton;
+	private EditText			name, pass;
 	
-	private boolean		islogged	= false;
+	private boolean				islogged	= false;
 	
 	
 	public void onCreate(Bundle savedInstanceState)
@@ -50,14 +50,13 @@ public class LoginActivity extends Activity implements Callback
 			public void onClick(View v)
 			{
 				// TODO Auto-generated method stub
-				if(islogged)
+				if (islogged)
 				{
 					controllerInbox.sendEmptyMessage(V_REQUEST_LOGOUT);
 				}
 				else
 				{
-					Message msg = Message.obtain(controllerInbox, V_REQUEST_LOGIN, 
-							new User(name.getText().toString(), pass.getText().toString()));
+					Message msg = Message.obtain(controllerInbox, V_REQUEST_LOGIN, new User(name.getText().toString(), pass.getText().toString()));
 					msg.sendToTarget();
 				}
 				
@@ -67,16 +66,12 @@ public class LoginActivity extends Activity implements Callback
 		controllerInbox = controller.getInboxHandler();
 		myHandler = new Handler(this);
 		
-		
-		
 	}
 	
 
 	public void onStart()
 	{
 		super.onStart();
-		
-		
 		
 	}
 	
@@ -116,10 +111,10 @@ public class LoginActivity extends Activity implements Callback
 		switch (msg.what)
 		{
 			case C_IS_LOGGED:
-				setUserIsLoggedIn((User)msg.obj);
+				setUserIsLoggedIn((User) msg.obj);
 				return true;
 			case C_IS_NOT_LOGGED:
-				setUserIsLoggedOut();
+				setUserIsLoggedOut((User) msg.obj);
 				return true;
 			case C_LOGIN_STARTED:
 				Toast.makeText(getApplicationContext(), "Log in started", Toast.LENGTH_SHORT).show();
@@ -128,34 +123,45 @@ public class LoginActivity extends Activity implements Callback
 				Toast.makeText(getApplicationContext(), "Log in failed!!", Toast.LENGTH_SHORT).show();
 				return true;
 			case C_LOGIN_FINISHED:
-				Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT).show();
-				setUserIsLoggedIn((User)msg.obj);
+				Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+				setUserIsLoggedIn((User) msg.obj);
+				finish();
 				return true;
 			case C_LOGOUT_STARTED:
-				Toast.makeText(getApplicationContext(), "Log out started", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(getApplicationContext(), "Log out started", Toast.LENGTH_SHORT).show();
 				return true;
 			case C_LOGOUT_FINISHED:
-				Toast.makeText(getApplicationContext(), "Log out finished", Toast.LENGTH_SHORT).show();
-				setUserIsLoggedOut();
+				//Toast.makeText(getApplicationContext(), "Log out finished", Toast.LENGTH_SHORT).show();
+				setUserIsLoggedOut(null);
 				return true;
 		}
 		return false;
 	}
 	
+
 	private void setUserIsLoggedIn(User user)
 	{
 		islogged = true;
 		okButton.setText("Log out");
-		name.setText(user.getName());
-		name.setEnabled(false);
-		pass.setText(user.getPass());
-		pass.setEnabled(false);
+		if (user != null)
+		{
+			name.setText(user.getName());
+			name.setEnabled(false);
+			pass.setText(user.getPass());
+			pass.setEnabled(false);
+		}
 	}
 	
-	private void setUserIsLoggedOut()
+
+	private void setUserIsLoggedOut(User user)
 	{
 		islogged = false;
 		okButton.setText("Log in");
+		if (user != null)
+		{
+			name.setText(user.getName());
+			pass.setText(user.getPass());
+		}
 		name.setEnabled(true);
 		pass.setEnabled(true);
 	}

@@ -62,7 +62,7 @@ public class GeoRemindMe extends Application
 		if (PreferencesController.isStart_on_boot() && PreferencesController.isAutoupdate())
 			controller.getInboxHandler().sendEmptyMessage(V_REQUEST_PERIODICAL_UPDATES);
 		
-		Logger.start(getApplicationContext(), 0);
+		//Logger.start(getApplicationContext(), 0);
 	}
 	
 
@@ -91,7 +91,7 @@ public class GeoRemindMe extends Application
 		controller.cancelPeriodicalUpdates();
 		controller.dispose();
 		
-		Logger.finish();
+		//Logger.finish();
 	}
 	
 	// -------------------------------------------------------------

@@ -1,14 +1,7 @@
 package org.georemindme.community.controller.appserver;
 
 
-import static org.georemindme.community.controller.ControllerProtocol.C_LOGIN_FAILED;
-import static org.georemindme.community.controller.ControllerProtocol.C_LOGIN_FINISHED;
-import static org.georemindme.community.controller.ControllerProtocol.C_LOGIN_STARTED;
-import static org.georemindme.community.controller.ControllerProtocol.C_LOGOUT_FINISHED;
-import static org.georemindme.community.controller.ControllerProtocol.C_LOGOUT_STARTED;
-import static org.georemindme.community.controller.ControllerProtocol.C_UPDATE_FAILED;
-import static org.georemindme.community.controller.ControllerProtocol.C_UPDATE_FINISHED;
-import static org.georemindme.community.controller.ControllerProtocol.C_UPDATE_STARTED;
+import static org.georemindme.community.controller.ControllerProtocol.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -272,8 +265,13 @@ public class Server implements Serializable
 									point_ext.add(point_int);
 									obj.put("points", point_ext);
 									
-									boolean c_active = true;
-									obj.put("active", c_active);
+									int c_active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
+									boolean c_active_processed;
+									if(c_active == 0)
+										c_active_processed = false;
+									else
+										c_active_processed = true;
+									obj.put("active", c_active_processed);
 									
 									long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
 									obj.put("id", c_id);
@@ -383,5 +381,22 @@ public class Server implements Serializable
 			controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
 			//controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, null);
 		}
+	}
+
+
+	public final User getDatabaseUser()
+	{
+		// TODO Auto-generated method stub
+		final User u = db.getUser();
+		
+		return u;
+	}
+
+
+	public void saveAlert(Alert obj)
+	{
+		// TODO Auto-generated method stub
+		db.addAlert(obj);
+		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
 	}
 }

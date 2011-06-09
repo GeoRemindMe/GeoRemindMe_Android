@@ -45,8 +45,17 @@
 			android:name="org.georemindme.community.view.AddAlarmActivity"
 			android:windowSoftInputMode="stateHidden|adjustPan"
 			android:theme="@style/Theme.Window"
-		>
-		</activity>
+		></activity>
+		
+		<activity
+			android:name="org.georemindme.community.view.MapDialogActivity"
+			android:theme="@style/Theme.Window"
+		></activity>
+		
+		<activity
+			android:name="org.georemindme.community.view.ListTabActivity"
+			android:theme="@style/Theme.Window"
+		></activity>
 		
 		<activity
 			android:name="org.georemindme.community.view.AlertsMap"
@@ -86,7 +95,7 @@
 			android:name="org.georemindme.community.services.LocationService"></service>
 		<service
 			android:enabled="true"
-			android:name="controller.appserver.UpdateService"></service>
+			android:name="org.georemindme.community.controller.appserver.UpdateService"></service>
 		<receiver android:name="org.georemindme.community.controller.Booter">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED"></action>

@@ -7,17 +7,16 @@
   <!-- Layout for title bar -->
 	<LinearLayout
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="@dimen/title_height"
 		android:id="@+id/titlebar"
 		android:orientation="horizontal"
-		android:layout_margin="10dip">
+		android:background="@color/orange_transparent">
 		<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="40dip"
 			android:layout_weight="1.0"
 			android:id="@+id/logo"
 			android:layout_gravity="left"
-			android:src="@drawable/logo"
 			android:adjustViewBounds="true"></ImageView>
 		<Button
 			android:layout_width="wrap_content"
@@ -46,11 +45,15 @@
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/createalertButton"
-				android:text="New Alert"></Button>
+				android:text="New Alert"
+				android:drawableTop="@drawable/alert"
+				></Button>
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/preferencesbutton"
-				android:text="Settings"></Button>
+				android:text="Settings"
+				android:drawableTop="@drawable/settings"
+				></Button>
 		</LinearLayout>
 		<LinearLayout
 			android:orientation="horizontal"
@@ -60,12 +63,16 @@
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/mapbutton"
-				android:text="Map"></Button>
+				android:text="Map"
+				android:drawableTop="@drawable/map"
+				></Button>
 
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/listbutton"
-				android:text="List"></Button>
+				android:text="List"
+				android:drawableTop="@drawable/list"
+				></Button>
 		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>

@@ -29,11 +29,12 @@
 			android:key="PREF_SHOW_TRAFFIC"
 			android:title="@string/settings_traffic_title"
 			android:defaultValue="false"/>
-
+<!-- 
 		<org.georemindme.community.view.custom.HorizontalSlider
 			android:key="PREF_DEFAULT_ZOOM_LEVEL"
 			android:defaultValue="1"
 			android:title="Zoom level"/>
+ -->
 	</PreferenceCategory>
 
     
