@@ -24,7 +24,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 	private long		serverID;
 	
 	private CheckBox	cbDone;
-	private Database db;
+//	private Database db;
 	
 	public AlertAdapter(Context context, int layout, Cursor c, String[] from,
 			int[] to, Database db)
@@ -32,7 +32,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 		super(context, layout, c, from, to);
 		// TODO Auto-generated constructor stub
 		
-		this.db = db;
+	//	this.db = db;
 		this.c = c;
 		this.context = context;
 	}
@@ -57,7 +57,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 			TextView tvDescription = (TextView) v.findViewById(R.id.alert_description);
 			cbDone = (CheckBox) v.findViewById(R.id.alert_done);
 			serverID = c.getLong(c.getColumnIndex(Database.SERVER_ID));
-			cbDone.setOnClickListener(new ClickGesture(serverID, cbDone, db));
+			//cbDone.setOnClickListener(new ClickGesture(serverID, cbDone, db));
 			
 			tvName.setText(name);
 			tvDescription.setText(description);
@@ -83,7 +83,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 		{
 			// TODO Auto-generated method stub
 			Log.v("Setting done", serverID + "");
-			db.setAlertDone(serverID, cbDone.isChecked());
+		//	db.setAlertDone(serverID, cbDone.isChecked());
 		}
 		
 	}

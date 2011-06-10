@@ -41,8 +41,8 @@ public class Logger
 			catch (IOException e)
 			{
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Log.e("LOGGER - Start", "Error: " + e.toString());
+				//e.printStackTrace();
+			//	Log.e("LOGGER - Start", "Error: " + e.toString());
 			}
 			buffer = new BufferedWriter(writter);
 		}
@@ -59,8 +59,8 @@ public class Logger
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("LOGGER - Finish", "Error: " + e.toString());
+			//e.printStackTrace();
+			//Log.e("LOGGER - Finish", "Error: " + e.toString());
 		}
 		
 	}
@@ -89,10 +89,12 @@ public class Logger
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
 				
-				Log.e("Error writing to private logger", e.getCause().getLocalizedMessage());
+				//Log.e("Error writing to private logger", e.getCause().getLocalizedMessage());
 			}
 		}
 		else
-			Log.e("LOGGER", "I cannot write to the file. is null");
+		{
+		//	Log.e("LOGGER", "I cannot write to the file. is null");
+		}
 	}
 }

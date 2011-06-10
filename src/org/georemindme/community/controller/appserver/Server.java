@@ -280,9 +280,9 @@ public class Server implements Serializable
 									int c_active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
 									boolean c_active_processed;
 									if(c_active == 0)
-										c_active_processed = true;
-									else
 										c_active_processed = false;
+									else
+										c_active_processed = true;
 									obj.put("active", c_active_processed);
 									
 									long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
@@ -414,5 +414,25 @@ public class Server implements Serializable
 		// TODO Auto-generated method stub
 		db.addAlert(obj);
 		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
+	}
+
+
+	public void requestAllUndoneAlerts()
+	{
+		// TODO Auto-generated method stub
+		Cursor c = db.getAlertsUndone();
+		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
+	}
+	
+	public void requestAllDoneAlerts()
+	{
+		Cursor c = db.getAlertsDone();
+		controllerInbox.obtainMessage(C_ALL_DONE_ALERTS, c).sendToTarget();
+	}
+	
+	public void requestAllMutedAlerts()
+	{
+		Cursor c = db.getAlertsInactive();
+		controllerInbox.obtainMessage(C_ALL_MUTED_ALERTS, c).sendToTarget();
 	}
 }

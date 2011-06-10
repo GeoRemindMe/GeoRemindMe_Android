@@ -17,8 +17,13 @@ public interface ControllerProtocol
 	int	V_REQUEST_ADDRESS						= 112;	// obj = new
 														// Double[latitude,
 														// longitude]
-	int	V_REQUEST_SAVE_ALERT					= 113; // obj = (Alert) new alert.
+	int	V_REQUEST_ALL_UNDONE_ALERTS				= 113;
+	int	V_REQUEST_ALL_DONE_ALERTS				= 114;
+	int	V_REQUEST_ALL_MUTED_ALERTS				= 115;
 	
+	int	V_REQUEST_SAVE_ALERT					= 116;	// obj = (Alert) new
+														// alert.
+														
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty
 	int	C_LOGIN_FINISHED						= 203;	// empty
@@ -33,7 +38,10 @@ public interface ControllerProtocol
 	int	C_NO_LAST_LOCATION_AVAILABLE			= 212;
 	int	C_LAST_LOCATION							= 213;	// obj = (Location)
 														// lastlocation
-	int C_ALERT_SAVED = 214;
+	int	C_ALERT_SAVED							= 214;
+	int	C_ALL_UNDONE_ALERTS						= 215;	// obj = (Cursor) data
+	int	C_ALL_DONE_ALERTS						= 216;	// obj = (Cursor) data
+	int	C_ALL_MUTED_ALERTS						= 217;	// obj = (Cursor) data
 														
 	int	S_REQUEST_UPDATE						= 301;	// empty
 														

@@ -45,11 +45,13 @@
 			android:name="org.georemindme.community.view.AddAlarmActivity"
 			android:windowSoftInputMode="stateHidden|adjustPan"
 			android:theme="@style/Theme.Window"
+			android:noHistory = "true"
 		></activity>
 		
 		<activity
 			android:name="org.georemindme.community.view.MapDialogActivity"
 			android:theme="@style/Theme.Window"
+			android:noHistory="true"
 		></activity>
 		
 		<activity
@@ -65,13 +67,16 @@
 
 		<activity
 			android:name="org.georemindme.community.view.Settings"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:noHistory="true"
+			>
 		</activity>
 
 		<activity
 			android:windowSoftInputMode="stateHidden"
 			android:name="org.georemindme.community.view.ViewAlert"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:noHistory="true">
 			<intent-filter>
 				<action
 					android:name="org.georemindme.community.launchAlertWindow"></action>
@@ -80,16 +85,23 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name="org.georemindme.community.view.AlertList"
-			android:label="@string/app_name">
-			<intent-filter>
-				<action
-					android:name="org.georemindme.community.launchAlertList"></action>
-				<category
-					android:name="android.intent.category.DEFAULT"/>
-			</intent-filter>
+			android:name="org.georemindme.community.view.UndoneAlertList"
+			android:label="@string/app_name"
+			android:noHistory="true">
 		</activity>
 
+		<activity
+			android:name="org.georemindme.community.view.DoneAlertList"
+			android:label="@string/app_name"
+			android:noHistory="true">
+		</activity>
+		
+		<activity
+			android:name="org.georemindme.community.view.MutedAlertList"
+			android:label="@string/app_name"
+			android:noHistory="true">
+		</activity>
+		
 		<service
 			android:enabled="true"
 			android:name="org.georemindme.community.services.LocationService"></service>

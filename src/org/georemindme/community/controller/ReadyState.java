@@ -69,6 +69,15 @@ public class ReadyState implements ControllerState
 			case V_RESET_LOCATION_PROVIDERS:
 				controller.restartLocationServer();
 				return true;
+			case V_REQUEST_ALL_UNDONE_ALERTS:
+				controller.requestAllUndoneAlerts();
+				return true;
+			case V_REQUEST_ALL_DONE_ALERTS:
+				controller.requestAllDoneAlerts();
+				return true;
+			case V_REQUEST_ALL_MUTED_ALERTS:
+				controller.requestAllMutedAlerts();
+				return true;
 			case P_PREFERENCE_CHANGED:
 				controller.preferencesChanged((Integer)msg.obj);
 				switch((Integer)msg.obj)
@@ -94,6 +103,11 @@ public class ReadyState implements ControllerState
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 			case C_ALERT_SAVED:
+				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				return true;
+			case C_ALL_UNDONE_ALERTS:
+			case C_ALL_DONE_ALERTS:
+			case C_ALL_MUTED_ALERTS:
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 			case LS_LOCATION_CHANGED:

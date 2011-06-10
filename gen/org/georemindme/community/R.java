@@ -220,53 +220,56 @@ public final class R {
     public static final class style {
         /**  datepicker 
          */
-        public static final int AddAlertDialog_datepicker=0x7f080006;
+        public static final int AddAlertDialog_datepicker=0x7f080007;
         /**  timepicker 
          */
-        public static final int AddAlertDialog_timepicker=0x7f080007;
+        public static final int AddAlertDialog_timepicker=0x7f080008;
         /**  button 
          */
-        public static final int Button=0x7f080009;
+        public static final int Button=0x7f08000a;
         /**  Buttons 
          */
         public static final int DashboardButton=0x7f080001;
+        /**  TextViews 
+         */
+        public static final int DefaultTextView=0x7f080003;
         /**  help big text 
          */
-        public static final int Help_big_text=0x7f08000e;
+        public static final int Help_big_text=0x7f08000f;
         /**  help link text 
          */
-        public static final int Help_link_text=0x7f080010;
+        public static final int Help_link_text=0x7f080011;
         /**  help small text 
          */
-        public static final int Help_small_text=0x7f08000f;
+        public static final int Help_small_text=0x7f080010;
         /**  Settings 
          */
-        public static final int SettingsTitle=0x7f080003;
+        public static final int SettingsTitle=0x7f080004;
         /**  tasklist item big text 
          */
-        public static final int TaskList_item_big_text=0x7f08000c;
+        public static final int TaskList_item_big_text=0x7f08000d;
         /**  tasklist item medium text 
          */
-        public static final int TaskList_item_medium_text=0x7f08000d;
+        public static final int TaskList_item_medium_text=0x7f08000e;
         /**  tasklist top button 
          */
-        public static final int TaskList_top_button=0x7f08000b;
+        public static final int TaskList_top_button=0x7f08000c;
         /**  TasksList 
  tasklist top text 
          */
-        public static final int TaskList_top_textview=0x7f08000a;
+        public static final int TaskList_top_textview=0x7f08000b;
         /**  Main window 
          */
         public static final int Theme_Window=0x7f080000;
         public static final int TitleBarAction=0x7f080002;
         /**  checkbox 
          */
-        public static final int checkbox=0x7f080008;
+        public static final int checkbox=0x7f080009;
         /**  edittext 
          */
-        public static final int edittext=0x7f080005;
+        public static final int edittext=0x7f080006;
         /**  textview 
          */
-        public static final int textview=0x7f080004;
+        public static final int textview=0x7f080005;
     }
 }

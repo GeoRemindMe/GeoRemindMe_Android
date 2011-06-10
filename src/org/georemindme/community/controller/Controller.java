@@ -133,7 +133,7 @@ public class Controller
 	}
 	
 
-	final void notifyOutboxHandlers(int what, int arg1, int arg2, Object obj)
+	final synchronized void notifyOutboxHandlers(int what, int arg1, int arg2, Object obj)
 	{
 		if (outboxHandlers.isEmpty())
 		{
@@ -303,6 +303,23 @@ public class Controller
 	{
 		// TODO Auto-generated method stub
 		server.saveAlert(alert);
+	}
+
+
+	void requestAllUndoneAlerts()
+	{
+		// TODO Auto-generated method stub
+		server.requestAllUndoneAlerts();
+	}
+	
+	void requestAllDoneAlerts()
+	{
+		server.requestAllDoneAlerts();
+	}
+	
+	void requestAllMutedAlerts()
+	{
+		server.requestAllMutedAlerts();
 	}
 	
 }

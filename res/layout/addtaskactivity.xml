@@ -32,6 +32,7 @@
 			android:layout_height="fill_parent"
 			android:orientation="vertical">
 			<TextView
+				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Name"></TextView>
@@ -40,6 +41,7 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 			<TextView
+				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Description"></TextView>
@@ -49,6 +51,7 @@
 				android:layout_height="wrap_content"></EditText>
 
 			<TextView
+				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Active Period"
@@ -72,6 +75,7 @@
 			</LinearLayout>
 			
 			<TextView
+				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Map'n Address"
@@ -85,6 +89,7 @@
 			>
 			</org.georemindme.community.view.custom.DummyMap>
 			<TextView
+				style="@style/DefaultTextView"
 				android:id="@+id/addressTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"

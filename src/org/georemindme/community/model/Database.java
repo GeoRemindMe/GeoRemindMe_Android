@@ -290,14 +290,35 @@ public class Database
 	{
 		this.open();
 		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
-				+ " = 0";
-		
+				+ " = 0 and " + ALERT_ACTIVE + " = 1";
+		Log.w("DATABASE", sql);
 		Cursor c = db.rawQuery(sql, null);
-		this.close();
+		//this.close();
 		return c;
 	}
 	
+	public synchronized Cursor getAlertsDone()
+	{
+		this.open();
+		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
+				+ " > 0";
+		Log.w("DATABASE", sql);
+		Cursor c = db.rawQuery(sql, null);
+		//this.close();
+		return c;
+	}
 
+	public synchronized Cursor getAlertsInactive()
+	{
+		this.open();
+		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
+		+ " = 0 and " + ALERT_ACTIVE + " = 0";
+		Log.w("DATABASE", sql);
+		Cursor c = db.rawQuery(sql, null);
+		//this.close();
+		return c;
+	}
+	
 	public synchronized Cursor getAlertsUndoneCoordinates()
 	{
 		this.open();
@@ -469,11 +490,13 @@ public class Database
 		
 		if (a.isActive())
 		{
-			cv.put(ALERT_ACTIVE, 0);
+			cv.put(ALERT_ACTIVE, 1);
+			Log.v("ALERT_DONE", "La alerta est‡ activa");
 		}
 		else
 		{
-			cv.put(ALERT_ACTIVE, 1);
+			cv.put(ALERT_ACTIVE, 0);
+			Log.v("ALERT_DONE", "La alerta est‡ inactiva");
 		}
 		
 		cv.put(ALERT_NAME, a.getName());
@@ -586,11 +609,11 @@ public class Database
 		
 		if (a.isActive())
 		{
-			cv.put(ALERT_ACTIVE, 0);
+			cv.put(ALERT_ACTIVE, 1);
 		}
 		else
 		{
-			cv.put(ALERT_ACTIVE, 1);
+			cv.put(ALERT_ACTIVE, 0);
 		}
 		
 		cv.put(ALERT_NAME, a.getName());
