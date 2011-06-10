@@ -104,7 +104,7 @@ public class Database
 	 */
 	
 	// Common fields
-	private static final String	_ID										= "_id";
+	public static final String	_ID										= "_id";
 	
 	// Alert table fields.
 	public static final String	SERVER_ID								= "server_id";
@@ -291,34 +291,37 @@ public class Database
 		this.open();
 		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
 				+ " = 0 and " + ALERT_ACTIVE + " = 1";
-		Log.w("DATABASE", sql);
+		// Log.w("DATABASE", sql);
 		Cursor c = db.rawQuery(sql, null);
-		//this.close();
+		// this.close();
 		return c;
 	}
 	
+
 	public synchronized Cursor getAlertsDone()
 	{
 		this.open();
 		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
 				+ " > 0";
-		Log.w("DATABASE", sql);
+		// Log.w("DATABASE", sql);
 		Cursor c = db.rawQuery(sql, null);
-		//this.close();
+		// this.close();
 		return c;
 	}
+	
 
 	public synchronized Cursor getAlertsInactive()
 	{
 		this.open();
 		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
-		+ " = 0 and " + ALERT_ACTIVE + " = 0";
-		Log.w("DATABASE", sql);
+				+ " = 0 and " + ALERT_ACTIVE + " = 0";
+		// Log.w("DATABASE", sql);
 		Cursor c = db.rawQuery(sql, null);
-		//this.close();
+		// this.close();
 		return c;
 	}
 	
+
 	public synchronized Cursor getAlertsUndoneCoordinates()
 	{
 		this.open();
@@ -365,7 +368,7 @@ public class Database
 		
 		Cursor c = db.rawQuery(sql, null);
 		// Log.v("DATABASE - getmodifiedAlerts", c.getCount() + "");
-		//this.close();
+		// this.close();
 		return c;
 	}
 	
@@ -387,7 +390,7 @@ public class Database
 		// PROBABLEMENTE ESTE METODO FALLE. TENDRƒ QUE USAR METODOS MATEMçTICOS
 		// DE SQLITE3
 		String sql = "Select *, " + "(" + latE6 + " - " + POINT_X + ") * ("
-				+ latE6 + " - " + POINT_X + ") +" + "(" + lngE6 + " - "
+				+ latE6 + " - " + POINT_X + ") + " + "(" + lngE6 + " - "
 				+ POINT_Y + ") * (" + lngE6 + " - " + POINT_Y
 				+ ") as distance " + "from " + ALERT_TABLE + " where "
 				+ ALERT_DONE + "= 0 AND " + (latitudeOffset + latE6) + " > "
@@ -397,9 +400,11 @@ public class Database
 				+ POINT_Y + " > " + (-1 * longitudeOffset + lngE6)
 				+ " order by distance";
 		
-		// Log.v("SQL ALERT QUERY", sql);
+		Log.v("Latitude offset: ", latitudeOffset + "");
+		Log.v("Longitude offset: ", longitudeOffset + "");
+		Log.v("SQL ALERT QUERY", sql);
 		c = db.rawQuery(sql, null);
-		this.close();
+		// this.close();
 		return c;
 	}
 	
@@ -646,6 +651,26 @@ public class Database
 		{
 			Log.v("Saving user", e.getStackTrace().toString());
 		}
+		
+		this.close();
+	}
+	
+
+	public synchronized void changeAlertActive(boolean active, int id)
+	{
+		this.open();
+		
+		ContentValues cv = new ContentValues();
+		
+		if (active)
+			cv.put(ALERT_ACTIVE, 1);
+		else
+			cv.put(ALERT_ACTIVE, 0);
+		
+		Integer idI = new Integer(id);
+		
+		Log.i("Database", "" + active + "   " + idI.toString());
+		db.update(ALERT_TABLE, cv, "_id=?", new String[]{idI.toString()});
 		
 		this.close();
 	}

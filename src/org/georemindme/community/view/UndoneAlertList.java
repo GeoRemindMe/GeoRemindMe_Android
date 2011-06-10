@@ -1,6 +1,7 @@
 package org.georemindme.community.view;
 
 
+import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -31,16 +33,22 @@ import android.widget.ListView;
 
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
-public class UndoneAlertList extends ListActivity implements OnItemClickListener, Callback
+
+public class UndoneAlertList extends ListActivity implements
+		OnItemClickListener, Callback
 {
 	
-	private Cursor			c					= null;
-	private ListView		list;
-	private Bundle			data;
+	private Cursor		c			= null;
+	private ListView	list;
+	private Bundle		data;
 	
-	private Handler controllerInbox;
-	private Handler ownInbox;
-	private Controller controller;
+	private Handler		controllerInbox;
+	private Handler		ownInbox;
+	private Controller	controller;
+	
+	private Location	location	= null;
+	
+	private AlertAdapter adapter = null;
 	
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -61,25 +69,29 @@ public class UndoneAlertList extends ListActivity implements OnItemClickListener
 	public void onResume()
 	{
 		super.onResume();
+		controller.removeOutboxHandler(ownInbox);
 		controller.addOutboxHandler(ownInbox);
 		
 		controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
+		if (location == null)
+			controllerInbox.obtainMessage(V_REQUEST_LAST_LOCATION).sendToTarget();
 	}
 	
+
 	public void onStop()
 	{
 		super.onStop();
 		controller.removeOutboxHandler(ownInbox);
 	}
 	
+
 	public void onDestroy()
 	{
-		
 		if (c != null)
 			c.close();
 		super.onDestroy();
 	}
-
+	
 
 	@Override
 	public void onItemClick(AdapterView<?> list, View v, int position, long id)
@@ -87,32 +99,45 @@ public class UndoneAlertList extends ListActivity implements OnItemClickListener
 		// TODO Auto-generated method stub
 		Log.v("click on", "position: " + position);
 	}
-
+	
 
 	@Override
 	public boolean handleMessage(Message msg)
 	{
 		// TODO Auto-generated method stub
-		switch(msg.what)
+		switch (msg.what)
 		{
 			case C_ALL_UNDONE_ALERTS:
 				c = (Cursor) msg.obj;
 				processData();
 				return true;
+			case C_LAST_LOCATION:
+				Log.v("LOCATION", "Ha llegado lastlocation");
+				location = (Location) msg.obj;
+				processData();
+				return true;
+			case C_ALERT_CHANGED:
+				Log.w("Cambio de datos", "???");
+				processData();
+				list.invalidate();
+				return true;
 		}
 		return false;
 	}
 	
+
 	private void processData()
 	{
-		startManagingCursor(c);
+		// startManagingCursor(c);
 		
-		String from[] = { Database.ALERT_NAME,
-				Database.ALERT_DESCRIPTION };
+		String from[] = { Database.ALERT_NAME, Database.ALERT_DESCRIPTION };
 		int to[] = { R.id.alert_name, R.id.alert_description };
 		
-		setListAdapter(new AlertAdapter(this, R.layout.alert_list_item, c, from, to, null));
-
+		adapter = new AlertAdapter(this, R.layout.alert_list_item, c, from, to, controller, location);
+		setListAdapter(adapter);
+		
+		if(adapter != null)
+			adapter.notifyDataSetChanged();
+		
 	}
-	
 }

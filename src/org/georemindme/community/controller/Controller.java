@@ -309,7 +309,16 @@ public class Controller
 	void requestAllUndoneAlerts()
 	{
 		// TODO Auto-generated method stub
-		server.requestAllUndoneAlerts();
+		
+		Location lastLocation = locationServer.getLastKnownLocation();
+		if(lastLocation != null)
+		{
+			server.requestAllUndoneNearestAlerts(lastLocation.getLatitude(), lastLocation.getLongitude(), (int)1E6);
+		}
+		else
+		{
+			server.requestAllUndoneAlerts();
+		}
 	}
 	
 	void requestAllDoneAlerts()
@@ -322,4 +331,8 @@ public class Controller
 		server.requestAllMutedAlerts();
 	}
 	
+	void changeAlertActive(boolean active, int id)
+	{
+		server.changeAlertActive(active, id);
+	}
 }

@@ -23,6 +23,8 @@ public interface ControllerProtocol
 	
 	int	V_REQUEST_SAVE_ALERT					= 116;	// obj = (Alert) new
 														// alert.
+	int	V_REQUEST_CHANGE_ALERT_ACTIVE			= 117;	// obj = (Object[])
+														// on/off | id;
 														
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty
@@ -42,7 +44,8 @@ public interface ControllerProtocol
 	int	C_ALL_UNDONE_ALERTS						= 215;	// obj = (Cursor) data
 	int	C_ALL_DONE_ALERTS						= 216;	// obj = (Cursor) data
 	int	C_ALL_MUTED_ALERTS						= 217;	// obj = (Cursor) data
-														
+	int	C_ALERT_CHANGED							= 218;
+	
 	int	S_REQUEST_UPDATE						= 301;	// empty
 														
 	int	P_PREFERENCE_CHANGED					= 401;	// obj = (Integer)

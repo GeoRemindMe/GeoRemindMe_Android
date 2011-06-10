@@ -78,6 +78,11 @@ public class ReadyState implements ControllerState
 			case V_REQUEST_ALL_MUTED_ALERTS:
 				controller.requestAllMutedAlerts();
 				return true;
+			case V_REQUEST_CHANGE_ALERT_ACTIVE:
+				Object[] obj = (Object[])msg.obj;
+				
+				controller.changeAlertActive((Boolean)obj[0], (Integer)obj[1]);
+				return true;
 			case P_PREFERENCE_CHANGED:
 				controller.preferencesChanged((Integer)msg.obj);
 				switch((Integer)msg.obj)
@@ -103,6 +108,9 @@ public class ReadyState implements ControllerState
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 			case C_ALERT_SAVED:
+				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				return true;
+			case C_ALERT_CHANGED:
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 			case C_ALL_UNDONE_ALERTS:

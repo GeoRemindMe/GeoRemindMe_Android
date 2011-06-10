@@ -9,8 +9,8 @@
 	></item>
 		
 	<item
-		android:icon="@android:drawable/ic_menu_close_clear_cancel"
+		android:icon="@android:drawable/ic_lock_power_off"
 		android:id="@+id/menu_item_exit"
-		android:title="Exit"
+		android:title="Quit"
 	></item>
 </menu>

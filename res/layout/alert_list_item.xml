@@ -9,24 +9,42 @@
   	android:layout_width="wrap_content"
   	android:layout_height="fill_parent"
   	android:layout_weight="1"
+  	android:gravity="center_vertical"
   >
   <TextView
   	android:id="@+id/alert_name"
   	android:layout_width="fill_parent"
   	android:layout_height="wrap_content"
-  	android:textSize="20dip"
+  	style="@style/DefaultTextView"
   	android:text="This is the text"
   ></TextView>
   <TextView
   	android:id="@+id/alert_description"
-  	android:layout_width="fill_parent"
-  	android:layout_height="wrap_content"
-  	android:text="This is the description"
+	style="@style/textview"
+  	android:text="This is the description. And It can be quite quite long..."
   ></TextView>
   </LinearLayout>
+  <LinearLayout
+  	android:layout_width="wrap_content"
+  	android:layout_height="fill_parent"
+  	android:orientation="horizontal"
+  	android:gravity="center_horizontal"
+  >
+  <org.georemindme.community.view.custom.SoundButton
+  	android:id="@+id/alert_list_item_soundButton"
+  	android:layout_width="wrap_content"
+  	android:layout_height="fill_parent"
+  	android:background="@null"
+  	android:src="@android:drawable/ic_lock_silent_mode_off"
+  	android:paddingRight="5dip"
+  ></org.georemindme.community.view.custom.SoundButton>
   <CheckBox
   	android:id="@+id/alert_done"
   	android:layout_width="wrap_content"
   	android:layout_height="fill_parent"
+  	android:gravity="center"
+  	android:paddingLeft="5dip"
   ></CheckBox>
+  </LinearLayout>
+  
 </LinearLayout>

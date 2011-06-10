@@ -424,6 +424,13 @@ public class Server implements Serializable
 		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
 	}
 	
+	public void requestAllUndoneNearestAlerts(double latitude, double longitude, int radio)
+	{
+		// TODO Auto-generated method stub
+		Cursor c = db.getNearestAlertsUndone(latitude, longitude, radio);
+		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
+	}
+	
 	public void requestAllDoneAlerts()
 	{
 		Cursor c = db.getAlertsDone();
@@ -434,5 +441,11 @@ public class Server implements Serializable
 	{
 		Cursor c = db.getAlertsInactive();
 		controllerInbox.obtainMessage(C_ALL_MUTED_ALERTS, c).sendToTarget();
+	}
+	
+	public void changeAlertActive(boolean active, int id)
+	{
+		db.changeAlertActive(active, id);
+		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
 	}
 }
