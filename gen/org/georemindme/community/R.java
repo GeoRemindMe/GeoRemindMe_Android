@@ -65,6 +65,7 @@ public final class R {
         public static final int onoff=0x7f020007;
         public static final int orange_small=0x7f020008;
         public static final int settings=0x7f020009;
+        public static final int soundbutton=0x7f02000a;
     }
     public static final class id {
         public static final int actionBar=0x7f0a0015;

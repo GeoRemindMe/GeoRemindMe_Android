@@ -30,6 +30,15 @@
   	android:orientation="horizontal"
   	android:gravity="center_horizontal"
   >
+  <ToggleButton
+  	android:id="@+id/alert_list_item_soundButton"
+  	android:layout_height="wrap_content"
+  	android:layout_width="wrap_content"
+  	android:textOn=""
+  	android:textOff=""
+  	android:background="@drawable/soundbutton"
+  ></ToggleButton>
+  <!-- 
   <org.georemindme.community.view.custom.SoundButton
   	android:id="@+id/alert_list_item_soundButton"
   	android:layout_width="wrap_content"
@@ -38,6 +47,7 @@
   	android:src="@android:drawable/ic_lock_silent_mode_off"
   	android:paddingRight="5dip"
   ></org.georemindme.community.view.custom.SoundButton>
+   -->
   <CheckBox
   	android:id="@+id/alert_done"
   	android:layout_width="wrap_content"

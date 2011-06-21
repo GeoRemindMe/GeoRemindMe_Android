@@ -38,22 +38,22 @@ public class UndoneAlertList extends ListActivity implements
 		OnItemClickListener, Callback
 {
 	
-	private Cursor		c			= null;
-	private ListView	list;
-	private Bundle		data;
+	private Cursor			c			= null;
+	private ListView		list;
+	private Bundle			data;
 	
-	private Handler		controllerInbox;
-	private Handler		ownInbox;
-	private Controller	controller;
+	private Handler			controllerInbox;
+	private Handler			ownInbox;
+	private Controller		controller;
 	
-	private Location	location	= null;
+	private Location		location	= null;
 	
-	private AlertAdapter adapter = null;
+	private AlertAdapter	adapter		= null;
+	
 	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		Log.w("Alert List", "OnCreate");
 		setContentView(R.layout.tasklist);
 		
 		list = (ListView) findViewById(android.R.id.list);
@@ -78,9 +78,9 @@ public class UndoneAlertList extends ListActivity implements
 	}
 	
 
-	public void onStop()
+	public void onPause()
 	{
-		super.onStop();
+		super.onPause();
 		controller.removeOutboxHandler(ownInbox);
 	}
 	
@@ -112,14 +112,11 @@ public class UndoneAlertList extends ListActivity implements
 				processData();
 				return true;
 			case C_LAST_LOCATION:
-				Log.v("LOCATION", "Ha llegado lastlocation");
 				location = (Location) msg.obj;
 				processData();
 				return true;
 			case C_ALERT_CHANGED:
-				Log.w("Cambio de datos", "???");
-				processData();
-				list.invalidate();
+				//controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
 				return true;
 		}
 		return false;
@@ -130,14 +127,19 @@ public class UndoneAlertList extends ListActivity implements
 	{
 		// startManagingCursor(c);
 		
+		if (adapter != null)
+		{
+			Log.w("Undone alert list", "Notifiy data set changed gets called");
+			adapter.notifyDataSetChanged();
+		}
+		
 		String from[] = { Database.ALERT_NAME, Database.ALERT_DESCRIPTION };
 		int to[] = { R.id.alert_name, R.id.alert_description };
 		
 		adapter = new AlertAdapter(this, R.layout.alert_list_item, c, from, to, controller, location);
 		setListAdapter(adapter);
+		//list.invalidate();
 		
-		if(adapter != null)
-			adapter.notifyDataSetChanged();
 		
 	}
 }

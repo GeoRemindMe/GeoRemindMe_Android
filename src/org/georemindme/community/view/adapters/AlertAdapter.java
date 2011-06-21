@@ -18,9 +18,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
@@ -29,10 +31,10 @@ public class AlertAdapter extends SimpleCursorAdapter
 {
 	private Cursor			c;
 	private Context			context;
-	private long			serverID;
+	//private long			serverID;
 	
 	private CheckBox		cbDone;
-	private SoundButton		soundButton;
+	private ToggleButton		soundButton;
 	private Controller		controller;
 	private Location		actualLocation;
 	
@@ -71,50 +73,60 @@ public class AlertAdapter extends SimpleCursorAdapter
 			final int id = c.getInt(c.getColumnIndex(Database._ID));
 			TextView tvName = (TextView) v.findViewById(R.id.alert_name);
 			TextView tvDescription = (TextView) v.findViewById(R.id.alert_description);
-			cbDone = (CheckBox) v.findViewById(R.id.alert_done);
-			serverID = c.getLong(c.getColumnIndex(Database.SERVER_ID));
-			soundButton = (SoundButton) v.findViewById(R.id.alert_list_item_soundButton);
-			soundButton.setOnClickListener(new View.OnClickListener()
+			
+			final long serverID = c.getLong(c.getColumnIndex(Database.SERVER_ID));
+			
+			
+			
+			
+			soundButton = (ToggleButton) v.findViewById(R.id.alert_list_item_soundButton);
+			soundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
 			{
 				
 				@Override
-				public void onClick(View v)
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 				{
 					// TODO Auto-generated method stub
-					if(soundButton.isOn())
-					{
-						Log.w("AlertAdapter", "Lo pongo off");
-						Log.w("AlertDeMierda", soundButton.setOff() + "");
-						//soundButton.setImageDrawable(Resources.getSystem().getDrawable(android.R.drawable.ic_lock_silent_mode_off));
-
-					}
-					else
-					{
-						Log.w("AlertAdapter", "Lo pongo on");
-						Log.w("AlertDeMierda", soundButton.setOn() + "");
-						//soundButton.setImageDrawable(Resources.getSystem().getDrawable(android.R.drawable.ic_lock_silent_mode));
-					}
-					
+					Log.w("SoundButton", soundButton.isChecked() + "");
 					Object[] data = new Object[2];
-					data[0] = new Boolean(soundButton.isOn());
+					data[0] = new Boolean(soundButton.isChecked());
 					data[1] = new Integer(id);
-					Log.w("AlertAdapter", soundButton.isOn() + "");
 					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data).sendToTarget();
+
 				}
 			});
 			int active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
 			if(active == 0)
 			{
 				//No est‡ activa.
-				soundButton.setImageDrawable(Resources.getSystem().getDrawable(android.R.drawable.ic_lock_silent_mode));
-				soundButton.setOff();
+				soundButton.setChecked(false);
 			}
 			else
 			{
-				soundButton.setImageDrawable(Resources.getSystem().getDrawable(android.R.drawable.ic_lock_silent_mode_off));
-				soundButton.setOn();
+				soundButton.setChecked(true);
 			}
 			
+			
+					
+			
+			
+			
+			
+			cbDone = (CheckBox) v.findViewById(R.id.alert_done);
+			cbDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+			{
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+				{
+					// TODO Auto-generated method stub
+					Object[] data = new Object[2];
+					data[0] = new Boolean(isChecked);
+					data[1] = new Integer(id);
+					Log.w("El checkbox est‡: ", isChecked + "");
+					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
+				}
+			});
 			int done = c.getInt(c.getColumnIndex(Database.ALERT_DONE));
 			if (done == 0)
 			{
@@ -164,29 +176,6 @@ public class AlertAdapter extends SimpleCursorAdapter
 		}
 		
 		return v;
-	}
-	
-	private class ClickGesture implements OnClickListener
-	{
-		private long		serverID;
-		private CheckBox	cbDone;
-		
-		
-		ClickGesture(long serverID, CheckBox cbDone, Database db)
-		{
-			this.serverID = serverID;
-			this.cbDone = cbDone;
-		}
-		
-
-		@Override
-		public void onClick(View v)
-		{
-			// TODO Auto-generated method stub
-			Log.v("Setting done", serverID + "");
-			// db.setAlertDone(serverID, cbDone.isChecked());
-		}
-		
 	}
 	
 }

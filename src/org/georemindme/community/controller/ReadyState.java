@@ -83,6 +83,10 @@ public class ReadyState implements ControllerState
 				
 				controller.changeAlertActive((Boolean)obj[0], (Integer)obj[1]);
 				return true;
+			case V_REQUEST_CHANGE_ALERT_DONE:
+				Object[] obj2 = (Object[])msg.obj;
+				controller.changeAlertDone((Boolean)obj2[0], (Integer)obj2[1]);
+				return true;
 			case P_PREFERENCE_CHANGED:
 				controller.preferencesChanged((Integer)msg.obj);
 				switch((Integer)msg.obj)

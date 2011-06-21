@@ -4,6 +4,7 @@ package org.georemindme.community.controller.appserver;
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Server implements Serializable
 	
 	private static final String	LOG					= "SERVER_DEBUG";
 	
-	private static final String	URL					= "http://georemindme.appspot.com/service/";
+	private static final String	URL					= "http://3.georemindme.appspot.com/service/";
 	private static int			connectionTimeout	= 10000;
 	
 	private JSONRPCClient		connection;
@@ -47,7 +48,7 @@ public class Server implements Serializable
 	
 	private Database			db;
 	
-	private Handler			controllerInbox;
+	private Handler				controllerInbox;
 	
 	private Thread				loginThread;
 	
@@ -67,7 +68,7 @@ public class Server implements Serializable
 	{
 		this.controllerInbox = controllerInbox;
 		
-		//openConnection();
+		// openConnection();
 		
 		db = Database.getDatabaseInstance(context);
 		// Elimino la apertura ya que cada llamada a la base de datos a abre
@@ -84,11 +85,13 @@ public class Server implements Serializable
 		connection.setSoTimeout(Server.connectionTimeout);
 	}
 	
+
 	private void closeConnection()
 	{
 		connection = null;
 	}
 	
+
 	String getURL()
 	{
 		return URL;
@@ -109,13 +112,13 @@ public class Server implements Serializable
 		connection.setSoTimeout(connectionTimeout);
 	}
 	
-	
+
 	public synchronized User getUser()
 	{
 		return user;
 	}
-
 	
+
 	public final void loginfromdatabase()
 	{
 		final User u = db.getUser();
@@ -142,13 +145,15 @@ public class Server implements Serializable
 				catch (JSONRPCException e)
 				{
 					controllerInbox.sendEmptyMessage(C_LOGIN_FAILED);
-					//controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0, null);
+					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
+					// null);
 					e.printStackTrace();
 				}
 				catch (Exception e)
 				{
 					controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
-					//controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0, null);
+					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
+					// null);
 					e.printStackTrace();
 				}
 				finally
@@ -162,7 +167,8 @@ public class Server implements Serializable
 							{
 								Message msg = controllerInbox.obtainMessage(C_LOGIN_FINISHED, user);
 								msg.sendToTarget();
-								//controller.notifyOutboxHandlers(C_LOGIN_FINISHED, 0, 0, user);
+								// controller.notifyOutboxHandlers(C_LOGIN_FINISHED,
+								// 0, 0, user);
 								Server.this.user = user;
 							}
 						});
@@ -172,7 +178,7 @@ public class Server implements Serializable
 		
 		loginThread.start();
 		controllerInbox.sendEmptyMessage(C_LOGIN_STARTED);
-		//controller.notifyOutboxHandlers(C_LOGIN_STARTED, 0, 0, null);
+		// controller.notifyOutboxHandlers(C_LOGIN_STARTED, 0, 0, null);
 	}
 	
 
@@ -195,14 +201,15 @@ public class Server implements Serializable
 				finally
 				{
 					controllerInbox.sendEmptyMessage(C_LOGOUT_FINISHED);
-					//controller.notifyOutboxHandlers(C_LOGOUT_FINISHED, 0, 0, null);
+					// controller.notifyOutboxHandlers(C_LOGOUT_FINISHED, 0, 0,
+					// null);
 				}
 			}
 		};
 		
 		t.start();
 		controllerInbox.sendEmptyMessage(C_LOGOUT_STARTED);
-		//controller.notifyOutboxHandlers(C_LOGOUT_STARTED, 0, 0, null);
+		// controller.notifyOutboxHandlers(C_LOGOUT_STARTED, 0, 0, null);
 	}
 	
 
@@ -253,6 +260,7 @@ public class Server implements Serializable
 									obj.put("done_when", c_done_when);
 									
 									String c_name = c.getString(c.getColumnIndex(Database.ALERT_NAME));
+							//	c_name = encodeToUTF8(c_name);
 									obj.put("name", c_name);
 									
 									long c_created = c.getLong(c.getColumnIndex(Database.ALERT_CREATE));
@@ -270,16 +278,12 @@ public class Server implements Serializable
 									double c_latitude = c.getDouble(c.getColumnIndex(Database.POINT_X));
 									double c_longitude = c.getDouble(c.getColumnIndex(Database.POINT_Y));
 									
-									JSONArray point_ext = new JSONArray();
-									JSONArray point_int = new JSONArray();
-									point_int.add(c_latitude);
-									point_int.add(c_longitude);
-									point_ext.add(point_int);
-									obj.put("points", point_ext);
+									obj.put("x", c_latitude);
+									obj.put("y", c_longitude);
 									
 									int c_active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
 									boolean c_active_processed;
-									if(c_active == 0)
+									if (c_active == 0)
 										c_active_processed = false;
 									else
 										c_active_processed = true;
@@ -289,6 +293,7 @@ public class Server implements Serializable
 									obj.put("id", c_id);
 									
 									String c_description = c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION));
+							//	c_description = encodeToUTF8(c_description);
 									obj.put("description", c_description);
 									
 									/*
@@ -331,11 +336,38 @@ public class Server implements Serializable
 						for (int i = 0; i < alerts.size(); i++)
 						{
 							JSONObject alert = (JSONObject) alerts.get(i);
+							
 							long id = (Long) alert.get("id");
-							long done_when = (Long) alert.get("done_when");
-							long ends = (Long) alert.get("ends");
-							long starts = (Long) alert.get("starts");
-							long created = (Long) alert.get("created");
+							
+							long done_when = 0;
+							String done_when_s = (String) alert.get("done_when");
+							if(!done_when_s.equals(""))
+							{
+								done_when = Long.parseLong(done_when_s);
+							}
+							
+							long ends = 0;
+							String ends_s = (String) alert.get("ends");
+							if(!ends_s.equals(""))
+							{
+								ends = Long.parseLong(ends_s);
+							}
+							
+							long starts = 0;
+							String starts_s = (String) alert.get("starts");
+							if(!starts_s.equals(""))
+							{
+								starts = Long.parseLong(starts_s);
+							}
+							
+							long created = 0;
+							String created_s = (String) alert.get("created");
+							if(!created_s.equals(""))
+							{
+								created = Long.parseLong(created_s);
+							}
+							
+							
 							String description = (String) alert.get("description");
 							
 							boolean done = (Boolean) alert.get("done");
@@ -343,13 +375,22 @@ public class Server implements Serializable
 							
 							boolean active = (Boolean) alert.get("active");
 							
+							double latitude = (Double) alert.get("x");
+							double longitude = (Double) alert.get("y");
+							/*
 							JSONArray points = (JSONArray) alert.get("points");
 							JSONArray temp = (JSONArray) points.get(0);
 							Object objc = temp.get(0);
 							double latitude = (Double) temp.get(0);
 							double longitude = (Double) temp.get(1);
+							*/
+							long modified = 0;
+							String modified_s = (String) alert.get("modified");
+							if(!modified_s.equals(""))
+							{
+								modified = Long.parseLong(modified_s);
+							}
 							
-							long modified = (Long) alert.get("modified");
 							
 							Alert tmp = new Alert(id, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
 							
@@ -360,10 +401,13 @@ public class Server implements Serializable
 						
 						db.refreshAlerts(alertList);
 						
+						db.removeCreatedAlertsAndSynced();
+						
 						db.setLastsync((Long) array.get(0));
 						
 						controllerInbox.sendEmptyMessage(C_UPDATE_FINISHED);
-						//controller.notifyOutboxHandlers(C_UPDATE_FINISHED, 0, 0, null);
+						// controller.notifyOutboxHandlers(C_UPDATE_FINISHED, 0,
+						// 0, null);
 						
 					}
 					catch (JSONRPCException e)
@@ -371,7 +415,8 @@ public class Server implements Serializable
 						e.printStackTrace();
 						
 						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
-						//controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, e);
+						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
+						// 0, e);
 						
 					}
 					catch (ParseException e)
@@ -380,25 +425,24 @@ public class Server implements Serializable
 						e.printStackTrace();
 						
 						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
-						//controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, e);
+						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
+						// 0, e);
 					}
 				}
-				
-			
 				
 			};
 			
 			t.start();
 			controllerInbox.sendEmptyMessage(C_UPDATE_STARTED);
-			//controller.notifyOutboxHandlers(C_UPDATE_STARTED, 0, 0, null);
+			// controller.notifyOutboxHandlers(C_UPDATE_STARTED, 0, 0, null);
 		}
 		else
 		{
 			controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
-			//controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, null);
+			// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, null);
 		}
 	}
-
+	
 
 	public final User getDatabaseUser()
 	{
@@ -407,7 +451,7 @@ public class Server implements Serializable
 		
 		return u;
 	}
-
+	
 
 	public void saveAlert(Alert obj)
 	{
@@ -415,7 +459,7 @@ public class Server implements Serializable
 		db.addAlert(obj);
 		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
 	}
-
+	
 
 	public void requestAllUndoneAlerts()
 	{
@@ -424,28 +468,55 @@ public class Server implements Serializable
 		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
 	}
 	
-	public void requestAllUndoneNearestAlerts(double latitude, double longitude, int radio)
+
+	public void requestAllUndoneNearestAlerts(double latitude,
+			double longitude, int radio)
 	{
 		// TODO Auto-generated method stub
 		Cursor c = db.getNearestAlertsUndone(latitude, longitude, radio);
 		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
 	}
 	
+
 	public void requestAllDoneAlerts()
 	{
 		Cursor c = db.getAlertsDone();
 		controllerInbox.obtainMessage(C_ALL_DONE_ALERTS, c).sendToTarget();
 	}
 	
+
 	public void requestAllMutedAlerts()
 	{
 		Cursor c = db.getAlertsInactive();
 		controllerInbox.obtainMessage(C_ALL_MUTED_ALERTS, c).sendToTarget();
 	}
 	
+
 	public void changeAlertActive(boolean active, int id)
 	{
 		db.changeAlertActive(active, id);
 		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
+	}
+	
+
+	public void changeAlertDone(boolean done, int id)
+	{
+		db.setAlertDone(id, done);
+		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
+	}
+	
+	private String encodeToUTF8(String stringToEncode)
+	{
+		try
+		{
+			return new String(stringToEncode.getBytes(), "UTF-8");
+			//return new String(stringToEncode, "UTF-18");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

@@ -125,6 +125,7 @@ public class LoginActivity extends Activity implements Callback
 			case C_LOGIN_FINISHED:
 				Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
 				setUserIsLoggedIn((User) msg.obj);
+				controllerInbox.obtainMessage(V_REQUEST_UPDATE).sendToTarget();
 				finish();
 				return true;
 			case C_LOGOUT_STARTED:

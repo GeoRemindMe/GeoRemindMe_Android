@@ -335,4 +335,9 @@ public class Controller
 	{
 		server.changeAlertActive(active, id);
 	}
+	
+	void changeAlertDone(boolean done, int id)
+	{
+		server.changeAlertDone(done, id);
+	}
 }

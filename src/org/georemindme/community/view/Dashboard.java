@@ -132,6 +132,10 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 				i = new Intent(getApplicationContext(), ListTabActivity.class);
 				startActivity(i);
 				break;
+			case R.id.mapbutton:
+				i = new Intent(getApplicationContext(), MapDialogActivity.class);
+				startActivity(i);
+				break;
 		}
 	}
 	
