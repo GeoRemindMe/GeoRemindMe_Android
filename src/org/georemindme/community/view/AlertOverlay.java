@@ -1,76 +1,68 @@
 package org.georemindme.community.view;
 
-import org.georemindme.community.R;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Canvas;
-import android.graphics.Point;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
 
-import com.google.android.maps.GeoPoint;
+import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
-public class AlertOverlay extends Overlay
+
+public class AlertOverlay extends ItemizedOverlay<OverlayItem>
 {
-	private Context context;
-	private GeoPoint geopoint;
-	private int drawable;
-	private int markerWidth = 0, markerHeight = 0;
-	private long serverID;
+	private List<OverlayItem>	items	= new ArrayList<OverlayItem>();
+	private Drawable			marker	= null;
 	
-	public AlertOverlay(Context context, GeoPoint gp, long serverID)
-	{
-		this.context = context;
-		this.geopoint = gp;
-		this.serverID = serverID;
-		drawable = R.drawable.orange_small;
-	}
 	
-	public boolean draw(Canvas canvas, MapView mapview, boolean shadow, long when)
+	public AlertOverlay(Drawable defaultMarker)
 	{
-		super.draw(canvas, mapview, shadow);
+		super(defaultMarker);
+		// TODO Auto-generated constructor stub
 		
-		Bitmap marker = BitmapFactory.decodeResource(context.getResources(),
-				drawable);
-
-		Point out = new Point();
-
-		markerWidth = marker.getWidth();
-		markerHeight = marker.getHeight();
-
-		mapview.getProjection().toPixels(geopoint, out);
-		canvas.drawBitmap(marker, out.x - markerWidth / 2, out.y - markerHeight
-				/ 2, null);
-		return true;
+		marker = defaultMarker;
+		
+		populateChanges();
 	}
 	
-	public boolean onTap(GeoPoint p, MapView mapView)
+	public void cleanOverlays()
 	{
-		Point pointTap = mapView.getProjection().toPixels(p, null);
-		Point pointMap = mapView.getProjection().toPixels(this.geopoint, null);
-
-		/*
-		 * if (pointTap.x - pointMap.x >= 0 && pointTap.x - pointMap.x <=
-		 * markerWidth && pointMap.y - pointTap.y >= 0 && pointMap.y -
-		 * pointTap.y <= markerHeight)
-		 */
-		
-		if ((pointTap.x > (pointMap.x - (markerWidth / 2)))
-				&& (pointTap.x < (pointMap.x + (markerWidth / 2)))
-				&& (pointTap.y > (pointMap.y - (markerHeight / 2)))
-				&& (pointTap.y < (pointMap.y + (markerHeight / 2))))
-		{
-			// I have to ask for the dialog to the map
-			Log.v("AlertOverlay", this.toString());
-			
-			
-			return true;
-		}
-
-		return super.onTap(p, mapView);
+		items.clear();
+		populateChanges();
 	}
+	
+	public void addOverlayItem(OverlayItem overlayItem)
+	{
+		items.add(overlayItem);
+	}
+	
+	public void populateChanges()
+	{
+		populate();
+	}
+
+	@Override
+	protected OverlayItem createItem(int i)
+	{
+		// TODO Auto-generated method stub
+		return items.get(i);
+	}
+	
+	@Override
+	public void draw(Canvas canvas, MapView mapView, boolean shadow)
+	{
+		super.draw(canvas, mapView, shadow);
+		boundCenterBottom(marker);
+	}
+
+	@Override
+	public int size()
+	{
+		// TODO Auto-generated method stub
+		return items.size();
+	}
+	
 }

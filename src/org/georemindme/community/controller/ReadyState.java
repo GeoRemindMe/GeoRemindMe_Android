@@ -26,6 +26,11 @@ public class ReadyState implements ControllerState
 			case V_REQUEST_SAVE_ALERT:
 				controller.saveAlert((Alert) (msg.obj));
 				return true;
+				
+			case V_REQUEST_UPDATE_ALERT:
+				controller.updateAlert((Alert) msg.obj);
+				return true;
+				
 			case V_REQUEST_QUIT:
 				onRequestQuit();
 				return true;

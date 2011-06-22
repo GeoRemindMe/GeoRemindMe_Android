@@ -53,8 +53,13 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		// Get buttons from UI
 		mode = (Button) findViewById(R.id.modebutton);
 		mode.setOnClickListener(this);
+		
+		/*
 		map = (Button) findViewById(R.id.mapbutton);
 		map.setOnClickListener(this);
+		*/
+		
+		
 		list = (Button) findViewById(R.id.listbutton);
 		list.setOnClickListener(this);
 		settings = (Button) findViewById(R.id.preferencesbutton);
@@ -132,10 +137,12 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 				i = new Intent(getApplicationContext(), ListTabActivity.class);
 				startActivity(i);
 				break;
+				/*
 			case R.id.mapbutton:
 				i = new Intent(getApplicationContext(), MapDialogActivity.class);
 				startActivity(i);
 				break;
+				*/
 		}
 	}
 	

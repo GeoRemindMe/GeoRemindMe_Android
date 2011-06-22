@@ -30,6 +30,7 @@ import android.widget.CursorAdapter;
 import android.widget.ProgressBar;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
@@ -91,13 +92,18 @@ public class UndoneAlertList extends ListActivity implements
 			c.close();
 		super.onDestroy();
 	}
-	
 
 	@Override
 	public void onItemClick(AdapterView<?> list, View v, int position, long id)
 	{
 		// TODO Auto-generated method stub
-		Log.v("click on", "position: " + position);
+		//Para hacer que este método funcionase en el CheckBox y en el ToggleButton he tenido que poner
+		//que no puedan ser focusables para evitar el bug que hay conocido en la plataforma.
+		
+		if(c != null)
+		{
+			
+		}
 	}
 	
 
@@ -112,6 +118,7 @@ public class UndoneAlertList extends ListActivity implements
 				processData();
 				return true;
 			case C_LAST_LOCATION:
+				Log.e("C_LAST_LOCATION", "Viene una nueva localización");
 				location = (Location) msg.obj;
 				processData();
 				return true;

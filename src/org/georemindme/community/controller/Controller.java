@@ -305,7 +305,11 @@ public class Controller
 		server.saveAlert(alert);
 	}
 
-
+	void updateAlert(Alert alert)
+	{
+		server.updateAlert(alert);
+	}
+	
 	void requestAllUndoneAlerts()
 	{
 		// TODO Auto-generated method stub

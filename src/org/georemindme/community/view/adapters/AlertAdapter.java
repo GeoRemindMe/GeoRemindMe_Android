@@ -31,10 +31,10 @@ public class AlertAdapter extends SimpleCursorAdapter
 {
 	private Cursor			c;
 	private Context			context;
-	//private long			serverID;
+	// private long serverID;
 	
 	private CheckBox		cbDone;
-	private ToggleButton		soundButton;
+	private ToggleButton	soundButton;
 	private Controller		controller;
 	private Location		actualLocation;
 	
@@ -76,15 +76,13 @@ public class AlertAdapter extends SimpleCursorAdapter
 			
 			final long serverID = c.getLong(c.getColumnIndex(Database.SERVER_ID));
 			
-			
-			
-			
 			soundButton = (ToggleButton) v.findViewById(R.id.alert_list_item_soundButton);
 			soundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
 			{
 				
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked)
 				{
 					// TODO Auto-generated method stub
 					Log.w("SoundButton", soundButton.isChecked() + "");
@@ -92,13 +90,13 @@ public class AlertAdapter extends SimpleCursorAdapter
 					data[0] = new Boolean(soundButton.isChecked());
 					data[1] = new Integer(id);
 					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data).sendToTarget();
-
+					
 				}
 			});
 			int active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
-			if(active == 0)
+			if (active == 0)
 			{
-				//No est‡ activa.
+				// No est‡ activa.
 				soundButton.setChecked(false);
 			}
 			else
@@ -106,18 +104,13 @@ public class AlertAdapter extends SimpleCursorAdapter
 				soundButton.setChecked(true);
 			}
 			
-			
-					
-			
-			
-			
-			
 			cbDone = (CheckBox) v.findViewById(R.id.alert_done);
 			cbDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
 			{
 				
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked)
 				{
 					// TODO Auto-generated method stub
 					Object[] data = new Object[2];
@@ -171,9 +164,9 @@ public class AlertAdapter extends SimpleCursorAdapter
 				tvDescription.setVisibility(View.GONE);
 			}
 			
-			
 			tvName.setText(name);
 		}
+		
 		
 		return v;
 	}

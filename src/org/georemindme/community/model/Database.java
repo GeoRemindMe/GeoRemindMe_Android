@@ -265,7 +265,7 @@ public class Database
 			double lng = c.getDouble(c.getColumnIndex(Database.POINT_Y));
 			
 			// Log.v("Antes de crear la alerta", "");
-			Alert a = new Alert(0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng);
+			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng);
 			c.close();
 			return a;
 		}
@@ -479,14 +479,14 @@ public class Database
 		this.open();
 		
 		String sql = "delete from " + ALERT_TABLE + " where " + SERVER_ID
-				+ " == " + (a.getId() * 1.0);
+				+ " == " + (a.getIdServer() * 1.0);
 		
 		db.delete(ALERT_TABLE, SERVER_ID + " = ?", new String[] { ""
-				+ a.getId() });
+				+ a.getIdServer() });
 		
 		ContentValues cv = new ContentValues();
 		
-		cv.put(SERVER_ID, a.getId());
+		cv.put(SERVER_ID, a.getIdServer());
 		cv.put(ALERT_START, a.getStarts());
 		cv.put(ALERT_END, a.getEnds());
 		cv.put(ALERT_DESCRIPTION, a.getDescription());
@@ -607,7 +607,7 @@ public class Database
 		
 		ContentValues cv = new ContentValues();
 		
-		cv.put(SERVER_ID, a.getId());
+		cv.put(SERVER_ID, a.getIdServer());
 		cv.put(ALERT_START, a.getStarts());
 		cv.put(ALERT_END, a.getEnds());
 		cv.put(ALERT_DESCRIPTION, a.getDescription());

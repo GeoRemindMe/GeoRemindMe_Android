@@ -26,6 +26,7 @@ public interface ControllerProtocol
 	int	V_REQUEST_CHANGE_ALERT_ACTIVE			= 117;	// obj = (Object[])
 														// on/off | id;
 	int	V_REQUEST_CHANGE_ALERT_DONE				= 118;
+	int	V_REQUEST_UPDATE_ALERT					= 119; //Object = Alert.
 	
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty

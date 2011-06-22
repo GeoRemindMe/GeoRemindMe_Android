@@ -337,7 +337,7 @@ public class Server implements Serializable
 						{
 							JSONObject alert = (JSONObject) alerts.get(i);
 							
-							long id = (Long) alert.get("id");
+							long id_server = (Long) alert.get("id");
 							
 							long done_when = 0;
 							String done_when_s = (String) alert.get("done_when");
@@ -392,9 +392,9 @@ public class Server implements Serializable
 							}
 							
 							
-							Alert tmp = new Alert(id, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
+							Alert tmp = new Alert(0, id_server, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
 							
-							Log.v("Refrescando alerta", "SERVERID: " + id);
+							Log.v("Refrescando alerta", "SERVERID: " + id_server);
 							
 							alertList.add(tmp);
 						}
@@ -460,7 +460,13 @@ public class Server implements Serializable
 		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
 	}
 	
-
+	
+	public void updateAlert(Alert alert)
+	{
+		db.refreshAlert(alert);
+		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
+	}
+	
 	public void requestAllUndoneAlerts()
 	{
 		// TODO Auto-generated method stub

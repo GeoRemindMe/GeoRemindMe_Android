@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class Alert implements Serializable
 {
+	private long	id_server;
 	private long	id;
 	private long	done_when;
 	private long	ends;
@@ -20,12 +21,13 @@ public class Alert implements Serializable
 	private String	description;
 	
 	
-	public Alert(long id, long done_when, long ends, long starts, long created,
-			boolean done, String name, String description, boolean active,
-			long modified, double latitude, double longitude)
+	public Alert(long id, long id_server, long done_when, long ends,
+			long starts, long created, boolean done, String name,
+			String description, boolean active, long modified, double latitude,
+			double longitude)
 	{
-		super();
 		this.id = id;
+		this.id_server = id_server;
 		this.done_when = done_when;
 		this.ends = ends;
 		this.starts = starts;
@@ -37,6 +39,34 @@ public class Alert implements Serializable
 		this.modified = modified;
 		this.latitude = latitude;
 		this.longitude = longitude;
+	}
+	
+
+	public Alert()
+	{
+		this.id = this.id_server = this.done_when = this.ends = this.starts = this.created = this.modified = 0;
+		this.latitude = this.longitude = 0;
+		this.done = this.active = false;
+		this.name = this.description = "";
+	}
+	
+
+	/**
+	 * @return the id_server
+	 */
+	public long getIdServer()
+	{
+		return id_server;
+	}
+	
+
+	/**
+	 * @param id_server
+	 *            the id_server to set
+	 */
+	public void setIdServer(long id)
+	{
+		this.id_server = id;
 	}
 	
 
