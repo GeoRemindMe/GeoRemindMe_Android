@@ -260,7 +260,7 @@ public class Server implements Serializable
 									obj.put("done_when", c_done_when);
 									
 									String c_name = c.getString(c.getColumnIndex(Database.ALERT_NAME));
-							//	c_name = encodeToUTF8(c_name);
+								//c_name = encodeToUTF8(c_name);
 									obj.put("name", c_name);
 									
 									long c_created = c.getLong(c.getColumnIndex(Database.ALERT_CREATE));
@@ -293,7 +293,7 @@ public class Server implements Serializable
 									obj.put("id", c_id);
 									
 									String c_description = c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION));
-							//	c_description = encodeToUTF8(c_description);
+								//c_description = encodeToUTF8(c_description);
 									obj.put("description", c_description);
 									
 									/*
@@ -316,9 +316,11 @@ public class Server implements Serializable
 						dataToSend.add(dictionary);
 						Log.v("Creando datos a subir", dictionary.toJSONString());
 						
+						String dataToUpload = dictionary.toJSONString();
+					//dataToUpload = encodeToUTF8(dataToUpload);
 						// Process data from server to local database.
 						openConnection();
-						String data = connection.callString("sync", sessionId, since_last_sync, dictionary.toJSONString());
+						String data = connection.callString("sync", sessionId, since_last_sync, dataToUpload);
 						closeConnection();
 						JSONParser parser = new JSONParser();
 						
@@ -515,7 +517,7 @@ public class Server implements Serializable
 	{
 		try
 		{
-			return new String(stringToEncode.getBytes(), "UTF-8");
+			return new String(stringToEncode.getBytes("UTF-8"));
 			//return new String(stringToEncode, "UTF-18");
 		}
 		catch (UnsupportedEncodingException e)

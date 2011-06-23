@@ -174,9 +174,17 @@ public class LocationServer implements Callback
 		}
 		
 		Location bestProvider = locationManager.getLastKnownLocation(bestLocationProvider);
+		//ESTE COMENTARIO SOLUCIONA EL ERROR DE LOCALIZACIÓN QUE SE PRODUCÍA POR ARRASTRAR LA POSICIÓN
+		//DEL USUARIO EN EL MAPA. 
+		
+		//SOLUCION PROVISIONAL.
+		
+		/*
+		Log.i("getLastKnownLocation - LocationServer", bestProvider.toString());
 		if (isBetterLocation(bestProvider, lastKnownLocation))
 			lastKnownLocation = bestProvider;
-		
+		*/
+		lastKnownLocation = bestProvider;
 		return lastKnownLocation;
 	}
 	
@@ -189,8 +197,7 @@ public class LocationServer implements Callback
 		Log.v("LastLocation", lastKnownLocation.toString());
 		// Message msg = Message.obtain(controllerInbox, LS_LOCATION_CHANGED,
 		// lastKnownLocation);
-		Message msg = controllerInbox.obtainMessage(LS_LOCATION_CHANGED, lastKnownLocation);
-		msg.sendToTarget();
+		controllerInbox.obtainMessage(LS_LOCATION_CHANGED, lastKnownLocation).sendToTarget();
 	}
 	
 
@@ -234,7 +241,7 @@ public class LocationServer implements Callback
 					}
 					else
 					{
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, null);
+						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, null).sendToTarget();
 					}
 				}
 				catch (IOException e)
@@ -262,8 +269,8 @@ public class LocationServer implements Callback
 		{
 			setLocationProviders();
 			Log.i("Start tracking position", "Started");
-			Log.w("Time: ", timeToRefresh + "");
-			Log.w("Distance: ", distanceToRefresh + "");
+			Log.i("Time: ", timeToRefresh + "");
+			Log.i("Distance: ", distanceToRefresh + "");
 			locationManager.requestLocationUpdates(bestLocationProvider, timeToRefresh, distanceToRefresh, bestLocationListener);
 		}
 		catch (LocationProviderUnavailableException e)
@@ -296,7 +303,7 @@ public class LocationServer implements Callback
 	private void setTimeToRefresh()
 	{
 		// TODO Auto-generated method stub
-		timeToRefresh = PreferencesController.getTime(); // Hay que
+		timeToRefresh = PreferencesController.getTime() * 60; // Hay que
 															// multiplicar
 															// además por 60
 															// para que sean
@@ -380,6 +387,7 @@ public class LocationServer implements Callback
 
 	public void getAddress(final Double double1, final Double double2)
 	{
+		Log.i("Obteniendo localización de:", double1 + " //" + double2);
 		// TODO Auto-generated method stub
 		Thread t = new Thread("AddressThread")
 		{
@@ -389,17 +397,15 @@ public class LocationServer implements Callback
 				try
 				{
 					List<Address> addresses = null;
-					if (lastKnownLocation != null)
-						addresses = gc.getFromLocation(double1, double2, 5);
-					else
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED).sendToTarget();
+					addresses = gc.getFromLocation(double1, double2, 5);
+					
 					if (!addresses.isEmpty())
 					{
 						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0)).sendToTarget();
 					}
 					else
 					{
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, null);
+						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED, null);
 					}
 				}
 				catch (IOException e)

@@ -8,6 +8,7 @@ import java.util.List;
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.GeoRemindMe;
+import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.view.adapters.AlertAdapter;
 
@@ -74,8 +75,12 @@ public class UndoneAlertList extends ListActivity implements
 		controller.addOutboxHandler(ownInbox);
 		
 		controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
-		if (location == null)
-			controllerInbox.obtainMessage(V_REQUEST_LAST_LOCATION).sendToTarget();
+		controllerInbox.obtainMessage(V_REQUEST_LAST_LOCATION).sendToTarget();
+		/*
+		 * if (location == null)
+		 * controllerInbox.obtainMessage(V_REQUEST_LAST_LOCATION
+		 * ).sendToTarget();
+		 */
 	}
 	
 
@@ -92,18 +97,61 @@ public class UndoneAlertList extends ListActivity implements
 			c.close();
 		super.onDestroy();
 	}
+	
 
 	@Override
 	public void onItemClick(AdapterView<?> list, View v, int position, long id)
 	{
 		// TODO Auto-generated method stub
-		//Para hacer que este método funcionase en el CheckBox y en el ToggleButton he tenido que poner
-		//que no puedan ser focusables para evitar el bug que hay conocido en la plataforma.
 		
-		if(c != null)
+		// Para hacer que este método funcionase en el CheckBox y en el
+		// ToggleButton he tenido que poner
+		// que no puedan ser focusables para evitar el bug que hay conocido en
+		// la plataforma.
+		
+		Alert alert = convertCursorPositionToAlert(this.c, position);
+		
+		Intent i = new Intent(UndoneAlertList.this, AddAlarmActivity.class);
+		Bundle extras = new Bundle();
+		extras.putSerializable("ALERT", alert);
+		i.putExtras(extras);
+		startActivity(i);
+		
+	}
+	
+
+	private Alert convertCursorPositionToAlert(Cursor c, int position)
+	{
+		if (c != null)
 		{
+			c.moveToPosition(position);
+			Alert alertSelected = new Alert();
+			int active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
+			if (active == 0)
+				alertSelected.setActive(false);
+			else
+				alertSelected.setActive(true);
+			alertSelected.setCreated(c.getLong(c.getColumnIndex(Database.ALERT_CREATE)));
+			alertSelected.setDescription(c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION)));
+			long done_when = c.getLong(c.getColumnIndex(Database.ALERT_DONE));
+			alertSelected.setDone_when(done_when);
+			if (done_when != 0)
+				alertSelected.setDone(true);
+			else
+				alertSelected.setDone(false);
+			alertSelected.setEnds(c.getLong(c.getColumnIndex(Database.ALERT_END)));
+			alertSelected.setId(c.getLong(c.getColumnIndex(Database._ID)));
+			alertSelected.setIdServer(c.getLong(c.getColumnIndex(Database.SERVER_ID)));
+			alertSelected.setLatitude(c.getDouble(c.getColumnIndex(Database.POINT_X)));
+			alertSelected.setLongitude(c.getDouble(c.getColumnIndex(Database.POINT_Y)));
+			alertSelected.setModified(c.getLong(c.getColumnIndex(Database.ALERT_MODIFY)));
+			alertSelected.setName(c.getString(c.getColumnIndex(Database.ALERT_NAME)));
+			alertSelected.setStarts(c.getLong(c.getColumnIndex(Database.ALERT_START)));
 			
+			return alertSelected;
 		}
+		
+		return null;
 	}
 	
 
@@ -118,12 +166,11 @@ public class UndoneAlertList extends ListActivity implements
 				processData();
 				return true;
 			case C_LAST_LOCATION:
-				Log.e("C_LAST_LOCATION", "Viene una nueva localización");
 				location = (Location) msg.obj;
 				processData();
 				return true;
 			case C_ALERT_CHANGED:
-				//controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
+				// controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
 				return true;
 		}
 		return false;
@@ -145,8 +192,7 @@ public class UndoneAlertList extends ListActivity implements
 		
 		adapter = new AlertAdapter(this, R.layout.alert_list_item, c, from, to, controller, location);
 		setListAdapter(adapter);
-		//list.invalidate();
-		
+		// list.invalidate();
 		
 	}
 }
