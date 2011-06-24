@@ -478,11 +478,7 @@ public class Database
 	{
 		this.open();
 		
-		String sql = "delete from " + ALERT_TABLE + " where " + SERVER_ID
-				+ " == " + (a.getIdServer() * 1.0);
-		
-		db.delete(ALERT_TABLE, SERVER_ID + " = ?", new String[] { ""
-				+ a.getIdServer() });
+		Log.i("DATABASE", "Refrescando alerta con _id: " + a.getId());
 		
 		ContentValues cv = new ContentValues();
 		
@@ -518,7 +514,18 @@ public class Database
 		cv.put(POINT_X, a.getLatitude());
 		cv.put(POINT_Y, a.getLongitude());
 		
-		db.insert(ALERT_TABLE, null, cv);
+		if (a.getId() == 0)
+		{
+			// Esta tarea aun no se ha metido en la base de datos.
+			db.delete(ALERT_TABLE, _ID + " = 0", null);
+			db.insert(ALERT_TABLE, null, cv);
+		}
+		else
+		{
+			db.update(ALERT_TABLE, cv, _ID + " = ?", new String[] { "" + a.getId() });
+		}
+		
+		
 		
 		this.close();
 	}

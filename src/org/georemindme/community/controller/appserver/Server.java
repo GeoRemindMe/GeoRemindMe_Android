@@ -5,6 +5,8 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.model.User;
+import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -222,6 +225,7 @@ public class Server implements Serializable
 	}
 	
 
+	// Debo de unificar todo a org.json y dejar de usar org.simple.json.
 	public void sync_data()
 	{
 		if (isUserlogin())
@@ -235,8 +239,6 @@ public class Server implements Serializable
 					
 					try
 					{
-						JSONArray dataToSend = new JSONArray();
-						
 						Date now = new Date();
 						long local_sync = now.getTime();
 						local_sync /= 1000;
@@ -245,67 +247,69 @@ public class Server implements Serializable
 						// dataToSend.add(sessionId);
 						
 						Cursor c = db.getModifiedAlerts(since_last_sync);
-						JSONArray dictionary = new JSONArray();
+						org.json.JSONArray dictionary = new org.json.JSONArray();
+						
 						if (c != null)
 						{
 							
 							if (c.moveToFirst())
 							{
 								Log.v("", "El cursor trae datos...");
+								
 								do
 								{
-									JSONObject obj = new JSONObject();
+									org.json.JSONObject obj = new org.json.JSONObject();
 									
 									long c_done_when = c.getLong(c.getColumnIndex(Database.ALERT_DONE));
-									obj.put("done_when", c_done_when);
-									
-									String c_name = c.getString(c.getColumnIndex(Database.ALERT_NAME));
-								//c_name = encodeToUTF8(c_name);
-									obj.put("name", c_name);
-									
-									long c_created = c.getLong(c.getColumnIndex(Database.ALERT_CREATE));
-									obj.put("created", c_created);
-									
-									long c_starts = c.getLong(c.getColumnIndex(Database.ALERT_START));
-									obj.put("starts", c_starts);
-									
-									long c_ends = c.getLong(c.getColumnIndex(Database.ALERT_END));
-									obj.put("ends", c_ends);
-									
-									long c_modified = c.getLong(c.getColumnIndex(Database.ALERT_MODIFY));
-									obj.put("modified", c_modified);
-									
-									double c_latitude = c.getDouble(c.getColumnIndex(Database.POINT_X));
-									double c_longitude = c.getDouble(c.getColumnIndex(Database.POINT_Y));
-									
-									obj.put("x", c_latitude);
-									obj.put("y", c_longitude);
-									
-									int c_active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
-									boolean c_active_processed;
-									if (c_active == 0)
-										c_active_processed = false;
-									else
-										c_active_processed = true;
-									obj.put("active", c_active_processed);
-									
-									long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
-									obj.put("id", c_id);
-									
-									String c_description = c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION));
-								//c_description = encodeToUTF8(c_description);
-									obj.put("description", c_description);
-									
-									/*
-									 * Log.v("Datos modificados: ", "" +
-									 * c_done_when + "\n" + c_name + "\n" +
-									 * c_created + "\n" + c_starts + "\n" +
-									 * c_ends + "\n" + c_modified + "\n" +
-									 * c_latitude + "\n" + c_longitude + "\n" +
-									 * c_active + "\n" + c_id);
-									 */
-
-									dictionary.add(obj);
+									try
+									{
+										if (c_done_when != 0)
+											obj.put("done_when", c_done_when);
+										
+										String c_name = c.getString(c.getColumnIndex(Database.ALERT_NAME));
+										obj.put("name", c_name);
+										
+										long c_created = c.getLong(c.getColumnIndex(Database.ALERT_CREATE));
+										obj.put("created", c_created);
+										
+										long c_starts = c.getLong(c.getColumnIndex(Database.ALERT_START));
+										obj.put("starts", c_starts);
+										
+										long c_ends = c.getLong(c.getColumnIndex(Database.ALERT_END));
+										obj.put("ends", c_ends);
+										
+										long c_modified = c.getLong(c.getColumnIndex(Database.ALERT_MODIFY));
+										obj.put("modified", c_modified);
+										
+										double c_latitude = c.getDouble(c.getColumnIndex(Database.POINT_X));
+										double c_longitude = c.getDouble(c.getColumnIndex(Database.POINT_Y));
+										
+										obj.put("x", c_latitude);
+										obj.put("y", c_longitude);
+										
+										int c_active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
+										boolean c_active_processed;
+										if (c_active == 0)
+											c_active_processed = false;
+										else
+											c_active_processed = true;
+										obj.put("active", c_active_processed);
+										
+										long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
+										if (c_id != 0)
+											obj.put("id", c_id);
+										
+										String c_description = c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION));
+										obj.put("description", c_description);
+										
+									}
+									catch (JSONException e)
+									{
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									dictionary.put(obj);
+									// dictionary.add(obj);
 								}
 								while (c.moveToNext());
 							}
@@ -313,23 +317,16 @@ public class Server implements Serializable
 							c.close();
 						}
 						
-						dataToSend.add(dictionary);
-						Log.v("Creando datos a subir", dictionary.toJSONString());
-						
-						String dataToUpload = dictionary.toJSONString();
-					//dataToUpload = encodeToUTF8(dataToUpload);
-						// Process data from server to local database.
+						Log.v("Datos del cliente", dictionary.toString());
 						openConnection();
-						String data = connection.callString("sync", sessionId, since_last_sync, dataToUpload);
+						String data = connection.callString("sync", sessionId, since_last_sync, dictionary);
 						closeConnection();
 						JSONParser parser = new JSONParser();
 						
-						Log.v("DATA lenght", ":" + data.length());
-						
 						Log.v("Datos del server", data);
 						
-						Object obj = parser.parse(data);
-						JSONArray array = (JSONArray) obj;
+						Object object = parser.parse(data);
+						JSONArray array = (JSONArray) object;
 						
 						JSONArray alerts = (JSONArray) array.get(1);
 						
@@ -343,32 +340,31 @@ public class Server implements Serializable
 							
 							long done_when = 0;
 							String done_when_s = (String) alert.get("done_when");
-							if(!done_when_s.equals(""))
+							if (!done_when_s.equals(""))
 							{
 								done_when = Long.parseLong(done_when_s);
 							}
 							
 							long ends = 0;
 							String ends_s = (String) alert.get("ends");
-							if(!ends_s.equals(""))
+							if (!ends_s.equals(""))
 							{
 								ends = Long.parseLong(ends_s);
 							}
 							
 							long starts = 0;
 							String starts_s = (String) alert.get("starts");
-							if(!starts_s.equals(""))
+							if (!starts_s.equals(""))
 							{
 								starts = Long.parseLong(starts_s);
 							}
 							
 							long created = 0;
 							String created_s = (String) alert.get("created");
-							if(!created_s.equals(""))
+							if (!created_s.equals(""))
 							{
 								created = Long.parseLong(created_s);
 							}
-							
 							
 							String description = (String) alert.get("description");
 							
@@ -379,31 +375,24 @@ public class Server implements Serializable
 							
 							double latitude = (Double) alert.get("x");
 							double longitude = (Double) alert.get("y");
-							/*
-							JSONArray points = (JSONArray) alert.get("points");
-							JSONArray temp = (JSONArray) points.get(0);
-							Object objc = temp.get(0);
-							double latitude = (Double) temp.get(0);
-							double longitude = (Double) temp.get(1);
-							*/
+							
 							long modified = 0;
 							String modified_s = (String) alert.get("modified");
-							if(!modified_s.equals(""))
+							if (!modified_s.equals(""))
 							{
 								modified = Long.parseLong(modified_s);
 							}
 							
-							
 							Alert tmp = new Alert(0, id_server, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
 							
-							Log.v("Refrescando alerta", "SERVERID: " + id_server);
+							Log.v("Refrescando alerta", "SERVERID: "
+									+ id_server);
 							
 							alertList.add(tmp);
 						}
 						
-						db.refreshAlerts(alertList);
-						
 						db.removeCreatedAlertsAndSynced();
+						db.refreshAlerts(alertList);
 						
 						db.setLastsync((Long) array.get(0));
 						
@@ -462,13 +451,14 @@ public class Server implements Serializable
 		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
 	}
 	
-	
+
 	public void updateAlert(Alert alert)
 	{
 		db.refreshAlert(alert);
 		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
 	}
 	
+
 	public void requestAllUndoneAlerts()
 	{
 		// TODO Auto-generated method stub
@@ -513,12 +503,13 @@ public class Server implements Serializable
 		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
 	}
 	
+
 	private String encodeToUTF8(String stringToEncode)
 	{
 		try
 		{
 			return new String(stringToEncode.getBytes("UTF-8"));
-			//return new String(stringToEncode, "UTF-18");
+			// return new String(stringToEncode, "UTF-18");
 		}
 		catch (UnsupportedEncodingException e)
 		{

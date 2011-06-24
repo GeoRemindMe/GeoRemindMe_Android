@@ -48,6 +48,7 @@ public class ReadyState implements ControllerState
 				return true;
 				
 			case V_REQUEST_LOGOUT:
+				controller.getServerInstance().sync_data();
 				controller.getServerInstance().logout();
 				return true;
 				
