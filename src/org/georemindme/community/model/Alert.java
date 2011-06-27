@@ -181,6 +181,11 @@ public class Alert implements Serializable
 	public void setDone(boolean done)
 	{
 		this.done = done;
+		if(done == true)
+		{
+			this.setDone_when(System.currentTimeMillis() / 1000);
+		}
+		this.setModified(System.currentTimeMillis() / 1000);
 	}
 	
 

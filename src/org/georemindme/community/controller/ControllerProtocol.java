@@ -49,6 +49,7 @@ public interface ControllerProtocol
 	int	C_ALERT_CHANGED							= 218;
 	
 	int	S_REQUEST_UPDATE						= 301;	// empty
+	int S_ALERT_NEAR = 302; // Object alert
 														
 	int	P_PREFERENCE_CHANGED					= 401;	// obj = (Integer)
 														// P_XXX_YYY_CHANGED
@@ -70,4 +71,6 @@ public interface ControllerProtocol
 	int	LS_GETTING_ADDRESS_STARTED				= 503;
 	int	LS_GETTING_ADDRESS_FAILED				= 504;
 	int	LS_GETTING_ADDRESS_FINISHED				= 505;
+	
+	int NS_REQUEST_ALERTS_NEAR = 601;
 }

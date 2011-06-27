@@ -254,8 +254,6 @@ public class Server implements Serializable
 							
 							if (c.moveToFirst())
 							{
-								Log.v("", "El cursor trae datos...");
-								
 								do
 								{
 									org.json.JSONObject obj = new org.json.JSONObject();
@@ -324,7 +322,7 @@ public class Server implements Serializable
 						JSONParser parser = new JSONParser();
 						
 						Log.v("Datos del server", data);
-						
+			//	db.removeModifiedAlerts(since_last_sync);		
 						Object object = parser.parse(data);
 						JSONArray array = (JSONArray) object;
 						
@@ -386,16 +384,15 @@ public class Server implements Serializable
 							Alert tmp = new Alert(0, id_server, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
 							
 							Log.v("Refrescando alerta", "SERVERID: "
-									+ id_server);
+									+ id_server + " X: " + latitude + " Y: " + longitude);
 							
 							alertList.add(tmp);
 						}
 						
-						db.removeCreatedAlertsAndSynced();
 						db.refreshAlerts(alertList);
 						
 						db.setLastsync((Long) array.get(0));
-						
+						db.removeAlertsWithNoServerId();
 						controllerInbox.sendEmptyMessage(C_UPDATE_FINISHED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FINISHED, 0,
 						// 0, null);
@@ -503,19 +500,51 @@ public class Server implements Serializable
 		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
 	}
 	
-
-	private String encodeToUTF8(String stringToEncode)
+	public void requestAlarmsNear(double latE6, double lngE6, int meters)
 	{
-		try
+		
+		Cursor c = db.getAlertsToNotify(latE6, lngE6, meters);
+		
+		//Aqui voy disparando los eventos para que el notificador los detecte.
+		if(c != null && c.moveToFirst())
 		{
-			return new String(stringToEncode.getBytes("UTF-8"));
-			// return new String(stringToEncode, "UTF-18");
+			do
+			{
+				Alert a = getAlertAtActualPosition(c);
+				controllerInbox.obtainMessage(S_ALERT_NEAR, a).sendToTarget();
+			}while(c.moveToNext());
 		}
-		catch (UnsupportedEncodingException e)
+		else
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			Log.w("Notification", "No hay alertas cerca");
 		}
+	}
+	
+	private Alert getAlertAtActualPosition(Cursor c)
+	{
+		Alert alertSelected = new Alert();
+		int active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
+		if (active == 0)
+			alertSelected.setActive(false);
+		else
+			alertSelected.setActive(true);
+		alertSelected.setCreated(c.getLong(c.getColumnIndex(Database.ALERT_CREATE)));
+		alertSelected.setDescription(c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION)));
+		long done_when = c.getLong(c.getColumnIndex(Database.ALERT_DONE));
+		alertSelected.setDone_when(done_when);
+		if (done_when != 0)
+			alertSelected.setDone(true);
+		else
+			alertSelected.setDone(false);
+		alertSelected.setEnds(c.getLong(c.getColumnIndex(Database.ALERT_END)));
+		alertSelected.setId(c.getLong(c.getColumnIndex(Database._ID)));
+		alertSelected.setIdServer(c.getLong(c.getColumnIndex(Database.SERVER_ID)));
+		alertSelected.setLatitude(c.getDouble(c.getColumnIndex(Database.POINT_X)));
+		alertSelected.setLongitude(c.getDouble(c.getColumnIndex(Database.POINT_Y)));
+		alertSelected.setModified(c.getLong(c.getColumnIndex(Database.ALERT_MODIFY)));
+		alertSelected.setName(c.getString(c.getColumnIndex(Database.ALERT_NAME)));
+		alertSelected.setStarts(c.getLong(c.getColumnIndex(Database.ALERT_START)));
+		
+		return alertSelected;
 	}
 }

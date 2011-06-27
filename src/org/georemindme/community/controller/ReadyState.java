@@ -141,6 +141,12 @@ public class ReadyState implements ControllerState
 			case LS_GETTING_ADDRESS_FINISHED:
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
+			case NS_REQUEST_ALERTS_NEAR:
+				controller.requestAlarmsNear();
+				return true;
+			case S_ALERT_NEAR:
+				controller.notifyAlert((Alert) msg.obj);
+				return true;
 		}
 		return false;
 	}

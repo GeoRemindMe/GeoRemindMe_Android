@@ -418,6 +418,39 @@ public class Database
 		return c;
 	}
 	
+	public synchronized Cursor getAlertsToNotify(double latE6,
+			double lngE6, int meters)
+	{
+		this.open();
+		Cursor c = null;
+		double latitudeOffset = (meters / 110574.61) / 2;
+		double longitudeOffset = (meters / 111302.62) / 2;
+		
+		// Log.v("Latitude offset", latitudeOffset + "");
+		// Log.v("Longitude offset", longitudeOffset + "");
+		
+		// Log.v("Latitude", latE6 + "");
+		// Log.v("Longitude", lngE6 + "");
+		
+		// PROBABLEMENTE ESTE METODO FALLE. TENDRƒ QUE USAR METODOS MATEMçTICOS
+		// DE SQLITE3
+		
+		 String sql = "Select *, " + "(" + latE6 + " - " + POINT_X + ") * (" +
+		 latE6 + " - " + POINT_X + ") + " + "(" + lngE6 + " - " + POINT_Y +
+		 ") * (" + lngE6 + " - " + POINT_Y + ") as distance " + "from " +
+		 ALERT_TABLE + " where " + ALERT_DONE + "= 0 AND " + ALERT_ACTIVE + " = 1 AND " + (latitudeOffset +
+		 latE6) + " > " + POINT_X + " and " + POINT_X + " > " + (-1 *
+		 latitudeOffset + latE6) + " and " + (longitudeOffset + lngE6) + " > "
+		 + POINT_Y + " and " + POINT_Y + " > " + (-1 * longitudeOffset +
+		 lngE6) + " and " + ALERT_START  + " <= strftime('%s','now') and ("
+		 + ALERT_END + " >= strftime('%s', 'now') or " + ALERT_END + " = 0) "+" order by distance";
+		
+		//Log.v("SQL ALERT QUERY", sql);
+		c = db.rawQuery(sql, null);
+		// this.close();
+		return c;
+	}
+
 
 	public synchronized User getUser()
 	{
@@ -514,18 +547,22 @@ public class Database
 		cv.put(POINT_X, a.getLatitude());
 		cv.put(POINT_Y, a.getLongitude());
 		
-		if (a.getId() == 0)
+		if (a.getIdServer() != 0 && a.getId() == 0)
 		{
-			// Esta tarea aun no se ha metido en la base de datos.
-			db.delete(ALERT_TABLE, _ID + " = 0", null);
-			db.insert(ALERT_TABLE, null, cv);
+			
+			if(db.update(ALERT_TABLE, cv, SERVER_ID + " = ?", new String[] { ""
+					+ a.getIdServer() }) == 0)
+			{
+				db.insert(ALERT_TABLE, null, cv);
+			}
+			
 		}
 		else
 		{
-			db.update(ALERT_TABLE, cv, _ID + " = ?", new String[] { "" + a.getId() });
+			//Problema getId() siempre va a dar 0 porque el servidor no conoce el id de la alerta :D
+			db.update(ALERT_TABLE, cv, _ID + " = ?", new String[] { ""
+					+ a.getId() });
 		}
-		
-		
 		
 		this.close();
 	}
@@ -537,6 +574,16 @@ public class Database
 		{
 			refreshAlert(a);
 		}
+	}
+	
+
+	public synchronized void removeAlertsWithNoServerId()
+	{
+		this.open();
+		
+		db.delete(ALERT_TABLE, SERVER_ID + " = 0 ", null);
+		
+		this.close();
 	}
 	
 
@@ -682,9 +729,15 @@ public class Database
 		ContentValues cv = new ContentValues();
 		
 		if (active)
+		{
 			cv.put(ALERT_ACTIVE, 1);
+			Log.i("changeAlertActive", "La pongo como activa");
+		}
 		else
+		{
 			cv.put(ALERT_ACTIVE, 0);
+			Log.i("changeAlertActive", "La pongo como INactiva");
+		}
 		
 		Date now = new Date();
 		

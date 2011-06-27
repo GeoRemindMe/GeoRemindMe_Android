@@ -31,6 +31,7 @@ public class Controller
 	
 	private Server					server;
 	private LocationServer			locationServer;
+	private NotificationCenter notificationCenter;
 	
 	private final HandlerThread		inboxHandlerThread;
 	private final Handler			inboxHandler;
@@ -95,7 +96,7 @@ public class Controller
 		alarmManagerIntent = new Intent(context, UpdateService.class);
 		alarmManagerPendingIntent = PendingIntent.getService(context, 0, alarmManagerIntent, 0);
 		
-		
+		notificationCenter = NotificationCenter.setUp(this);
 	}
 	
 
@@ -343,5 +344,26 @@ public class Controller
 	void changeAlertDone(boolean done, int id)
 	{
 		server.changeAlertDone(done, id);
+	}
+	
+	void requestAlarmsNear()
+	{
+		Location l = locationServer.getLastKnownLocation();
+		
+		double latE6 = l.getLatitude();
+		double lngE6 = l.getLongitude();
+		int meters = PreferencesController.getRadius();
+		
+		server.requestAlarmsNear(latE6, lngE6, meters);
+	}
+	
+	void notifyAlert(Alert a)
+	{
+		notificationCenter.notifyAlert(a);
+	}
+	
+	public void removeNotification(int id)
+	{
+		notificationCenter.cancelAlert(id);
 	}
 }
