@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  android:padding="6dip">
+  <com.google.android.maps.MapView
+  	android:id="@+id/mapdialogactivity_map"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:layout_weight="1.0"
+  	android:apiKey="0lxXQNB__9B6gvGoNVuub-_MNnJ9hsY0uTdG83Q"
+  	android:clickable="true"
+  ></com.google.android.maps.MapView>
+  <TextView
+  	android:id="@+id/mapdialogactitivy_address"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:text="Address: XYZ"
+  ></TextView>
+  <Button
+  	android:id="@+id/mapdialogactivity_okbutton"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:text="Ok"
+  	android:padding="4dip"
+  ></Button>
+</LinearLayout>

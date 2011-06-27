@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:scrollbars="none">
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Pick a day"></TextView>
+			<DatePicker
+				android:id="@+id/datepicker"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"></DatePicker>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Pick the time"></TextView>
+			<TimePicker
+				android:id="@+id/timepicker"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"></TimePicker>
+			<CheckBox
+				android:id="@+id/foreverCheckBox"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:checked="false"></CheckBox>
+			<Button
+				android:id="@+id/okButtonDialogTime"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Ok"></Button>
+		</LinearLayout>
+	</ScrollView>
+
+</LinearLayout>
