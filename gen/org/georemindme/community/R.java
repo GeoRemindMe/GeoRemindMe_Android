@@ -33,61 +33,83 @@ public final class R {
         public static final int red=0x7f050005;
         public static final int white=0x7f050003;
     }
+    public static final class dimen {
+        public static final int colorstrip_height=0x7f060000;
+        public static final int now_playing_height=0x7f060002;
+        public static final int text_size_large=0x7f060005;
+        public static final int text_size_medium=0x7f060004;
+        public static final int text_size_small=0x7f060003;
+        public static final int title_height=0x7f060001;
+    }
     public static final class drawable {
-        public static final int blue_small=0x7f020000;
-        public static final int icon=0x7f020001;
-        public static final int logo=0x7f020002;
-        public static final int orange_small=0x7f020003;
+        public static final int alert=0x7f020000;
+        public static final int blue_small=0x7f020001;
+        public static final int home=0x7f020002;
+        public static final int icon=0x7f020003;
+        public static final int list=0x7f020004;
+        public static final int logo=0x7f020005;
+        public static final int map=0x7f020006;
+        public static final int onoff=0x7f020007;
+        public static final int orange_small=0x7f020008;
+        public static final int settings=0x7f020009;
+        public static final int soundbutton=0x7f02000a;
     }
     public static final class id {
-        public static final int actionBar=0x7f090010;
-        public static final int alert_description=0x7f090006;
-        public static final int alert_done=0x7f090007;
-        public static final int alert_name=0x7f090005;
-        public static final int bottompanel=0x7f09001c;
-        public static final int button_logindialog_cancel=0x7f09001a;
-        public static final int button_logindialog_clear=0x7f090017;
-        public static final int button_logindialog_ok=0x7f090019;
-        public static final int button_search=0x7f09001e;
-        public static final int buttonsplace=0x7f09000b;
-        public static final int checkbox_done=0x7f09002b;
-        public static final int createalertButton=0x7f09000c;
-        public static final int descriptionEditText=0x7f090002;
-        public static final int edittext_address=0x7f09002a;
-        public static final int edittext_description=0x7f090029;
-        public static final int edittext_name=0x7f090028;
-        public static final int edittext_search=0x7f09001d;
-        public static final int endButton=0x7f090004;
-        public static final int homeButton=0x7f090000;
-        public static final int listbutton=0x7f09000f;
-        public static final int logo=0x7f090009;
-        public static final int logout=0x7f090018;
-        public static final int map=0x7f09001b;
-        public static final int mapbutton=0x7f09000e;
-        public static final int menu_item_list=0x7f09002f;
-        public static final int menu_item_location=0x7f09002c;
-        public static final int menu_item_preferences=0x7f09002d;
-        public static final int menu_item_sync=0x7f09002e;
-        public static final int modebutton=0x7f09000a;
-        public static final int name=0x7f090011;
-        public static final int nameEditText=0x7f090001;
-        public static final int okButton=0x7f090013;
-        public static final int online=0x7f090015;
-        public static final int pass=0x7f090012;
-        public static final int password=0x7f090016;
-        public static final int pref_autoupdate=0x7f090025;
-        public static final int pref_location_provider_accuracy=0x7f090023;
-        public static final int pref_location_provider_power=0x7f090024;
-        public static final int pref_location_rate=0x7f090022;
-        public static final int pref_location_update_radius=0x7f090021;
-        public static final int pref_show_satellite=0x7f09001f;
-        public static final int pref_show_traffic=0x7f090020;
-        public static final int pref_sync_on_boot=0x7f090026;
-        public static final int pref_sync_rate=0x7f090027;
-        public static final int preferencesbutton=0x7f09000d;
-        public static final int radiogroup=0x7f090014;
-        public static final int startButton=0x7f090003;
-        public static final int titlebar=0x7f090008;
+        public static final int actionBar=0x7f0a0010;
+        public static final int alert_description=0x7f0a0006;
+        public static final int alert_done=0x7f0a0007;
+        public static final int alert_name=0x7f0a0005;
+        public static final int bottompanel=0x7f0a001c;
+        public static final int button_logindialog_cancel=0x7f0a001a;
+        public static final int button_logindialog_clear=0x7f0a0017;
+        public static final int button_logindialog_ok=0x7f0a0019;
+        public static final int button_search=0x7f0a001e;
+        public static final int buttonsplace=0x7f0a000b;
+        public static final int checkbox_done=0x7f0a0032;
+        public static final int createalertButton=0x7f0a000c;
+        public static final int datepicker=0x7f0a0022;
+        public static final int descriptionEditText=0x7f0a0002;
+        public static final int edittext_address=0x7f0a0031;
+        public static final int edittext_description=0x7f0a0030;
+        public static final int edittext_name=0x7f0a002f;
+        public static final int edittext_search=0x7f0a001d;
+        public static final int endButton=0x7f0a0004;
+        public static final int foreverCheckBox=0x7f0a0024;
+        public static final int homeButton=0x7f0a0000;
+        public static final int listbutton=0x7f0a000f;
+        public static final int logo=0x7f0a0009;
+        public static final int logout=0x7f0a0018;
+        public static final int map=0x7f0a001b;
+        public static final int mapbutton=0x7f0a000e;
+        public static final int mapdialogactitivy_address=0x7f0a0020;
+        public static final int mapdialogactivity_map=0x7f0a001f;
+        public static final int mapdialogactivity_okbutton=0x7f0a0021;
+        public static final int menu_item_list=0x7f0a0036;
+        public static final int menu_item_location=0x7f0a0033;
+        public static final int menu_item_preferences=0x7f0a0034;
+        public static final int menu_item_sync=0x7f0a0035;
+        public static final int modebutton=0x7f0a000a;
+        public static final int name=0x7f0a0011;
+        public static final int nameEditText=0x7f0a0001;
+        public static final int okButton=0x7f0a0013;
+        public static final int okButtonDialogTime=0x7f0a0025;
+        public static final int online=0x7f0a0015;
+        public static final int pass=0x7f0a0012;
+        public static final int password=0x7f0a0016;
+        public static final int pref_autoupdate=0x7f0a002c;
+        public static final int pref_location_provider_accuracy=0x7f0a002a;
+        public static final int pref_location_provider_power=0x7f0a002b;
+        public static final int pref_location_rate=0x7f0a0029;
+        public static final int pref_location_update_radius=0x7f0a0028;
+        public static final int pref_show_satellite=0x7f0a0026;
+        public static final int pref_show_traffic=0x7f0a0027;
+        public static final int pref_sync_on_boot=0x7f0a002d;
+        public static final int pref_sync_rate=0x7f0a002e;
+        public static final int preferencesbutton=0x7f0a000d;
+        public static final int radiogroup=0x7f0a0014;
+        public static final int startButton=0x7f0a0003;
+        public static final int timepicker=0x7f0a0023;
+        public static final int titlebar=0x7f0a0008;
     }
     public static final class layout {
         public static final int addtaskactivity=0x7f030000;
@@ -96,138 +118,140 @@ public final class R {
         public static final int loginactivity=0x7f030003;
         public static final int logindialog=0x7f030004;
         public static final int mapactivity=0x7f030005;
-        public static final int preferences=0x7f030006;
-        public static final int tasklist=0x7f030007;
-        public static final int viewtask=0x7f030008;
+        public static final int mapdialogactivity=0x7f030006;
+        public static final int pickdayandtimedialog=0x7f030007;
+        public static final int preferences=0x7f030008;
+        public static final int tasklist=0x7f030009;
+        public static final int viewtask=0x7f03000a;
     }
     public static final class menu {
-        public static final int main_menu=0x7f080000;
+        public static final int main_menu=0x7f090000;
     }
     public static final class string {
-        public static final int OK=0x7f060001;
-        public static final int adress=0x7f06002d;
-        public static final int adress_hint=0x7f060039;
-        public static final int app_name=0x7f060000;
-        public static final int buttondelete=0x7f060031;
-        public static final int buttonmap=0x7f060030;
-        public static final int buttonsave=0x7f060032;
-        public static final int checkdone=0x7f06002f;
-        public static final int deletebutton_add=0x7f06003b;
+        public static final int OK=0x7f070001;
+        public static final int adress=0x7f07002d;
+        public static final int adress_hint=0x7f070039;
+        public static final int app_name=0x7f070000;
+        public static final int buttondelete=0x7f070031;
+        public static final int buttonmap=0x7f070030;
+        public static final int buttonsave=0x7f070032;
+        public static final int checkdone=0x7f07002f;
+        public static final int deletebutton_add=0x7f07003b;
         /**  Help activity 
          */
-        public static final int help=0x7f060026;
-        public static final int help_howuseit=0x7f060029;
-        public static final int help_howuseit_description=0x7f06002a;
-        public static final int help_whatis=0x7f060027;
-        public static final int help_whatis_description=0x7f060028;
-        public static final int location_provider_not_enabled_message=0x7f060023;
-        public static final int location_provider_not_enabled_title=0x7f060022;
-        public static final int menu_item_filter=0x7f060004;
+        public static final int help=0x7f070026;
+        public static final int help_howuseit=0x7f070029;
+        public static final int help_howuseit_description=0x7f07002a;
+        public static final int help_whatis=0x7f070027;
+        public static final int help_whatis_description=0x7f070028;
+        public static final int location_provider_not_enabled_message=0x7f070023;
+        public static final int location_provider_not_enabled_title=0x7f070022;
+        public static final int menu_item_filter=0x7f070004;
         /**  Menu items 
          */
-        public static final int menu_item_help=0x7f060002;
-        public static final int menu_item_preferences=0x7f060003;
-        public static final int radius=0x7f06002e;
-        public static final int radius_hint=0x7f06003a;
+        public static final int menu_item_help=0x7f070002;
+        public static final int menu_item_preferences=0x7f070003;
+        public static final int radius=0x7f07002e;
+        public static final int radius_hint=0x7f07003a;
         /**  MapActivity 
          */
-        public static final int searchaddress=0x7f060036;
+        public static final int searchaddress=0x7f070036;
         /**  Settings 
          */
-        public static final int settings=0x7f060005;
-        public static final int settings_3g_location=0x7f060020;
-        public static final int settings_3g_location_summary=0x7f060021;
-        public static final int settings_alert_radius_title=0x7f060015;
-        public static final int settings_alerts=0x7f060007;
-        public static final int settings_autoupdate=0x7f06000a;
-        public static final int settings_autoupdate_summary=0x7f06000b;
-        public static final int settings_default_zoom_level_summary=0x7f060011;
-        public static final int settings_default_zoom_level_title=0x7f060010;
-        public static final int settings_fullscreen_title=0x7f060014;
-        public static final int settings_location=0x7f060006;
-        public static final int settings_location_provider_accuracy_summary=0x7f06001d;
-        public static final int settings_location_provider_accuracy_title=0x7f06001c;
-        public static final int settings_location_provider_power_summary=0x7f06001f;
-        public static final int settings_location_provider_power_title=0x7f06001e;
-        public static final int settings_location_providers=0x7f06001a;
-        public static final int settings_location_providers_summary=0x7f06001b;
-        public static final int settings_location_update_radius_summary=0x7f060017;
-        public static final int settings_location_update_radius_title=0x7f060016;
-        public static final int settings_location_update_rate_summary=0x7f060019;
-        public static final int settings_location_update_rate_title=0x7f060018;
-        public static final int settings_map=0x7f060008;
-        public static final int settings_satellite_title=0x7f060012;
-        public static final int settings_services=0x7f060009;
-        public static final int settings_sync_on_boot=0x7f06000c;
-        public static final int settings_sync_on_boot_summary=0x7f06000d;
-        public static final int settings_sync_rate=0x7f06000e;
-        public static final int settings_sync_rate_summary=0x7f06000f;
-        public static final int settings_traffic_title=0x7f060013;
-        public static final int tasklist_tasks_string=0x7f060025;
+        public static final int settings=0x7f070005;
+        public static final int settings_3g_location=0x7f070020;
+        public static final int settings_3g_location_summary=0x7f070021;
+        public static final int settings_alert_radius_title=0x7f070015;
+        public static final int settings_alerts=0x7f070007;
+        public static final int settings_autoupdate=0x7f07000a;
+        public static final int settings_autoupdate_summary=0x7f07000b;
+        public static final int settings_default_zoom_level_summary=0x7f070011;
+        public static final int settings_default_zoom_level_title=0x7f070010;
+        public static final int settings_fullscreen_title=0x7f070014;
+        public static final int settings_location=0x7f070006;
+        public static final int settings_location_provider_accuracy_summary=0x7f07001d;
+        public static final int settings_location_provider_accuracy_title=0x7f07001c;
+        public static final int settings_location_provider_power_summary=0x7f07001f;
+        public static final int settings_location_provider_power_title=0x7f07001e;
+        public static final int settings_location_providers=0x7f07001a;
+        public static final int settings_location_providers_summary=0x7f07001b;
+        public static final int settings_location_update_radius_summary=0x7f070017;
+        public static final int settings_location_update_radius_title=0x7f070016;
+        public static final int settings_location_update_rate_summary=0x7f070019;
+        public static final int settings_location_update_rate_title=0x7f070018;
+        public static final int settings_map=0x7f070008;
+        public static final int settings_satellite_title=0x7f070012;
+        public static final int settings_services=0x7f070009;
+        public static final int settings_sync_on_boot=0x7f07000c;
+        public static final int settings_sync_on_boot_summary=0x7f07000d;
+        public static final int settings_sync_rate=0x7f07000e;
+        public static final int settings_sync_rate_summary=0x7f07000f;
+        public static final int settings_traffic_title=0x7f070013;
+        public static final int tasklist_tasks_string=0x7f070025;
         /**  Tasklist View 
          */
-        public static final int tasklist_therearenotaskstoshow=0x7f060024;
-        public static final int textdescription=0x7f06002c;
-        public static final int textdescription_hint=0x7f060038;
+        public static final int tasklist_therearenotaskstoshow=0x7f070024;
+        public static final int textdescription=0x7f07002c;
+        public static final int textdescription_hint=0x7f070038;
         /**  View/modify/delete task 
          */
-        public static final int textname=0x7f06002b;
+        public static final int textname=0x7f07002b;
         /**  Add task 
          */
-        public static final int textname_hint=0x7f060037;
-        public static final int viewdelete_ask=0x7f060035;
-        public static final int viewdeleted=0x7f060034;
-        public static final int viewsaved=0x7f060033;
+        public static final int textname_hint=0x7f070037;
+        public static final int viewdelete_ask=0x7f070035;
+        public static final int viewdeleted=0x7f070034;
+        public static final int viewsaved=0x7f070033;
     }
     public static final class style {
         /**  datepicker 
          */
-        public static final int AddAlertDialog_datepicker=0x7f070005;
+        public static final int AddAlertDialog_datepicker=0x7f080005;
         /**  timepicker 
          */
-        public static final int AddAlertDialog_timepicker=0x7f070006;
+        public static final int AddAlertDialog_timepicker=0x7f080006;
         /**  button 
          */
-        public static final int Button=0x7f070008;
+        public static final int Button=0x7f080008;
         /**  Buttons 
          */
-        public static final int DashboardButton=0x7f070001;
+        public static final int DashboardButton=0x7f080001;
         /**  help big text 
          */
-        public static final int Help_big_text=0x7f07000d;
+        public static final int Help_big_text=0x7f08000d;
         /**  help link text 
          */
-        public static final int Help_link_text=0x7f07000f;
+        public static final int Help_link_text=0x7f08000f;
         /**  help small text 
          */
-        public static final int Help_small_text=0x7f07000e;
+        public static final int Help_small_text=0x7f08000e;
         /**  Settings 
          */
-        public static final int SettingsTitle=0x7f070002;
+        public static final int SettingsTitle=0x7f080002;
         /**  tasklist item big text 
          */
-        public static final int TaskList_item_big_text=0x7f07000b;
+        public static final int TaskList_item_big_text=0x7f08000b;
         /**  tasklist item medium text 
          */
-        public static final int TaskList_item_medium_text=0x7f07000c;
+        public static final int TaskList_item_medium_text=0x7f08000c;
         /**  tasklist top button 
          */
-        public static final int TaskList_top_button=0x7f07000a;
+        public static final int TaskList_top_button=0x7f08000a;
         /**  TasksList 
  tasklist top text 
          */
-        public static final int TaskList_top_textview=0x7f070009;
+        public static final int TaskList_top_textview=0x7f080009;
         /**  Main window 
          */
-        public static final int Theme_Window=0x7f070000;
+        public static final int Theme_Window=0x7f080000;
         /**  checkbox 
          */
-        public static final int checkbox=0x7f070007;
+        public static final int checkbox=0x7f080007;
         /**  edittext 
          */
-        public static final int edittext=0x7f070004;
+        public static final int edittext=0x7f080004;
         /**  textview 
          */
-        public static final int textview=0x7f070003;
+        public static final int textview=0x7f080003;
     }
 }
