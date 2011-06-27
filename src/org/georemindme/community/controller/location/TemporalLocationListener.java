@@ -36,8 +36,6 @@ public class TemporalLocationListener implements LocationListener
 	public void onLocationChanged(Location location)
 	{
 		// TODO Auto-generated method stub
-		Log.v("TLL", "Location changed!! " + location.toString());
-		Logger.write(this, "Location changed: " + location.toString());
 		stopTiming();
 	}
 	
@@ -92,14 +90,10 @@ public class TemporalLocationListener implements LocationListener
 
 		public void run()
 		{
-			Log.v("TIMER", "Running");
-			Logger.write(this, "Timer running");
 			counter++;
 			if (counter > timeout)
 			{
 				// STOP
-				Log.v("TIMER", "Removing listener");
-				Logger.write(this, "Timer removing listener");
 				stopTiming();
 			}
 			else

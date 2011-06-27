@@ -32,7 +32,6 @@ public class SoundButton extends ImageButton
 	
 	private void init()
 	{
-		Log.e("SoundButton", "Se ha vuelto a crear el boton de mierda. Hijo de puta!!!!!!!");
 		setOn();
 	}
 	

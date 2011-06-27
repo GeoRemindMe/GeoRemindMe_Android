@@ -47,7 +47,6 @@ public class DoneAlertList extends ListActivity implements OnItemClickListener, 
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		Log.w("Alert List", "OnCreate");
 		setContentView(R.layout.tasklist);
 		
 		list = (ListView) findViewById(android.R.id.list);
@@ -74,6 +73,9 @@ public class DoneAlertList extends ListActivity implements OnItemClickListener, 
 	public void onPause()
 	{
 		super.onPause();
+		
+		if(c != null)
+			c.close();
 		
 		controller.removeOutboxHandler(ownInbox);
 	}
@@ -121,7 +123,6 @@ public class DoneAlertList extends ListActivity implements OnItemClickListener, 
 		
 		if (adapter != null)
 		{
-			Log.w("Done alert list", "Notifiy data set changed gets called");
 			adapter.notifyDataSetChanged();
 		}
 		

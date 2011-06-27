@@ -3,29 +3,36 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	>
   <!-- ActionBar -->
 	<LinearLayout
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal">
-		<Button
+		android:layout_height="@dimen/title_height"
+		android:orientation="horizontal"
+		android:background="@color/orange_transparent">
+		<ImageButton
+			style="@style/TitleBarAction"
 			android:id="@+id/homeButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Home"></Button>
+			android:src="@drawable/home"
+			android:background="@drawable/home"
+			></ImageButton>
 	</LinearLayout>
   
   <!-- Content -->
 	<ScrollView
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_weight="1.0">
+		android:layout_height="fill_parent"
+		android:layout_weight="1.0"
+		android:layout_gravity="fill"
+		android:padding="6dip"
+		android:scrollbars="none">
 		<LinearLayout
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:orientation="vertical">
 			<TextView
+				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Name"></TextView>
@@ -34,6 +41,7 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 			<TextView
+				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:text="Description"></TextView>
@@ -42,6 +50,12 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"></EditText>
 
+			<TextView
+				style="@style/DefaultTextView"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Active Period"
+			></TextView>
 			<LinearLayout
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
@@ -58,6 +72,52 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_weight="1.0"></Button>
+			</LinearLayout>
+			
+			<TextView
+				style="@style/DefaultTextView"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Map'n Address"
+			></TextView>
+			<org.georemindme.community.view.custom.DummyMap
+				android:id="@+id/dummymap"
+				android:layout_width="fill_parent"
+				android:layout_height = "130dip"
+				android:apiKey="0lxXQNB__9B6gvGoNVuub-_MNnJ9hsY0uTdG83Q"
+				android:clickable="true"
+			>
+			</org.georemindme.community.view.custom.DummyMap>
+			<TextView
+				style="@style/DefaultTextView"
+				android:id="@+id/addressTextView"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="Address: XYZ"
+			></TextView>
+			
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_gravity="bottom"
+				android:gravity="fill"
+				android:layout_weight="1.0"
+			>
+				<Button
+					android:id="@+id/addtaskactivity_okButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="bottom"
+					android:text ="Save it!"
+				android:layout_weight="1"></Button>
+				
+				<Button
+					android:id="@+id/resetButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="bottom"
+				android:layout_weight="1"></Button>
 			</LinearLayout>
 		</LinearLayout>
 </ScrollView>

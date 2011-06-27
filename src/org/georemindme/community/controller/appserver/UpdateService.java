@@ -17,8 +17,6 @@ public class UpdateService extends Service
 	
 	public int onStartCommand(Intent intent, int f, int sID)
 	{
-		Log.v(LOG, "service request");
-		
 		controller = Controller.getInstace(getApplicationContext());
 		
 		Message msg = Message.obtain(controller.getInboxHandler(), S_REQUEST_UPDATE);

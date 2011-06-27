@@ -138,8 +138,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 			if (data != null)
 			{
 				setdoneButton.setVisibility(View.VISIBLE);
-				
-				Log.e("EDITING", "Estoy editando....");
 				mode = EDIT;
 				alert = (Alert) data.get("ALERT");
 				
@@ -180,7 +178,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				alert = new Alert();
 				
 				start = new Time();
-				Log.w("Start tiene como valor:", start.log() + " ... ");
 				end = new Time();
 			}
 			
@@ -347,13 +344,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				}
 				break;
 			case R.id.resetButton:
-				if(alert.isDone())
-					alert.setDone(false);
-				else
-					alert.setDone(true);
-				
-				controllerInbox.obtainMessage(V_REQUEST_UPDATE_ALERT, alert).sendToTarget();
-			
+				// Habilitar lo de poder hacerla/deshacerla.
 				break;
 			case R.id.startButton:
 				showDialog(PICK_DATE_START);
@@ -379,7 +370,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					{
 						// TODO Auto-generated method stub
 						start = time;
-						Log.v("Start", start.log());
 					}
 				});
 			case PICK_DATE_END:
@@ -391,7 +381,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					{
 						// TODO Auto-generated method stub
 						end = time;
-						Log.v("End", end.log());
 					}
 				});
 		}
@@ -510,12 +499,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				lastLocation.setLongitude(b.getDouble("LONGITUDE"));
 				
 				lastAddress = b.getString("ADDRESS");
-				
-				Log.w("LastLocation - latitude", lastLocation.getLatitude()
-						+ " ");
-				Log.w("LastLocation - longitude", lastLocation.getLongitude()
-						+ " ");
-				Log.w("LastLocation - address", lastAddress);
 				
 				setPosition();
 				addressView.setText(lastAddress);

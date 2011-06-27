@@ -13,7 +13,6 @@ public class Booter extends BroadcastReceiver
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.v(LOG, "onReceive " + intent.getAction());
 	}
 	
 }

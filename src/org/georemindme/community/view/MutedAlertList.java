@@ -38,7 +38,6 @@ public class MutedAlertList extends ListActivity implements OnItemClickListener,
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		Log.w("Alert List", "OnCreate");
 		setContentView(R.layout.tasklist);
 		
 		list = (ListView) findViewById(android.R.id.list);
@@ -82,7 +81,6 @@ public class MutedAlertList extends ListActivity implements OnItemClickListener,
 	public void onItemClick(AdapterView<?> list, View v, int position, long id)
 	{
 		// TODO Auto-generated method stub
-		Log.v("click on", "position: " + position);
 	}
 	
 
@@ -114,7 +112,6 @@ public class MutedAlertList extends ListActivity implements OnItemClickListener,
 		
 		if (adapter != null)
 		{
-			Log.w("Muted alert list", "Notifiy data set changed gets called");
 			adapter.notifyDataSetChanged();
 		}
 		

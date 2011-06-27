@@ -26,11 +26,24 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
+        public static final int background1=0x7f05000d;
+        public static final int background2=0x7f05000e;
+        public static final int background3=0x7f05000f;
         public static final int black=0x7f050004;
         public static final int black_translucent=0x7f050000;
+        public static final int foreground1=0x7f05000b;
+        public static final int foreground2=0x7f05000c;
+        public static final int orange=0x7f050006;
+        public static final int orange_transparent=0x7f050007;
         public static final int pink_logo=0x7f050001;
         public static final int pink_logo_transparent=0x7f050002;
+        public static final int pinned_header_background=0x7f050012;
         public static final int red=0x7f050005;
+        public static final int session_foreground_past=0x7f050011;
+        public static final int title_background=0x7f050008;
+        public static final int title_separator=0x7f050010;
+        public static final int title_text=0x7f050009;
+        public static final int title_text_alt=0x7f05000a;
         public static final int white=0x7f050003;
     }
     public static final class dimen {
@@ -55,61 +68,63 @@ public final class R {
         public static final int soundbutton=0x7f02000a;
     }
     public static final class id {
-        public static final int actionBar=0x7f0a0010;
-        public static final int alert_description=0x7f0a0006;
-        public static final int alert_done=0x7f0a0007;
-        public static final int alert_name=0x7f0a0005;
-        public static final int bottompanel=0x7f0a001c;
-        public static final int button_logindialog_cancel=0x7f0a001a;
-        public static final int button_logindialog_clear=0x7f0a0017;
-        public static final int button_logindialog_ok=0x7f0a0019;
-        public static final int button_search=0x7f0a001e;
-        public static final int buttonsplace=0x7f0a000b;
-        public static final int checkbox_done=0x7f0a0032;
-        public static final int createalertButton=0x7f0a000c;
-        public static final int datepicker=0x7f0a0022;
+        public static final int actionBar=0x7f0a0014;
+        public static final int addressTextView=0x7f0a0006;
+        public static final int addtaskactivity_okButton=0x7f0a0007;
+        public static final int alert_description=0x7f0a000a;
+        public static final int alert_done=0x7f0a000c;
+        public static final int alert_list_item_soundButton=0x7f0a000b;
+        public static final int alert_name=0x7f0a0009;
+        public static final int bottompanel=0x7f0a0020;
+        public static final int button_logindialog_cancel=0x7f0a001e;
+        public static final int button_logindialog_clear=0x7f0a001b;
+        public static final int button_logindialog_ok=0x7f0a001d;
+        public static final int button_search=0x7f0a0022;
+        public static final int buttonsplace=0x7f0a0010;
+        public static final int checkbox_done=0x7f0a0036;
+        public static final int createalertButton=0x7f0a0011;
+        public static final int datepicker=0x7f0a0026;
         public static final int descriptionEditText=0x7f0a0002;
-        public static final int edittext_address=0x7f0a0031;
-        public static final int edittext_description=0x7f0a0030;
-        public static final int edittext_name=0x7f0a002f;
-        public static final int edittext_search=0x7f0a001d;
+        public static final int dummymap=0x7f0a0005;
+        public static final int edittext_address=0x7f0a0035;
+        public static final int edittext_description=0x7f0a0034;
+        public static final int edittext_name=0x7f0a0033;
+        public static final int edittext_search=0x7f0a0021;
         public static final int endButton=0x7f0a0004;
-        public static final int foreverCheckBox=0x7f0a0024;
+        public static final int foreverCheckBox=0x7f0a0028;
         public static final int homeButton=0x7f0a0000;
-        public static final int listbutton=0x7f0a000f;
-        public static final int logo=0x7f0a0009;
-        public static final int logout=0x7f0a0018;
-        public static final int map=0x7f0a001b;
-        public static final int mapbutton=0x7f0a000e;
-        public static final int mapdialogactitivy_address=0x7f0a0020;
-        public static final int mapdialogactivity_map=0x7f0a001f;
-        public static final int mapdialogactivity_okbutton=0x7f0a0021;
-        public static final int menu_item_list=0x7f0a0036;
-        public static final int menu_item_location=0x7f0a0033;
-        public static final int menu_item_preferences=0x7f0a0034;
-        public static final int menu_item_sync=0x7f0a0035;
-        public static final int modebutton=0x7f0a000a;
-        public static final int name=0x7f0a0011;
+        public static final int listbutton=0x7f0a0013;
+        public static final int logo=0x7f0a000e;
+        public static final int logout=0x7f0a001c;
+        public static final int map=0x7f0a001f;
+        public static final int mapdialogactitivy_address=0x7f0a0024;
+        public static final int mapdialogactivity_map=0x7f0a0023;
+        public static final int mapdialogactivity_okbutton=0x7f0a0025;
+        public static final int menu_item_exit=0x7f0a0038;
+        public static final int menu_item_sync=0x7f0a0037;
+        public static final int modebutton=0x7f0a000f;
+        public static final int name=0x7f0a0015;
         public static final int nameEditText=0x7f0a0001;
-        public static final int okButton=0x7f0a0013;
-        public static final int okButtonDialogTime=0x7f0a0025;
-        public static final int online=0x7f0a0015;
-        public static final int pass=0x7f0a0012;
-        public static final int password=0x7f0a0016;
-        public static final int pref_autoupdate=0x7f0a002c;
-        public static final int pref_location_provider_accuracy=0x7f0a002a;
-        public static final int pref_location_provider_power=0x7f0a002b;
-        public static final int pref_location_rate=0x7f0a0029;
-        public static final int pref_location_update_radius=0x7f0a0028;
-        public static final int pref_show_satellite=0x7f0a0026;
-        public static final int pref_show_traffic=0x7f0a0027;
-        public static final int pref_sync_on_boot=0x7f0a002d;
-        public static final int pref_sync_rate=0x7f0a002e;
-        public static final int preferencesbutton=0x7f0a000d;
-        public static final int radiogroup=0x7f0a0014;
+        public static final int okButton=0x7f0a0017;
+        public static final int okButtonDialogTime=0x7f0a0029;
+        public static final int online=0x7f0a0019;
+        public static final int pass=0x7f0a0016;
+        public static final int password=0x7f0a001a;
+        public static final int pref_autoupdate=0x7f0a0030;
+        public static final int pref_location_provider_accuracy=0x7f0a002e;
+        public static final int pref_location_provider_power=0x7f0a002f;
+        public static final int pref_location_rate=0x7f0a002d;
+        public static final int pref_location_update_radius=0x7f0a002c;
+        public static final int pref_show_satellite=0x7f0a002a;
+        public static final int pref_show_traffic=0x7f0a002b;
+        public static final int pref_sync_on_boot=0x7f0a0031;
+        public static final int pref_sync_rate=0x7f0a0032;
+        public static final int preferencesbutton=0x7f0a0012;
+        public static final int radiogroup=0x7f0a0018;
+        public static final int resetButton=0x7f0a0008;
         public static final int startButton=0x7f0a0003;
-        public static final int timepicker=0x7f0a0023;
-        public static final int titlebar=0x7f0a0008;
+        public static final int timepicker=0x7f0a0027;
+        public static final int titlebar=0x7f0a000d;
     }
     public static final class layout {
         public static final int addtaskactivity=0x7f030000;
@@ -206,52 +221,56 @@ public final class R {
     public static final class style {
         /**  datepicker 
          */
-        public static final int AddAlertDialog_datepicker=0x7f080005;
+        public static final int AddAlertDialog_datepicker=0x7f080007;
         /**  timepicker 
          */
-        public static final int AddAlertDialog_timepicker=0x7f080006;
+        public static final int AddAlertDialog_timepicker=0x7f080008;
         /**  button 
          */
-        public static final int Button=0x7f080008;
+        public static final int Button=0x7f08000a;
         /**  Buttons 
          */
         public static final int DashboardButton=0x7f080001;
+        /**  TextViews 
+         */
+        public static final int DefaultTextView=0x7f080003;
         /**  help big text 
          */
-        public static final int Help_big_text=0x7f08000d;
+        public static final int Help_big_text=0x7f08000f;
         /**  help link text 
          */
-        public static final int Help_link_text=0x7f08000f;
+        public static final int Help_link_text=0x7f080011;
         /**  help small text 
          */
-        public static final int Help_small_text=0x7f08000e;
+        public static final int Help_small_text=0x7f080010;
         /**  Settings 
          */
-        public static final int SettingsTitle=0x7f080002;
+        public static final int SettingsTitle=0x7f080004;
         /**  tasklist item big text 
          */
-        public static final int TaskList_item_big_text=0x7f08000b;
+        public static final int TaskList_item_big_text=0x7f08000d;
         /**  tasklist item medium text 
          */
-        public static final int TaskList_item_medium_text=0x7f08000c;
+        public static final int TaskList_item_medium_text=0x7f08000e;
         /**  tasklist top button 
          */
-        public static final int TaskList_top_button=0x7f08000a;
+        public static final int TaskList_top_button=0x7f08000c;
         /**  TasksList 
  tasklist top text 
          */
-        public static final int TaskList_top_textview=0x7f080009;
+        public static final int TaskList_top_textview=0x7f08000b;
         /**  Main window 
          */
         public static final int Theme_Window=0x7f080000;
+        public static final int TitleBarAction=0x7f080002;
         /**  checkbox 
          */
-        public static final int checkbox=0x7f080007;
+        public static final int checkbox=0x7f080009;
         /**  edittext 
          */
-        public static final int edittext=0x7f080004;
+        public static final int edittext=0x7f080006;
         /**  textview 
          */
-        public static final int textview=0x7f080003;
+        public static final int textview=0x7f080005;
     }
 }

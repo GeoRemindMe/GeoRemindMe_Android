@@ -102,7 +102,6 @@ public class MapDialogActivity extends MapActivity implements Callback,
 				
 				PreferencesController.setZoom(map.getZoomLevel());
 				
-				Log.e("Justo antes", " de volver /nLatitude: " + locationUsed.getLatitude() + "/nLongitude: " + locationUsed.getLongitude());
 				setResult(RESULT_OK, data);
 				finish();
 			}
@@ -128,9 +127,6 @@ public class MapDialogActivity extends MapActivity implements Callback,
 			latitude = b.getDouble("LATITUDE");
 			longitude = b.getDouble("LONGITUDE");
 			address = b.getString("ADDRESS");
-			
-			Log.e("Latitude", latitude + "");
-			Log.e("Longitude", longitude + "");
 			
 			locationUsed = new Location("unknown");
 			locationUsed.setLatitude(latitude);
@@ -273,9 +269,6 @@ public class MapDialogActivity extends MapActivity implements Callback,
 		locationUsed = new Location("unknown");
 		locationUsed.setLatitude(gp.getLatitudeE6() / 1E6 * 1.0);
 		locationUsed.setLongitude(gp.getLongitudeE6() / 1E6 * 1.0);
-		
-		Log.w("New latitude", locationUsed.getLatitude() + " ");
-		Log.w("New longitude", locationUsed.getLongitude() + " ");
 		
 		setPosition();
 		Double[] data = new Double[2];
