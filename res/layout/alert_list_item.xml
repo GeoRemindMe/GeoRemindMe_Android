@@ -51,6 +51,7 @@
 			android:layout_height="fill_parent"
 			android:gravity="center"
 			android:paddingLeft="5dip"
+			android:clickable="true"
 			android:focusable="false"
 			android:focusableInTouchMode="false"></CheckBox>
 	</LinearLayout>

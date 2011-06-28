@@ -120,6 +120,7 @@ public class Database
 	public static final String	ALERT_RANGE								= "alert_range";
 	public static final String	ALERT_X									= "alert_x";
 	public static final String	ALERT_Y									= "alert_y";
+	public static final String	ALERT_DELETED							= "alert_deleted";
 	
 	// User table fields.
 	public static final String	USER_CREATION							= "user_creation";
@@ -128,8 +129,8 @@ public class Database
 	public static final String	USER_LASTSYNC							= "user_lastsync";
 	
 	// Point table fields.
-	public static final String	POINT_X									= "point_x";
-	public static final String	POINT_Y									= "point_y";
+	public static final String	LATITUDE								= "latitude";
+	public static final String	LONGITUDE								= "longitude";
 	public static final String	POINT_NAME								= "point_name";
 	public static final String	POINT_BOOKMARKED						= "point_bookmarked";
 	public static final String	POINT_PHYSICALADDRESS					= "point_physicaladdress";
@@ -180,16 +181,18 @@ public class Database
 																				+ ALERT_MODIFY
 																				+ " real not null, "
 																				+ ALERT_ACTIVE
-																				+ " integer not null default 0, "
+																				+ " integer not null default 1, "
 																				+ ALERT_DONE
 																				+ " real not null, "
 																				+ ALERT_NAME
 																				+ " text not null, "
-																				+ POINT_X
+																				+ LATITUDE
 																				+ " real not null, "
-																				+ POINT_Y
-																				+ " real not null"
-																				+ ")";
+																				+ LONGITUDE
+																				+ " real not null, "
+																				+ ALERT_DELETED
+																				+ " real not null default 0"
+																				+")";
 	
 	private final Context		context;
 	private DatabaseHelper		dbHelper;
@@ -228,8 +231,8 @@ public class Database
 	public synchronized Cursor getAlert(double lat, double lng)
 	{
 		this.open();
-		String sql = "Select * from " + ALERT_TABLE + " where " + POINT_X + "="
-				+ lat + " AND " + POINT_Y + " = " + lng;
+		String sql = "Select * from " + ALERT_TABLE + " where " + LATITUDE
+				+ "=" + lat + " AND " + LONGITUDE + " = " + lng;
 		
 		Cursor c = db.rawQuery(sql, null);
 		
@@ -261,8 +264,8 @@ public class Database
 			else
 				done_b = true;
 			
-			double lat = c.getDouble(c.getColumnIndex(Database.POINT_X));
-			double lng = c.getDouble(c.getColumnIndex(Database.POINT_Y));
+			double lat = c.getDouble(c.getColumnIndex(Database.LATITUDE));
+			double lng = c.getDouble(c.getColumnIndex(Database.LONGITUDE));
 			
 			// Log.v("Antes de crear la alerta", "");
 			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng);
@@ -277,7 +280,7 @@ public class Database
 	public synchronized Cursor getAlertsCoordinates()
 	{
 		this.open();
-		String sql = "Select " + POINT_X + ", " + POINT_Y + " from "
+		String sql = "Select " + LATITUDE + ", " + LONGITUDE + " from "
 				+ ALERT_TABLE;
 		
 		Cursor c = db.rawQuery(sql, null);
@@ -330,7 +333,7 @@ public class Database
 	public synchronized Cursor getAlertsUndoneCoordinates()
 	{
 		this.open();
-		String sql = "Select " + SERVER_ID + ", " + POINT_X + ", " + POINT_Y
+		String sql = "Select " + SERVER_ID + ", " + LATITUDE + ", " + LONGITUDE
 				+ " from " + ALERT_TABLE + " where " + ALERT_DONE + " = 0";
 		
 		Cursor c = db.rawQuery(sql, null);
@@ -404,9 +407,9 @@ public class Database
 		 * + POINT_Y + " and " + POINT_Y + " > " + (-1 * longitudeOffset +
 		 * lngE6) + " order by distance";
 		 */
-		String sql = "Select *, " + "(" + latE6 + " - " + POINT_X + ") * ("
-				+ latE6 + " - " + POINT_X + ") + " + "(" + lngE6 + " - "
-				+ POINT_Y + ") * (" + lngE6 + " - " + POINT_Y
+		String sql = "Select *, " + "(" + latE6 + " - " + LATITUDE + ") * ("
+				+ latE6 + " - " + LATITUDE + ") + " + "(" + lngE6 + " - "
+				+ LONGITUDE + ") * (" + lngE6 + " - " + LONGITUDE
 				+ ") as distance " + "from " + ALERT_TABLE + " where "
 				+ ALERT_DONE + "= 0 order by distance";
 		
@@ -418,8 +421,9 @@ public class Database
 		return c;
 	}
 	
-	public synchronized Cursor getAlertsToNotify(double latE6,
-			double lngE6, int meters)
+
+	public synchronized Cursor getAlertsToNotify(double latE6, double lngE6,
+			int meters)
 	{
 		this.open();
 		Cursor c = null;
@@ -435,22 +439,25 @@ public class Database
 		// PROBABLEMENTE ESTE METODO FALLE. TENDRƒ QUE USAR METODOS MATEMçTICOS
 		// DE SQLITE3
 		
-		 String sql = "Select *, " + "(" + latE6 + " - " + POINT_X + ") * (" +
-		 latE6 + " - " + POINT_X + ") + " + "(" + lngE6 + " - " + POINT_Y +
-		 ") * (" + lngE6 + " - " + POINT_Y + ") as distance " + "from " +
-		 ALERT_TABLE + " where " + ALERT_DONE + "= 0 AND " + ALERT_ACTIVE + " = 1 AND " + (latitudeOffset +
-		 latE6) + " > " + POINT_X + " and " + POINT_X + " > " + (-1 *
-		 latitudeOffset + latE6) + " and " + (longitudeOffset + lngE6) + " > "
-		 + POINT_Y + " and " + POINT_Y + " > " + (-1 * longitudeOffset +
-		 lngE6) + " and " + ALERT_START  + " <= strftime('%s','now') and ("
-		 + ALERT_END + " >= strftime('%s', 'now') or " + ALERT_END + " = 0) "+" order by distance";
+		String sql = "Select *, " + "(" + latE6 + " - " + LATITUDE + ") * ("
+				+ latE6 + " - " + LATITUDE + ") + " + "(" + lngE6 + " - "
+				+ LONGITUDE + ") * (" + lngE6 + " - " + LONGITUDE
+				+ ") as distance " + "from " + ALERT_TABLE + " where "
+				+ ALERT_DONE + "= 0 AND " + ALERT_ACTIVE + " = 1 AND "
+				+ (latitudeOffset + latE6) + " > " + LATITUDE + " and "
+				+ LATITUDE + " > " + (-1 * latitudeOffset + latE6) + " and "
+				+ (longitudeOffset + lngE6) + " > " + LONGITUDE + " and "
+				+ LONGITUDE + " > " + (-1 * longitudeOffset + lngE6) + " and "
+				+ ALERT_START + " <= strftime('%s','now') and (" + ALERT_END
+				+ " >= strftime('%s', 'now') or " + ALERT_END + " = 0) "
+				+ " order by distance";
 		
-		//Log.v("SQL ALERT QUERY", sql);
+		// Log.v("SQL ALERT QUERY", sql);
 		c = db.rawQuery(sql, null);
 		// this.close();
 		return c;
 	}
-
+	
 
 	public synchronized User getUser()
 	{
@@ -541,24 +548,17 @@ public class Database
 		}
 		
 		cv.put(ALERT_NAME, a.getName());
-		cv.put(POINT_X, a.getLatitude());
-		cv.put(POINT_Y, a.getLongitude());
+		cv.put(LATITUDE, a.getLatitude());
+		cv.put(LONGITUDE, a.getLongitude());
 		
-		if (a.getIdServer() != 0 && a.getId() == 0)
+		if (db.update(ALERT_TABLE, cv, SERVER_ID + " = ?", new String[] { ""
+				+ a.getIdServer() }) == 0)
 		{
-			
-			if(db.update(ALERT_TABLE, cv, SERVER_ID + " = ?", new String[] { ""
-					+ a.getIdServer() }) == 0)
+			if (db.update(ALERT_TABLE, cv, _ID + " = ?", new String[] { ""
+					+ a.getId() }) == 0)
 			{
 				db.insert(ALERT_TABLE, null, cv);
 			}
-			
-		}
-		else
-		{
-			//Problema getId() siempre va a dar 0 porque el servidor no conoce el id de la alerta :D
-			db.update(ALERT_TABLE, cv, _ID + " = ?", new String[] { ""
-					+ a.getId() });
 		}
 		
 		this.close();
@@ -681,8 +681,8 @@ public class Database
 		}
 		
 		cv.put(ALERT_NAME, a.getName());
-		cv.put(POINT_X, a.getLatitude());
-		cv.put(POINT_Y, a.getLongitude());
+		cv.put(LATITUDE, a.getLatitude());
+		cv.put(LONGITUDE, a.getLongitude());
 		
 		db.insert(ALERT_TABLE, null, cv);
 		
@@ -703,7 +703,13 @@ public class Database
 		
 		try
 		{
-			long d = db.insertOrThrow(USER_TABLE, null, cV);
+			if(db.update(USER_TABLE, cV, null, null) == 0)
+			{
+				db.delete(USER_TABLE, null, null);
+				db.insert(USER_TABLE, null, cV);
+				
+				Log.i("User saved", "Successful");
+			}
 		}
 		catch (Exception e)
 		{
@@ -722,11 +728,11 @@ public class Database
 		
 		if (active)
 		{
-			cv.put(ALERT_ACTIVE, 0);
+			cv.put(ALERT_ACTIVE, 1);
 		}
 		else
 		{
-			cv.put(ALERT_ACTIVE, 1);
+			cv.put(ALERT_ACTIVE, 0);
 		}
 		
 		Date now = new Date();

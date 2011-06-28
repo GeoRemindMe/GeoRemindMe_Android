@@ -234,7 +234,7 @@ public class LocationServer implements Callback
 						addresses = gc.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 5);
 					else
 						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED).sendToTarget();
-					if (!addresses.isEmpty())
+					if (addresses != null && !addresses.isEmpty())
 					{
 						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0)).sendToTarget();
 					}

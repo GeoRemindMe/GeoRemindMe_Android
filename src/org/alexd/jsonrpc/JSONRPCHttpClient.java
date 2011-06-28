@@ -47,6 +47,11 @@ public class JSONRPCHttpClient extends JSONRPCClient
 	 */
 	private String							serviceUri;
 	
+	/*
+	 * Session Id
+	 */
+	private String							sessionId;
+	
 	// HTTP 1.0
 	private static final ProtocolVersion	PROTOCOL_VERSION	= new ProtocolVersion("HTTP", 1, 0);
 	
@@ -57,10 +62,12 @@ public class JSONRPCHttpClient extends JSONRPCClient
 	 * @param uri
 	 *            uri of the service
 	 */
-	public JSONRPCHttpClient(String uri)
+	public JSONRPCHttpClient(String uri, String sessionId)
 	{
 		httpClient = new DefaultHttpClient();
 		serviceUri = uri;
+		
+		this.sessionId = sessionId;
 	}
 	
 
@@ -76,11 +83,14 @@ public class JSONRPCHttpClient extends JSONRPCClient
 		HttpProtocolParams.setVersion(params, PROTOCOL_VERSION);
 		request.setParams(params);
 		
+		
+		if (sessionId != null)
+			request.addHeader("X-GEOREMINDME-SESSION", sessionId);
+		
 		HttpEntity entity;
 		try
 		{
 			entity = new JSONEntity(jsonRequest);
-			
 		}
 		catch (UnsupportedEncodingException e1)
 		{

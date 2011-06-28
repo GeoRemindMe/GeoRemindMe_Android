@@ -134,6 +134,7 @@ public class Controller
 		}
 		else
 		{
+			Log.i("Controller send new message", "What: " + what + " || Obj: " + obj);
 			for (Handler h : outboxHandlers)
 			{
 				Message msg = Message.obtain(h, what, arg1, arg2, obj);

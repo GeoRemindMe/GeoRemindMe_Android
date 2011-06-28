@@ -45,7 +45,7 @@ public class Server implements Serializable
 	
 	private JSONRPCClient		connection;
 	
-	private String				sessionId;
+	private String				sessionId			= null;
 	
 	private static Server		instance			= null;
 	
@@ -83,7 +83,7 @@ public class Server implements Serializable
 
 	private void openConnection()
 	{
-		connection = JSONRPCClient.create(Server.URL);
+		connection = JSONRPCClient.create(Server.URL, sessionId);
 		connection.setConnectionTimeout(Server.connectionTimeout);
 		connection.setSoTimeout(Server.connectionTimeout);
 	}
@@ -276,8 +276,8 @@ public class Server implements Serializable
 										long c_modified = c.getLong(c.getColumnIndex(Database.ALERT_MODIFY));
 										obj.put("modified", c_modified);
 										
-										double c_latitude = c.getDouble(c.getColumnIndex(Database.POINT_X));
-										double c_longitude = c.getDouble(c.getColumnIndex(Database.POINT_Y));
+										double c_latitude = c.getDouble(c.getColumnIndex(Database.LATITUDE));
+										double c_longitude = c.getDouble(c.getColumnIndex(Database.LONGITUDE));
 										
 										obj.put("x", c_latitude);
 										obj.put("y", c_longitude);
@@ -289,10 +289,17 @@ public class Server implements Serializable
 										else
 											c_active_processed = true;
 										obj.put("active", c_active_processed);
-										
+										Log.w("SYNC", c_name
+												+ " lleva como valor: "
+												+ c_active_processed);
 										long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
 										if (c_id != 0)
 											obj.put("id", c_id);
+										else
+										{
+											long c_clientId = c.getLong(c.getColumnIndex(Database._ID));
+											obj.put("client_id", c_clientId);
+										}
 										
 										String c_description = c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION));
 										obj.put("description", c_description);
@@ -314,7 +321,7 @@ public class Server implements Serializable
 						
 						Log.v("Datos del cliente", dictionary.toString());
 						openConnection();
-						String data = connection.callString("sync", sessionId, since_last_sync, dictionary);
+						String data = connection.callString("sync_alert", since_last_sync, dictionary);
 						closeConnection();
 						JSONParser parser = new JSONParser();
 						
@@ -331,34 +338,11 @@ public class Server implements Serializable
 							JSONObject alert = (JSONObject) alerts.get(i);
 							
 							long id_server = (Long) alert.get("id");
+							long done_when = (Long) alert.get("done_when");
+							long ends = (Long) alert.get("ends");
+							long starts = (Long) alert.get("starts");
 							
-							long done_when = 0;
-							String done_when_s = (String) alert.get("done_when");
-							if (!done_when_s.equals(""))
-							{
-								done_when = Long.parseLong(done_when_s);
-							}
-							
-							long ends = 0;
-							String ends_s = (String) alert.get("ends");
-							if (!ends_s.equals(""))
-							{
-								ends = Long.parseLong(ends_s);
-							}
-							
-							long starts = 0;
-							String starts_s = (String) alert.get("starts");
-							if (!starts_s.equals(""))
-							{
-								starts = Long.parseLong(starts_s);
-							}
-							
-							long created = 0;
-							String created_s = (String) alert.get("created");
-							if (!created_s.equals(""))
-							{
-								created = Long.parseLong(created_s);
-							}
+							long created = (Long) alert.get("created");
 							
 							String description = (String) alert.get("description");
 							
@@ -366,18 +350,18 @@ public class Server implements Serializable
 							String name = (String) alert.get("name");
 							
 							boolean active = (Boolean) alert.get("active");
-							
+		Log.w("SYNC", name + " trae como valor: " + active);
 							double latitude = (Double) alert.get("x");
 							double longitude = (Double) alert.get("y");
 							
-							long modified = 0;
-							String modified_s = (String) alert.get("modified");
-							if (!modified_s.equals(""))
-							{
-								modified = Long.parseLong(modified_s);
-							}
+							long modified = (Long) alert.get("modified");
 							
-							Alert tmp = new Alert(0, id_server, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
+							long client_id = 0;
+							Object client_id_tmp = alert.get("client_id");
+							if (client_id_tmp != null)
+								client_id = (Long) client_id_tmp;
+							
+							Alert tmp = new Alert(client_id, id_server, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
 							
 							Log.v("Refrescando alerta", "SERVERID: "
 									+ id_server + " X: " + latitude + " Y: "
@@ -389,7 +373,7 @@ public class Server implements Serializable
 						db.refreshAlerts(alertList);
 						
 						db.setLastsync((Long) array.get(0));
-						db.removeAlertsWithNoServerId();
+						// db.removeAlertsWithNoServerId();
 						controllerInbox.sendEmptyMessage(C_UPDATE_FINISHED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FINISHED, 0,
 						// 0, null);
@@ -539,8 +523,8 @@ public class Server implements Serializable
 		alertSelected.setEnds(c.getLong(c.getColumnIndex(Database.ALERT_END)));
 		alertSelected.setId(c.getLong(c.getColumnIndex(Database._ID)));
 		alertSelected.setIdServer(c.getLong(c.getColumnIndex(Database.SERVER_ID)));
-		alertSelected.setLatitude(c.getDouble(c.getColumnIndex(Database.POINT_X)));
-		alertSelected.setLongitude(c.getDouble(c.getColumnIndex(Database.POINT_Y)));
+		alertSelected.setLatitude(c.getDouble(c.getColumnIndex(Database.LATITUDE)));
+		alertSelected.setLongitude(c.getDouble(c.getColumnIndex(Database.LONGITUDE)));
 		alertSelected.setModified(c.getLong(c.getColumnIndex(Database.ALERT_MODIFY)));
 		alertSelected.setName(c.getString(c.getColumnIndex(Database.ALERT_NAME)));
 		alertSelected.setStarts(c.getLong(c.getColumnIndex(Database.ALERT_START)));

@@ -21,6 +21,7 @@ public class ReadyState implements ControllerState
 	@Override
 	public boolean handleMessage(Message msg)
 	{
+		Log.i("Ready state received new message", "What: " + msg.what + " || Obj: " + msg.obj);
 		switch(msg.what)
 		{
 			case V_REQUEST_SAVE_ALERT:

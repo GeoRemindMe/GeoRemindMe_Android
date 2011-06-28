@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -73,25 +74,10 @@ public class AlertAdapter extends SimpleCursorAdapter
 			final int id = c.getInt(c.getColumnIndex(Database._ID));
 			TextView tvName = (TextView) v.findViewById(R.id.alert_name);
 			TextView tvDescription = (TextView) v.findViewById(R.id.alert_description);
-			
+			soundButton = (ToggleButton) v.findViewById(R.id.alert_list_item_soundButton);
+			cbDone = (CheckBox) v.findViewById(R.id.alert_done);
 			final long serverID = c.getLong(c.getColumnIndex(Database.SERVER_ID));
 			
-			soundButton = (ToggleButton) v.findViewById(R.id.alert_list_item_soundButton);
-			soundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-			{
-				
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked)
-				{
-					// TODO Auto-generated method stub
-					Object[] data = new Object[2];
-					data[0] = new Boolean(soundButton.isChecked());
-					data[1] = new Integer(id);
-					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data).sendToTarget();
-					
-				}
-			});
 			int active = c.getInt(c.getColumnIndex(Database.ALERT_ACTIVE));
 			if (active == 0)
 			{
@@ -103,21 +89,6 @@ public class AlertAdapter extends SimpleCursorAdapter
 				soundButton.setChecked(true);
 			}
 			
-			cbDone = (CheckBox) v.findViewById(R.id.alert_done);
-			cbDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-			{
-				
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked)
-				{
-					// TODO Auto-generated method stub
-					Object[] data = new Object[2];
-					data[0] = new Boolean(isChecked);
-					data[1] = new Integer(id);
-					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
-				}
-			});
 			int done = c.getInt(c.getColumnIndex(Database.ALERT_DONE));
 			if (done == 0)
 			{
@@ -125,8 +96,8 @@ public class AlertAdapter extends SimpleCursorAdapter
 				/* Calculo la distancia a la que est‡ */
 				if (actualLocation != null)
 				{
-					double lat = c.getDouble(c.getColumnIndex(Database.POINT_X));
-					double lng = c.getDouble(c.getColumnIndex(Database.POINT_Y));
+					double lat = c.getDouble(c.getColumnIndex(Database.LATITUDE));
+					double lng = c.getDouble(c.getColumnIndex(Database.LONGITUDE));
 					
 					Location l = new Location("unknown provider");
 					l.setLatitude(lat);
@@ -155,6 +126,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 					tvDescription.setText("Unknown aprox. distance");
 				}
 				cbDone.setChecked(false);
+		
 			}
 			else
 			{
@@ -163,8 +135,43 @@ public class AlertAdapter extends SimpleCursorAdapter
 			}
 			
 			tvName.setText(name);
+
+			
+			// ----------------------------------
+			// ----------------------------------
+			
+			cbDone.setOnClickListener(new View.OnClickListener()
+			{
+				
+				@Override
+				public void onClick(View v)
+				{
+					// TODO Auto-generated method stub
+					CheckBox tmp = (CheckBox) v;
+					Object[] data = new Object[2];
+					data[0] = new Boolean(tmp.isChecked());
+					data[1] = new Integer(id);
+					
+					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
+				}
+			});
+			
+			soundButton.setOnClickListener(new View.OnClickListener()
+			{
+				
+				@Override
+				public void onClick(View v)
+				{
+					// TODO Auto-generated method stub
+					ToggleButton tmp = (ToggleButton) v;		
+					Object[] data = new Object[2];
+					data[0] = new Boolean(tmp.isChecked());
+					data[1] = new Integer(id);
+					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data).sendToTarget();
+				}
+			});
+			
 		}
-		
 		
 		return v;
 	}
