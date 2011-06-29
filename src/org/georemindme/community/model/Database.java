@@ -26,8 +26,6 @@ import android.util.Log;
  */
 public class Database
 {
-	private static Database	instance;
-	
 	// ///////////////////////////////////////////////////////////
 	// ///////////////////////////////////////////////////////////
 	// ///////////////////////////////////////////////////////////
@@ -59,6 +57,7 @@ public class Database
 		{
 			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + ALERT_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + ERROR_TABLE);
 		}
 		
 
@@ -67,8 +66,8 @@ public class Database
 		{
 			// TODO Auto-generated method stub
 			db.execSQL(CREATE_USER_TABLE);
-			Log.v("Creating database", CREATE_USER_TABLE);
 			db.execSQL(CREATE_ALERT_TABLE);
+			db.execSQL(CREATE_ERROR_TABLE);
 		}
 		
 
@@ -81,6 +80,8 @@ public class Database
 		}
 		
 	}
+	
+	private static Database	instance;
 	
 	public static final String	DATABASE_ACTION_ALERTS_UPDATED			= "DATABASE_ACTION_ALERTS_UPDATED";
 	public static final String	DATABASE_ACTION_ALERT_DONE				= "DATABASE_ACTION_ALERT_DONE";
@@ -122,6 +123,10 @@ public class Database
 	public static final String	ALERT_Y									= "alert_y";
 	public static final String	ALERT_DELETED							= "alert_deleted";
 	
+	// Error table fields.
+	public static final String	ERROR_MESSAGE							= "error_message";
+	public static final String	ERROR_DATE								= "error_date";
+	
 	// User table fields.
 	public static final String	USER_CREATION							= "user_creation";
 	public static final String	USER_EMAIL								= "user_email";
@@ -143,6 +148,7 @@ public class Database
 	public static final String	POINT_TABLE								= "point_table";
 	public static final String	USER_TABLE								= "user_table";
 	public static final String	ALERT_TABLE								= "alert_table";
+	public static final String	ERROR_TABLE								= "error_table";
 	
 	/**
 	 * Static fields to make easier database tables creation.
@@ -192,13 +198,18 @@ public class Database
 																				+ " real not null, "
 																				+ ALERT_DELETED
 																				+ " real not null default 0"
-																				+")";
+																				+ ")";
 	
-	private final Context		context;
-	private DatabaseHelper		dbHelper;
-	private SQLiteDatabase		db;
-	
-	
+	private static final String	CREATE_ERROR_TABLE						= "create table "
+																				+ ERROR_TABLE
+																				+ "("
+																				+ _ID
+																				+ " integer primary key autoincrement, "
+																				+ ERROR_MESSAGE
+																				+ " text not null, "
+																				+ ERROR_DATE
+																				+ " real not null"
+																				+ ")";
 	public static Database getDatabaseInstance(Context context)
 	{
 		if (instance == null)
@@ -206,6 +217,11 @@ public class Database
 		
 		return instance;
 	}
+	private final Context		context;
+	private DatabaseHelper		dbHelper;
+	
+	
+	private SQLiteDatabase		db;
 	
 
 	private Database(Context ctx)
@@ -215,9 +231,131 @@ public class Database
 	}
 	
 
+	public synchronized void addAlert(Alert a)
+	{
+		this.open();
+		
+		ContentValues cv = new ContentValues();
+		
+		cv.put(SERVER_ID, a.getIdServer());
+		cv.put(ALERT_START, a.getStarts());
+		cv.put(ALERT_END, a.getEnds());
+		cv.put(ALERT_DESCRIPTION, a.getDescription());
+		cv.put(ALERT_CREATE, a.getCreated());
+		cv.put(ALERT_MODIFY, a.getModified());
+		if (a.isDone())
+		{
+			cv.put(ALERT_DONE, a.getDone_when());
+			// Log.v("ALERT_DONE", "La alerta est‡ hecha");
+		}
+		else
+		{
+			cv.put(ALERT_DONE, 0);
+			// Log.v("ALERT_DONE", "La alerta est‡ sin hacer");
+		}
+		
+		if (a.isActive())
+		{
+			cv.put(ALERT_ACTIVE, 1);
+		}
+		else
+		{
+			cv.put(ALERT_ACTIVE, 0);
+		}
+		
+		cv.put(ALERT_NAME, a.getName());
+		cv.put(LATITUDE, a.getLatitude());
+		cv.put(LONGITUDE, a.getLongitude());
+		
+		db.insert(ALERT_TABLE, null, cv);
+		
+		this.close();
+	}
+	
+	public synchronized void addError(Error e)
+	{
+		this.open();
+		
+		ContentValues cv = new ContentValues();
+		cv.put(ERROR_MESSAGE, e.getMessage());
+		cv.put(ERROR_DATE, e.getDate());
+		
+		db.insert(ERROR_TABLE, null, cv);
+		
+		this.close();
+	}
+	
+	public synchronized Cursor getAllErrors()
+	{
+		this.open();
+		
+		Cursor c = null;
+		
+		String sql = "Select * from " + ERROR_TABLE;
+		
+		c = db.rawQuery(sql, null);
+		return c;
+	}
+
+	public synchronized void changeAlertActive(boolean active, int id)
+	{
+		this.open();
+		
+		ContentValues cv = new ContentValues();
+		
+		if (active)
+		{
+			cv.put(ALERT_ACTIVE, 1);
+		}
+		else
+		{
+			cv.put(ALERT_ACTIVE, 0);
+		}
+		
+		Date now = new Date();
+		
+		long time = now.getTime();
+		time /= 1000;
+		
+		cv.put(ALERT_MODIFY, time);
+		
+		db.update(ALERT_TABLE, cv, _ID + " = " + id, null);
+		
+		this.close();
+	}
+	
+
 	public void close()
 	{
 		dbHelper.close();
+	}
+
+
+	private synchronized void deleteAlert(Alert a)
+	{
+		this.open();
+		db.delete(ALERT_TABLE, SERVER_ID + " = " + a.getIdServer(), null);
+		this.close();
+	}
+	
+
+	public synchronized void deleteAlerts()
+	{
+		this.open();
+		
+		db.delete(ALERT_TABLE, ALERT_DELETED + " > 0", null);
+		
+		this.close();
+	}
+	
+
+	public synchronized void deleteAlerts(List<Alert> list)
+	{
+		int limit = list.size();
+		for (int i = 0; i < limit; i++)
+		{
+			deleteAlert(list.get(i));
+		}
 	}
 	
 
@@ -225,6 +363,7 @@ public class Database
 	{
 		removeUser();
 		removeAlerts();
+		removeErrors();
 	}
 	
 
@@ -289,23 +428,6 @@ public class Database
 	}
 	
 
-	public synchronized Cursor getAlertsUndone()
-	{
-		this.open();
-		
-		/*
-		 * String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
-		 * + " = 0 and " + ALERT_ACTIVE + " = 1";
-		 */
-		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
-				+ " = 0";
-		// Log.w("DATABASE", sql);
-		Cursor c = db.rawQuery(sql, null);
-		// this.close();
-		return c;
-	}
-	
-
 	public synchronized Cursor getAlertsDone()
 	{
 		this.open();
@@ -323,6 +445,82 @@ public class Database
 		this.open();
 		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
 				+ " = 0 and " + ALERT_ACTIVE + " = 0";
+		// Log.w("DATABASE", sql);
+		Cursor c = db.rawQuery(sql, null);
+		// this.close();
+		return c;
+	}
+	
+
+	public synchronized Cursor getAlertsToDelete()
+	{
+		this.open();
+		
+		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DELETED
+				+ " > 0";
+		
+		return db.rawQuery(sql, null);
+	}
+	
+
+	public synchronized Cursor getAlertsToDeleteInServer()
+	{
+		this.open();
+		
+		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DELETED
+				+ " > 0 and " + SERVER_ID + " > 0";
+		
+		return db.rawQuery(sql, null);
+	}
+	
+
+	public synchronized Cursor getAlertsToNotify(double latE6, double lngE6,
+			int meters)
+	{
+		this.open();
+		Cursor c = null;
+		double latitudeOffset = (meters / 110574.61) / 2;
+		double longitudeOffset = (meters / 111302.62) / 2;
+		
+		// Log.v("Latitude offset", latitudeOffset + "");
+		// Log.v("Longitude offset", longitudeOffset + "");
+		
+		// Log.v("Latitude", latE6 + "");
+		// Log.v("Longitude", lngE6 + "");
+		
+		// PROBABLEMENTE ESTE METODO FALLE. TENDRƒ QUE USAR METODOS MATEMçTICOS
+		// DE SQLITE3
+		
+		String sql = "Select *, " + "(" + latE6 + " - " + LATITUDE + ") * ("
+				+ latE6 + " - " + LATITUDE + ") + " + "(" + lngE6 + " - "
+				+ LONGITUDE + ") * (" + lngE6 + " - " + LONGITUDE
+				+ ") as distance " + "from " + ALERT_TABLE + " where "
+				+ ALERT_DONE + "= 0 AND " + ALERT_ACTIVE + " = 1 AND "
+				+ (latitudeOffset + latE6) + " > " + LATITUDE + " and "
+				+ LATITUDE + " > " + (-1 * latitudeOffset + latE6) + " and "
+				+ (longitudeOffset + lngE6) + " > " + LONGITUDE + " and "
+				+ LONGITUDE + " > " + (-1 * longitudeOffset + lngE6) + " and "
+				+ ALERT_START + " <= strftime('%s','now') and (" + ALERT_END
+				+ " >= strftime('%s', 'now') or " + ALERT_END + " = 0) AND "
+				+ ALERT_DELETED + "= 0 order by distance";
+		
+		// Log.v("SQL ALERT QUERY", sql);
+		c = db.rawQuery(sql, null);
+		// this.close();
+		return c;
+	}
+	
+
+	public synchronized Cursor getAlertsUndone()
+	{
+		this.open();
+		
+		/*
+		 * String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
+		 * + " = 0 and " + ALERT_ACTIVE + " = 1";
+		 */
+		String sql = "Select * from " + ALERT_TABLE + " where " + ALERT_DONE
+				+ " = 0 and " + ALERT_DELETED + " = 0";
 		// Log.w("DATABASE", sql);
 		Cursor c = db.rawQuery(sql, null);
 		// this.close();
@@ -411,48 +609,12 @@ public class Database
 				+ latE6 + " - " + LATITUDE + ") + " + "(" + lngE6 + " - "
 				+ LONGITUDE + ") * (" + lngE6 + " - " + LONGITUDE
 				+ ") as distance " + "from " + ALERT_TABLE + " where "
-				+ ALERT_DONE + "= 0 order by distance";
+				+ ALERT_DONE + "= 0 and " + ALERT_DELETED
+				+ " = 0 order by distance";
 		
 		Log.v("Latitude offset: ", latitudeOffset + "");
 		Log.v("Longitude offset: ", longitudeOffset + "");
 		Log.v("SQL ALERT QUERY", sql);
-		c = db.rawQuery(sql, null);
-		// this.close();
-		return c;
-	}
-	
-
-	public synchronized Cursor getAlertsToNotify(double latE6, double lngE6,
-			int meters)
-	{
-		this.open();
-		Cursor c = null;
-		double latitudeOffset = (meters / 110574.61) / 2;
-		double longitudeOffset = (meters / 111302.62) / 2;
-		
-		// Log.v("Latitude offset", latitudeOffset + "");
-		// Log.v("Longitude offset", longitudeOffset + "");
-		
-		// Log.v("Latitude", latE6 + "");
-		// Log.v("Longitude", lngE6 + "");
-		
-		// PROBABLEMENTE ESTE METODO FALLE. TENDRƒ QUE USAR METODOS MATEMçTICOS
-		// DE SQLITE3
-		
-		String sql = "Select *, " + "(" + latE6 + " - " + LATITUDE + ") * ("
-				+ latE6 + " - " + LATITUDE + ") + " + "(" + lngE6 + " - "
-				+ LONGITUDE + ") * (" + lngE6 + " - " + LONGITUDE
-				+ ") as distance " + "from " + ALERT_TABLE + " where "
-				+ ALERT_DONE + "= 0 AND " + ALERT_ACTIVE + " = 1 AND "
-				+ (latitudeOffset + latE6) + " > " + LATITUDE + " and "
-				+ LATITUDE + " > " + (-1 * latitudeOffset + latE6) + " and "
-				+ (longitudeOffset + lngE6) + " > " + LONGITUDE + " and "
-				+ LONGITUDE + " > " + (-1 * longitudeOffset + lngE6) + " and "
-				+ ALERT_START + " <= strftime('%s','now') and (" + ALERT_END
-				+ " >= strftime('%s', 'now') or " + ALERT_END + " = 0) "
-				+ " order by distance";
-		
-		// Log.v("SQL ALERT QUERY", sql);
 		c = db.rawQuery(sql, null);
 		// this.close();
 		return c;
@@ -574,12 +736,47 @@ public class Database
 	}
 	
 
-	public synchronized void removeAlertsWithNoServerId()
+	public synchronized void removeAlert(Alert a)
+	{
+		this.open();
+		ContentValues cv = new ContentValues();
+		Date now = new Date();
+		long time = now.getTime();
+		time /= 1000;
+		cv.put(ALERT_DELETED, time);
+		
+		db.update(ALERT_TABLE, cv, _ID + " = " + a.getId(), null);
+		
+		this.close();
+	}
+	
+
+	private synchronized void removeAlerts()
+	{
+		this.open();
+		db.execSQL("Delete from " + ALERT_TABLE);
+		this.close();
+	}
+	
+
+	public synchronized void removeCreatedAlertsAndSynced()
 	{
 		this.open();
 		
-		db.delete(ALERT_TABLE, SERVER_ID + " = 0 ", null);
+		String sql = " delete from " + ALERT_TABLE + " where " + SERVER_ID
+				+ " = 0";
 		
+		db.execSQL(sql);
+		
+		this.close();
+	}
+	
+
+	private void removeErrors()
+	{
+		// TODO Auto-generated method stub
+		this.open();
+		db.execSQL("Delete from " + ERROR_TABLE);
 		this.close();
 	}
 	
@@ -589,14 +786,6 @@ public class Database
 		this.open();
 		db.execSQL("Delete from " + USER_TABLE);
 		// Log.v("deleteUser", "Executed!");
-		this.close();
-	}
-	
-
-	private synchronized void removeAlerts()
-	{
-		this.open();
-		db.execSQL("Delete from " + ALERT_TABLE);
 		this.close();
 	}
 	
@@ -648,48 +837,6 @@ public class Database
 	}
 	
 
-	public synchronized void addAlert(Alert a)
-	{
-		this.open();
-		
-		ContentValues cv = new ContentValues();
-		
-		cv.put(SERVER_ID, a.getIdServer());
-		cv.put(ALERT_START, a.getStarts());
-		cv.put(ALERT_END, a.getEnds());
-		cv.put(ALERT_DESCRIPTION, a.getDescription());
-		cv.put(ALERT_CREATE, a.getCreated());
-		cv.put(ALERT_MODIFY, a.getModified());
-		if (a.isDone())
-		{
-			cv.put(ALERT_DONE, a.getDone_when());
-			// Log.v("ALERT_DONE", "La alerta est‡ hecha");
-		}
-		else
-		{
-			cv.put(ALERT_DONE, 0);
-			// Log.v("ALERT_DONE", "La alerta est‡ sin hacer");
-		}
-		
-		if (a.isActive())
-		{
-			cv.put(ALERT_ACTIVE, 1);
-		}
-		else
-		{
-			cv.put(ALERT_ACTIVE, 0);
-		}
-		
-		cv.put(ALERT_NAME, a.getName());
-		cv.put(LATITUDE, a.getLatitude());
-		cv.put(LONGITUDE, a.getLongitude());
-		
-		db.insert(ALERT_TABLE, null, cv);
-		
-		this.close();
-	}
-	
-
 	public synchronized void setUser(User u)
 	{
 		this.open();
@@ -703,7 +850,7 @@ public class Database
 		
 		try
 		{
-			if(db.update(USER_TABLE, cV, null, null) == 0)
+			if (db.update(USER_TABLE, cV, null, null) == 0)
 			{
 				db.delete(USER_TABLE, null, null);
 				db.insert(USER_TABLE, null, cV);
@@ -715,47 +862,6 @@ public class Database
 		{
 			Log.e("Saving user", e.getStackTrace().toString());
 		}
-		
-		this.close();
-	}
-	
-
-	public synchronized void changeAlertActive(boolean active, int id)
-	{
-		this.open();
-		
-		ContentValues cv = new ContentValues();
-		
-		if (active)
-		{
-			cv.put(ALERT_ACTIVE, 1);
-		}
-		else
-		{
-			cv.put(ALERT_ACTIVE, 0);
-		}
-		
-		Date now = new Date();
-		
-		long time = now.getTime();
-		time /= 1000;
-		
-		cv.put(ALERT_MODIFY, time);
-		
-		db.update(ALERT_TABLE, cv, _ID + " = " + id, null);
-		
-		this.close();
-	}
-	
-
-	public synchronized void removeCreatedAlertsAndSynced()
-	{
-		this.open();
-		
-		String sql = " delete from " + ALERT_TABLE + " where " + SERVER_ID
-				+ " = 0";
-		
-		db.execSQL(sql);
 		
 		this.close();
 	}

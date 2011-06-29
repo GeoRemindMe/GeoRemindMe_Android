@@ -26,8 +26,9 @@ public interface ControllerProtocol
 	int	V_REQUEST_CHANGE_ALERT_ACTIVE			= 117;	// obj = (Object[])
 														// on/off | id;
 	int	V_REQUEST_CHANGE_ALERT_DONE				= 118;
-	int	V_REQUEST_UPDATE_ALERT					= 119; //Object = Alert.
-	
+	int	V_REQUEST_UPDATE_ALERT					= 119;	// Object = Alert.
+	int	V_REQUEST_DELETE_ALERT					= 120;	// Object = alert.
+														
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty
 	int	C_LOGIN_FINISHED						= 203;	// empty
@@ -47,9 +48,10 @@ public interface ControllerProtocol
 	int	C_ALL_DONE_ALERTS						= 216;	// obj = (Cursor) data
 	int	C_ALL_MUTED_ALERTS						= 217;	// obj = (Cursor) data
 	int	C_ALERT_CHANGED							= 218;
+	int	C_ALERT_DELETED							= 219;
 	
 	int	S_REQUEST_UPDATE						= 301;	// empty
-	int S_ALERT_NEAR = 302; // Object alert
+	int	S_ALERT_NEAR							= 302;	// Object alert
 														
 	int	P_PREFERENCE_CHANGED					= 401;	// obj = (Integer)
 														// P_XXX_YYY_CHANGED
@@ -72,5 +74,5 @@ public interface ControllerProtocol
 	int	LS_GETTING_ADDRESS_FAILED				= 504;
 	int	LS_GETTING_ADDRESS_FINISHED				= 505;
 	
-	int NS_REQUEST_ALERTS_NEAR = 601;
+	int	NS_REQUEST_ALERTS_NEAR					= 601;
 }

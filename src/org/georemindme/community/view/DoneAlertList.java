@@ -110,7 +110,7 @@ public class DoneAlertList extends ListActivity implements OnItemClickListener, 
 				processData();
 				return true;
 			case C_ALERT_CHANGED:
-				//controllerInbox.obtainMessage(V_REQUEST_ALL_DONE_ALERTS).sendToTarget();
+				controllerInbox.obtainMessage(V_REQUEST_ALL_DONE_ALERTS).sendToTarget();
 				return true;
 		}
 		return false;

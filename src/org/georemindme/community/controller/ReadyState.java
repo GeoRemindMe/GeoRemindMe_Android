@@ -94,6 +94,9 @@ public class ReadyState implements ControllerState
 				Object[] obj2 = (Object[])msg.obj;
 				controller.changeAlertDone((Boolean)obj2[0], (Integer)obj2[1]);
 				return true;
+			case V_REQUEST_DELETE_ALERT:
+				controller.deleteAlert((Alert) msg.obj);
+				return true;
 			case P_PREFERENCE_CHANGED:
 				controller.preferencesChanged((Integer)msg.obj);
 				switch((Integer)msg.obj)
@@ -122,6 +125,9 @@ public class ReadyState implements ControllerState
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 			case C_ALERT_CHANGED:
+				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				return true;
+			case C_ALERT_DELETED:
 				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 			case C_ALL_UNDONE_ALERTS:

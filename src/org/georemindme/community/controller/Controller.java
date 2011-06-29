@@ -358,4 +358,11 @@ public class Controller
 		notificationCenter.cancelAlert(id);
 	}
 
+
+	public void deleteAlert(Alert obj)
+	{
+		// TODO Auto-generated method stub
+		server.deleteAlert(obj);
+	}
+
 }

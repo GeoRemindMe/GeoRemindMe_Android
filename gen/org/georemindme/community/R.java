@@ -100,8 +100,10 @@ public final class R {
         public static final int mapdialogactitivy_address=0x7f0a0024;
         public static final int mapdialogactivity_map=0x7f0a0023;
         public static final int mapdialogactivity_okbutton=0x7f0a0025;
-        public static final int menu_item_exit=0x7f0a0038;
-        public static final int menu_item_sync=0x7f0a0037;
+        public static final int menu_item_delete_alert=0x7f0a0038;
+        public static final int menu_item_exit=0x7f0a003a;
+        public static final int menu_item_sync=0x7f0a0039;
+        public static final int menu_item_view_edit_alert=0x7f0a0037;
         public static final int modebutton=0x7f0a000f;
         public static final int name=0x7f0a0015;
         public static final int nameEditText=0x7f0a0001;
@@ -140,7 +142,8 @@ public final class R {
         public static final int viewtask=0x7f03000a;
     }
     public static final class menu {
-        public static final int main_menu=0x7f090000;
+        public static final int alert_context_menu=0x7f090000;
+        public static final int main_menu=0x7f090001;
     }
     public static final class string {
         public static final int OK=0x7f070001;
