@@ -23,6 +23,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -156,9 +157,9 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					end = new Time(e);
 				
 				if(alert.isDone())
-					setdoneButton.setText("undone?");
+					setdoneButton.setText(getString(R.string.set_pending));
 				else
-					setdoneButton.setText("done?");
+					setdoneButton.setText(getString(R.string.set_done));
 				// As’ evito cambios de localizaci—n en la actividad.
 				userSetNewLocation = true;
 				lastAddress = "";
@@ -281,9 +282,10 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					else
 					{
 						AlertDialog.Builder builder = new AlertDialog.Builder(this);
-						builder.setMessage("Location not available.");
+						builder.setMessage(R.string.location_not_available);
 						builder.setCancelable(true);
-						builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+						builder.setPositiveButton(R.string.yes, 
+								new DialogInterface.OnClickListener()
 						{
 							
 							@Override
@@ -317,9 +319,9 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				else
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setMessage("Alert needs to have a name.");
+					builder.setMessage(R.string.alert_needs_to_have_a_name);
 					builder.setCancelable(true);
-					builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+					builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
 					{
 						
 						@Override
@@ -330,7 +332,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 							
 						}
 					});
-					builder.setNegativeButton("No", new DialogInterface.OnClickListener()
+					builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
 					{
 						
 						@Override
@@ -344,7 +346,16 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				}
 				break;
 			case R.id.resetButton:
-				// Habilitar lo de poder hacerla/deshacerla.
+				Object[] data = new Object[2];
+				if(alert.isDone())
+				{
+					data[0] = false;
+				}
+				else
+					data[0] = true;
+				
+				data[1] = (int) alert.getId();
+				controllerInbox.obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
 				break;
 			case R.id.startButton:
 				showDialog(PICK_DATE_START);
@@ -404,19 +415,19 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		switch (msg.what)
 		{
 			case LS_GETTING_ADDRESS_STARTED:
-				addressView.setText("Address: finding your address...");
+				addressView.setText(R.string.address_finding_your_address);
 				return true;
 			case LS_GETTING_ADDRESS_FAILED:
-				addressView.setText("Address: error finding your address.");
+				addressView.setText(R.string.address_error_finding_your_address);
 				return true;
 			case LS_GETTING_ADDRESS_FINISHED:
 				if (msg.obj != null)
 				{
 					lastAddress = ((Address) msg.obj).getAddressLine(0);
-					addressView.setText("Address: " + lastAddress);
+					addressView.setText(getString(R.string.address) + ": " + lastAddress);
 				}
 				else
-					addressView.setText("Address: not available right now.");
+					addressView.setText(R.string.address_not_available_right_now);
 				return true;
 			case LS_LOCATION_CHANGED:
 			case C_LAST_LOCATION:
@@ -427,13 +438,10 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					setPosition();
 				}
 				return true;
+			case C_ALERT_CHANGED:
 			case C_ALERT_SAVED:
-				if (mode == ADD)
-					Toast.makeText(getApplicationContext(), "Alert saved!", Toast.LENGTH_SHORT).show();
-				else
-					Toast.makeText(getApplicationContext(), "Alert updated!", Toast.LENGTH_SHORT).show();
-				finish();
 				
+				finish();
 				return true;
 		}
 		

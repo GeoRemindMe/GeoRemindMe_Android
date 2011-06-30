@@ -1,5 +1,6 @@
 package org.alexd.jsonrpc;
 
+import org.georemindme.community.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -62,7 +62,7 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		
 		// Create login dialog.
 		loginDialog = new Dialog(Dashboard.this);
-		loginDialog.setTitle("Change mode");
+		loginDialog.setTitle(R.string.change_mode);
 		loginDialog.setContentView(R.layout.logindialog);
 		android.view.WindowManager.LayoutParams params = loginDialog.getWindow().getAttributes();
 		params.width = LayoutParams.FILL_PARENT;
@@ -134,21 +134,21 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		switch (msg.what)
 		{
 			case C_LOGIN_STARTED:
-				mode.setText("Logging");
+				mode.setText(R.string.logging);
 				return true;
 			case C_IS_LOGGED:
-				mode.setText("Connected");
+				mode.setText(R.string.connected);
 				return true;
 			case C_IS_NOT_LOGGED:
-				mode.setText("Disconnected");
+				mode.setText(R.string.disconnected);
 				return true;
 			case C_LOGIN_FINISHED:
-				mode.setText("Connected");
+				mode.setText(R.string.connected);
 				Message m = Message.obtain(controller.getInboxHandler(), V_REQUEST_UPDATE);
 				m.sendToTarget();
 				return true;
 			case C_LOGIN_FAILED:
-				mode.setText("login failed");
+				mode.setText(R.string.login_failed);
 				return true;
 			case C_UPDATE_STARTED:
 				
@@ -163,9 +163,9 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 				// Aqui tengo que ofrecer al usuario la opcion de habilitar la
 				// localizacion.!!!!
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage("Do you want to enable any location provider?");
+				builder.setMessage(R.string.do_you_want_to_enable_any_location_provider);
 				builder.setCancelable(true);
-				builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+				builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
 				{
 					
 					@Override
@@ -178,7 +178,7 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 						startActivity(settingsIntent);
 					}
 				});
-				builder.setNegativeButton("No", new DialogInterface.OnClickListener()
+				builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
 				{
 					
 					@Override

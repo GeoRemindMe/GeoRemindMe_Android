@@ -112,7 +112,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 					}
 					else if (distance < 10)
 					{
-						tvDescription.setText("It's here!");
+						tvDescription.setText(context.getString(R.string.it_s_here));
 					}
 					else
 					{
@@ -123,7 +123,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 				}
 				else
 				{
-					tvDescription.setText("Unknown aprox. distance");
+					tvDescription.setText(context.getString(R.string.unknown_distance));
 				}
 				cbDone.setChecked(false);
 		

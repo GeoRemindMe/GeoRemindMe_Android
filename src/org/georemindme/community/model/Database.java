@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import org.georemindme.community.R;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -772,7 +773,7 @@ public class Database
 	}
 	
 
-	private void removeErrors()
+	public void removeErrors()
 	{
 		// TODO Auto-generated method stub
 		this.open();

@@ -1,5 +1,7 @@
 package org.alexd.jsonrpc;
 
+import org.georemindme.community.R;
+
 /**
  * Represents an error during JSON-RPC method call.
  * Various reasons can make a JSON-RPC call fail 

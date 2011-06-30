@@ -10,6 +10,10 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+
+
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,7 +22,12 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -26,6 +35,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.georemindme.community.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +84,23 @@ public class JSONRPCHttpClient extends JSONRPCClient
 	protected JSONObject doJSONRequest(JSONObject jsonRequest)
 			throws JSONRPCException
 	{
+		if (serviceUri.startsWith("https"))
+		{
+			HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+			
+			DefaultHttpClient client = new DefaultHttpClient();
+			
+			SchemeRegistry registry = new SchemeRegistry();
+			SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
+			socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+			registry.register(new Scheme("https", socketFactory, 443));
+			SingleClientConnManager mgr = new SingleClientConnManager(client.getParams(), registry);
+			DefaultHttpClient httpClient = new DefaultHttpClient(mgr, client.getParams());
+			
+			// Set verifier
+			HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+		}
+        
 		// Create HTTP/POST request with a JSON entity containing the request
 		HttpPost request = new HttpPost(serviceUri);
 		HttpParams params = new BasicHttpParams();

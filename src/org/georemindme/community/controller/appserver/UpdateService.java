@@ -1,5 +1,6 @@
 package org.georemindme.community.controller.appserver;
 
+import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 
 import android.app.Service;

@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Date;
+import org.georemindme.community.R;
 
 import android.content.Context;
 import android.os.Environment;

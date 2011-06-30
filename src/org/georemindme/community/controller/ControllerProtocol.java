@@ -1,5 +1,7 @@
 package org.georemindme.community.controller;
 
+import org.georemindme.community.R;
+
 
 public interface ControllerProtocol
 {
@@ -28,7 +30,7 @@ public interface ControllerProtocol
 	int	V_REQUEST_CHANGE_ALERT_DONE				= 118;
 	int	V_REQUEST_UPDATE_ALERT					= 119;	// Object = Alert.
 	int	V_REQUEST_DELETE_ALERT					= 120;	// Object = alert.
-														
+	
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty
 	int	C_LOGIN_FINISHED						= 203;	// empty

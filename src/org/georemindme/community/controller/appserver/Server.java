@@ -13,10 +13,12 @@ import java.util.List;
 
 import org.alexd.jsonrpc.JSONRPCClient;
 import org.alexd.jsonrpc.JSONRPCException;
+import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.model.User;
+import org.georemindme.community.model.Error;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,8 +42,9 @@ public class Server implements Serializable
 	
 	private static final String	LOG					= "SERVER_DEBUG";
 	
-	private static final String	URL					= "http://3.georemindme.appspot.com/service/";
+	private static final String	URL					= "https://3.georemindme.appspot.com/service/";
 	private static int			connectionTimeout	= 10000;
+	
 	
 	public static Server getInstance(Context context, Handler controllerInbox)
 	{
@@ -51,32 +54,25 @@ public class Server implements Serializable
 		return instance;
 	}
 	
-	private JSONRPCClient		connection;
+	private JSONRPCClient	connection;
 	
-	private String				sessionId			= null;
+	private String			sessionId	= null;
 	
-	private static Server		instance			= null;
+	private static Server	instance	= null;
 	
-	private Database			db;
+	private Database		db;
 	
-	private Handler				controllerInbox;
+	private Handler			controllerInbox;
 	
-	private Thread				loginThread;
+	private Thread			loginThread;
+	
+	private User			user		= null;
 	
 	
-	private User				user				= null;
-	
-
 	Server(Context context, Handler controllerInbox)
 	{
 		this.controllerInbox = controllerInbox;
-		
-		// openConnection();
-		
 		db = Database.getDatabaseInstance(context);
-		// Elimino la apertura ya que cada llamada a la base de datos a abre
-		// impl’citamente.
-		// db.open();
 		sessionId = null;
 	}
 	
@@ -129,8 +125,6 @@ public class Server implements Serializable
 						else
 							c_active_processed = true;
 						obj.put("active", c_active_processed);
-						Log.w("SYNC", c_name + " lleva como valor: "
-								+ c_active_processed);
 						long c_id = c.getLong(c.getColumnIndex(Database.SERVER_ID));
 						if (c_id != 0)
 							obj.put("id", c_id);
@@ -331,6 +325,9 @@ public class Server implements Serializable
 				}
 				catch (JSONRPCException e)
 				{
+					Error dbError = new Error("Error JSONRPCException trying to login", 
+							System.currentTimeMillis() / 1000);
+					db.addError(dbError);
 					controllerInbox.sendEmptyMessage(C_LOGIN_FAILED);
 					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
 					// null);
@@ -338,6 +335,8 @@ public class Server implements Serializable
 				}
 				catch (Exception e)
 				{
+					Error dbError = new Error("Login error due maybe autologin and db empty - Not important", System.currentTimeMillis() / 1000);
+					db.addError(dbError);
 					controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
 					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
 					// null);
@@ -442,9 +441,6 @@ public class Server implements Serializable
 			
 			Alert tmp = new Alert(client_id, id_server, done_when, ends, starts, created, done, name, description, active, modified, latitude, longitude);
 			
-			Log.v("Refrescando alerta", "SERVERID: " + id_server + " X: "
-					+ latitude + " Y: " + longitude);
-			
 			alertList.add(tmp);
 		}
 		
@@ -465,7 +461,6 @@ public class Server implements Serializable
 		
 		Cursor c = db.getAlertsToNotify(latE6, lngE6, meters);
 		
-		// Aqui voy disparando los eventos para que el notificador los detecte.
 		if (c != null && c.moveToFirst())
 		{
 			do
@@ -530,7 +525,82 @@ public class Server implements Serializable
 	}
 	
 
-	// Debo de unificar todo a org.json y dejar de usar org.simple.json.
+	private final void sendErrorsToServer()
+	{
+		Cursor c = db.getAllErrors();
+		org.json.JSONArray dictionary = new org.json.JSONArray();
+		
+		if (c != null)
+		{
+			
+			if (c.moveToFirst())
+			{
+				do
+				{
+					org.json.JSONObject obj = new org.json.JSONObject();
+					
+					if (user != null)
+					{
+						long c_error_when = c.getLong(c.getColumnIndex(Database.ERROR_DATE));
+						String c_error_message = c.getString(c.getColumnIndex(Database.ERROR_MESSAGE));
+						
+						try
+						{
+							obj.put("email", user.getName());
+							obj.put("msg", c_error_message);
+							obj.put("datetime", c_error_when);
+						}
+						catch (JSONException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
+					else
+					{
+						Error e = new Error("Error because system tried to send error without valid user", System.currentTimeMillis() / 1000);
+					}
+					
+					dictionary.put(obj);
+					// dictionary.add(obj);
+				}
+				while (c.moveToNext());
+			}
+			
+			c.close();
+		}
+		
+		// Aqui tengo que enviar el diccionario al server.
+		openConnection();
+		boolean response = false;
+		try
+		{
+			Log.i("Error list", dictionary.toString());
+			response = connection.callBoolean("report_bug", dictionary);
+			if (response == true)
+			{
+				db.removeErrors();
+			}
+			else
+			{
+				Error dbError = new Error("Server error procesing errors list. Operation cancel", 
+						System.currentTimeMillis() / 1000);
+				db.addError(dbError);
+			}
+		}
+		catch (JSONRPCException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Error dbError = new Error("Error JSONRPCException trying to send errors.", System.currentTimeMillis() / 1000);
+			db.addError(dbError);
+		}
+		closeConnection();
+		
+	}
+	
+
 	public void sync_data()
 	{
 		if (isUserlogin())
@@ -572,6 +642,8 @@ public class Server implements Serializable
 						
 						db.setLastsync((Long) array.get(0));
 						
+						sendErrorsToServer();
+						
 						controllerInbox.sendEmptyMessage(C_UPDATE_FINISHED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FINISHED, 0,
 						// 0, null);
@@ -582,6 +654,10 @@ public class Server implements Serializable
 						e.printStackTrace();
 						
 						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
+						
+						Error dbError = new Error("Error JSONRPCException trying to update data", 
+								System.currentTimeMillis() / 1000);
+						db.addError(dbError);
 						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
 						// 0, e);
 						
@@ -594,6 +670,9 @@ public class Server implements Serializable
 						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
 						// 0, e);
+						Error dbError = new Error("Error ParseException trying to parse data from server", 
+								System.currentTimeMillis() / 1000);
+						db.addError(dbError);
 					}
 				}
 				
@@ -607,6 +686,9 @@ public class Server implements Serializable
 		{
 			controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
 			// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, null);
+			
+			Error dbError = new Error("Update failed. User tried to update without being log in", System.currentTimeMillis() / 1000);
+			db.addError(dbError);
 		}
 	}
 	

@@ -11,6 +11,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -42,7 +43,7 @@ public class NotificationCenter implements Callback
 
 	public void notifyAlert(Alert a)
 	{
-		Notification note = new Notification(R.drawable.icon, "Alert near", System.currentTimeMillis());
+		Notification note = new Notification(R.drawable.icon, Resources.getSystem().getString(R.string.alert_near), System.currentTimeMillis());
 		
 		Intent i = new Intent(controller.getContext(), AddAlarmActivity.class);
 		Bundle extras = new Bundle();

@@ -1,5 +1,6 @@
 package org.georemindme.community.controller;
 
+import org.georemindme.community.R;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.User;
 import org.georemindme.community.tools.Logger;

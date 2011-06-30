@@ -1,6 +1,7 @@
 package org.georemindme.community.view.custom;
 
 
+import org.georemindme.community.R;
 import org.georemindme.community.controller.PreferencesController;
 import org.georemindme.community.view.AddAlarmActivity;
 import org.georemindme.community.view.MapDialogActivity;

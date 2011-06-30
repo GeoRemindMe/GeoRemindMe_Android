@@ -116,13 +116,13 @@ public class LoginActivity extends Activity implements Callback
 				setUserIsLoggedOut((User) msg.obj);
 				return true;
 			case C_LOGIN_STARTED:
-				Toast.makeText(getApplicationContext(), "Log in started", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), R.string.log_in_started, Toast.LENGTH_SHORT).show();
 				return true;
 			case C_LOGIN_FAILED:
-				Toast.makeText(getApplicationContext(), "Log in failed!!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), R.string.log_in_failed, Toast.LENGTH_SHORT).show();
 				return true;
 			case C_LOGIN_FINISHED:
-				Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), R.string.login_successful, Toast.LENGTH_SHORT).show();
 				setUserIsLoggedIn((User) msg.obj);
 				controllerInbox.obtainMessage(V_REQUEST_UPDATE).sendToTarget();
 				finish();
@@ -142,7 +142,7 @@ public class LoginActivity extends Activity implements Callback
 	private void setUserIsLoggedIn(User user)
 	{
 		islogged = true;
-		okButton.setText("Log out");
+		okButton.setText(R.string.log_out);
 		if (user != null)
 		{
 			name.setText(user.getName());
@@ -156,7 +156,7 @@ public class LoginActivity extends Activity implements Callback
 	private void setUserIsLoggedOut(User user)
 	{
 		islogged = false;
-		okButton.setText("Log in");
+		okButton.setText(R.string.log_in);
 		if (user != null)
 		{
 			name.setText(user.getName());

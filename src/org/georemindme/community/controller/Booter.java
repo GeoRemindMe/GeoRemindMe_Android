@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
+import org.georemindme.community.R;
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
 public class Booter extends BroadcastReceiver

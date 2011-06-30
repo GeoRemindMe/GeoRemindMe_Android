@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.TimerTask;
 
 import org.apache.http.client.CircularRedirectException;
+import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.PreferencesController;
 import org.georemindme.community.tools.Logger;

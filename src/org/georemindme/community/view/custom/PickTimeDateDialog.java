@@ -6,6 +6,7 @@ import org.georemindme.community.model.Time;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +22,8 @@ public class PickTimeDateDialog extends Dialog implements
 	public static final int			IS_START		= 1;
 	public static final int			IS_END			= 2;
 	
-	private static final String		IS_START_TEXT	= "Start time undefined";
-	private static final String		IS_END_TEXT		= "End time undefined";
+	private static final String		IS_START_TEXT	= Resources.getSystem().getString(R.string.start_time_undefined);
+	private static final String		IS_END_TEXT		= Resources.getSystem().getString(R.string.end_time_undefined);
 	
 	private Context					context;
 	
@@ -57,7 +58,7 @@ public class PickTimeDateDialog extends Dialog implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pickdayandtimedialog);
 		
-		setTitle("Day and Time");
+		setTitle(Resources.getSystem().getString(R.string.day_and_time));
 		
 		datepicker = (DatePicker) findViewById(R.id.datepicker);
 		timepicker = (TimePicker) findViewById(R.id.timepicker);

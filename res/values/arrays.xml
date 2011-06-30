@@ -12,33 +12,33 @@
 
 	<string-array
 		name="location_update_radius">
-		<item>10 meters</item>
-		<item>50 meters</item>
-		<item>100 meters</item>
-		<item>500 meters</item>
-		<item>1000 meters</item>
+		<item>10 mts</item>
+		<item>50 mts</item>
+		<item>100 mts</item>
+		<item>500 mts</item>
+		<item>1000 mts</item>
 	</string-array>
 
 	<string-array
 		name="location_update_rate">
-		<item>1 minutes</item>
-		<item>10 minutes</item>
-		<item>30 minutes</item>
-		<item>60 minutes</item>
-		<item>120 minutes</item>
+		<item>1 min</item>
+		<item>10 mins</item>
+		<item>30 mins</item>
+		<item>60 mins</item>
+		<item>120 mins</item>
 	</string-array>
 
 
 	<string-array
 		name="sync_update_rate">
-		<item>5 minutes</item>
-		<item>10 minutes</item>
-		<item>15 minutes</item>
-		<item>30 minutes</item>
-		<item>60 minutes</item>
-		<item>90 minutes</item>
-		<item>120 minutes</item>
-		<item>180 minutes</item>
+		<item>5 mins</item>
+		<item>10 mins</item>
+		<item>15 mins</item>
+		<item>30 mins</item>
+		<item>60 mins</item>
+		<item>90 mins</item>
+		<item>120 mins</item>
+		<item>180 mins</item>
 	</string-array>
     
     <!-- miliseconds -->
@@ -62,8 +62,8 @@
 
 	<string-array
 		name="location_providers_accuracy">
-		<item>High Precision</item>
-		<item>Low Precision</item>
+		<item>@string/high_precision</item>
+		<item>@string/low_precision</item>
 	</string-array>
 
 	<string-array
@@ -74,9 +74,9 @@
 
 	<string-array
 		name="location_providers_power">
-		<item>High consume</item>
-		<item>Medium consume</item>
-		<item>Low consume</item>
+		<item>@string/high_consume</item>
+		<item>@string/medium_consume</item>
+		<item>@string/low_consume</item>
 	</string-array>
 
 	<string-array

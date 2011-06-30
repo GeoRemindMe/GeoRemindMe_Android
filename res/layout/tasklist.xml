@@ -13,7 +13,7 @@
      	android:id="@android:id/empty"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
-         android:text="There are no tasks to see."
+         android:text="@string/there_are_no_tasks_to_see"
          android:layout_centerInParent="true"
          android:gravity="center"
          android:textSize="17sp"

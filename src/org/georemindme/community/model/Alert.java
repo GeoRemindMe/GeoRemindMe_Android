@@ -2,6 +2,7 @@ package org.georemindme.community.model;
 
 
 import java.io.Serializable;
+import org.georemindme.community.R;
 
 
 public class Alert implements Serializable

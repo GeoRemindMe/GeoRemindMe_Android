@@ -1,5 +1,7 @@
 package org.georemindme.community.model;
 
+import org.georemindme.community.R;
+
 public class User
 {
 	private String name;

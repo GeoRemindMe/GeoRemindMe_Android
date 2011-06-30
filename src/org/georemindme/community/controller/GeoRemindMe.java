@@ -7,6 +7,7 @@ package org.georemindme.community.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.georemindme.community.R;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.model.User;
 import org.georemindme.community.tools.Logger;

@@ -8,137 +8,254 @@
 		
 	<!-- Menu items -->
 	<string
-		name="menu_item_help">Help</string>
+		name="menu_item_help">Ayuda</string>
 
 	<string
-		name="menu_item_preferences">Preferences</string>
+		name="menu_item_preferences">Preferencias</string>
 
 	<string
-		name="menu_item_filter">Filter</string>
+		name="menu_item_filter">Filtro</string>
     
     <!-- Settings -->
 	<string
-		name="settings">Settings</string>
+		name="settings">Preferencias</string>
 	<string
-		name="settings_location">Location</string>
+		name="settings_location">Localización</string>
 	<string
-		name="settings_alerts">Alerts</string>
+		name="settings_alerts">Alertas</string>
 	<string
-		name="settings_map">Map</string>
+		name="settings_map">Mapa</string>
 	<string
-		name="settings_services">Services</string>
+		name="settings_services">Servicios</string>
 	<string
 		name="settings_autoupdate">Autoupdate</string>
 	<string
-		name="settings_autoupdate_summary">Check if you want to auto-update the data from the cloud.
+		name="settings_autoupdate_summary">Marca si quieres sincronizar datos con la nube.
 	</string>
 	<string
-		name="settings_sync_on_boot">Start on boot</string>
+		name="settings_sync_on_boot">Arrancar al inicio</string>
 	<string
-		name="settings_sync_on_boot_summary">Sync Service will start automatically.</string>
+		name="settings_sync_on_boot_summary">Sincronización se hará automáticamente</string>
 	<string
-		name="settings_sync_rate">Frecuency for updates</string>
+		name="settings_sync_rate">Frecuencia de actualizaciones</string>
 	<string
-		name="settings_sync_rate_summary">Minimum distance, in minutes, to update the data</string>
+		name="settings_sync_rate_summary">Distancia mínima, en metros, para actualizar</string>
 	<string
-		name="settings_default_zoom_level_title">Default zoom level</string>
+		name="settings_default_zoom_level_title">Nivel del zoom predeterminado</string>
 	<string
-		name="settings_default_zoom_level_summary">Zoom level of the first presentation of the map</string>
+		name="settings_default_zoom_level_summary">Nivel del zoom en la primera impresión del mapa.</string>
 	<string
-		name="settings_satellite_title">Satellite view</string>
+		name="settings_satellite_title">Vista de satélite</string>
 	<string
-		name="settings_traffic_title">Traffic</string>
+		name="settings_traffic_title">Vista de tráfico </string>
 	<string
-		name="settings_fullscreen_title">Fullscreen</string>
+		name="settings_fullscreen_title">Pantalla completa</string>
 	<string
-		name="settings_alert_radius_title">Alert radius</string>
+		name="settings_alert_radius_title">Radio de alertas</string>
 	<string
-		name="settings_location_update_radius_title">Location update radius</string>
+		name="settings_location_update_radius_title">Frecuencia de refresco de localización</string>
 	<string
-		name="settings_location_update_radius_summary">Minimum distance, in meters, to update the current location
+		name="settings_location_update_radius_summary">Distancia mínima, en metros, para actualizar localización
 	</string>
 	<string
-		name="settings_location_update_rate_title">Location update rate</string>
+		name="settings_location_update_rate_title">Frecuencia de refresco de localización</string>
 	<string
-		name="settings_location_update_rate_summary">Time, in minutes, to update the current location</string>
-	<string name = "settings_location_providers">Location providers</string>
-	<string name = "settings_location_providers_summary">Set up accuracy and power patterns</string>
+		name="settings_location_update_rate_summary">Tiempo, en minutos, para actualizar localización</string>
 	<string
-		name="settings_location_provider_accuracy_title">Accuracy</string>
+		name="settings_location_providers">Proveedores de localización</string>
+	<string
+		name="settings_location_providers_summary">Establecer precisión y consumo energético de proveedores de
+		localización</string>
+	<string
+		name="settings_location_provider_accuracy_title">Precisión</string>
 
 	<string
-		name="settings_location_provider_accuracy_summary">Set how much accuracy you would like to have</string>
-		
-	<string name="settings_location_provider_power_title">Power</string>
-	<string name="settings_location_provider_power_summary">Set how much power you would like to use</string>
-	
-	<string name="settings_3g_location">Use 3G connection</string>
-	<string name="settings_3g_location_summary">This option will consume 3G data to find out where you are</string>
-	<string
-		name="location_provider_not_enabled_title">Problem with location</string>
+		name="settings_location_provider_accuracy_summary">Establece el nivel de precisión que deseas usar.</string>
 
 	<string
-		name="location_provider_not_enabled_message">Your default location provider is not enabled right now. Do you
-		want to check it? If you do not do it
-		the program might will not work
-		properly</string>
+		name="settings_location_provider_power_title">Consumo energético</string>
+	<string
+		name="settings_location_provider_power_summary">Establece el consumo energético que deseas usar.</string>
+
+	<string
+		name="settings_3g_location">Usar conexión 3G</string>
+	<string
+		name="settings_3g_location_summary">Esta opción consumirá datos de 3G para averiguar tu localización
+	</string>
+	<string
+		name="location_provider_not_enabled_title">Problema con localización</string>
+
+	<string
+		name="location_provider_not_enabled_message">
+		Tu proveedor de localización predeterminado no está habilitado
+		ahora. ¿Deseas habilitarlo? Si no lo haces el programa no
+		no funcionará
+		debidamente</string>
     
     <!-- Tasklist View -->
 	<string
-		name="tasklist_therearenotaskstoshow">There are no tasks to show</string>
+		name="tasklist_therearenotaskstoshow">No hay alarmas que mostrar</string>
 	<string
-		name="tasklist_tasks_string">Tasks</string>
+		name="tasklist_tasks_string">Alarmas</string>
 		
 	<!-- Help activity -->
 	<string
-		name="help">Help</string>
+		name="help">Ayuda</string>
 	<string
-		name="help_whatis">What is GeoRemindMe?</string>
+		name="help_whatis">¿Qué es GeoRemindMe?</string>
 	<string
 		name="help_whatis_description">[Description goes in here]</string>
 	<string
-		name="help_howuseit">How can i use it?</string>
+		name="help_howuseit">¿Como puedo usarlo?</string>
 	<string
 		name="help_howuseit_description">[Description goes in here]</string>
 		
 	<!-- View/modify/delete task -->
 	<string
-		name="textname">Task name</string>
+		name="textname">Nombre de la alerta</string>
 	<string
-		name="textdescription">Task description</string>
+		name="textdescription">Descripción de la alerta</string>
 	<string
-		name="adress">Address</string>
+		name="adress">Dirección</string>
 	<string
-		name="radius">Action radius</string>
+		name="radius">Radio de acción</string>
 	<string
-		name="checkdone">Is it done?</string>
+		name="checkdone">¿Se ha realizado?</string>
 	<string
-		name="buttonmap">Map</string>
+		name="buttonmap">Mapa</string>
 	<string
-		name="buttondelete">Delete it</string>
+		name="buttondelete">Borrar</string>
 	<string
-		name="buttonsave">Save it</string>
+		name="buttonsave">Guardar</string>
 	<string
-		name="viewsaved">Done!</string>
+		name="viewsaved">Hecho</string>
 	<string
-		name="viewdeleted">Task removed!</string>
+		name="viewdeleted">Alerta eliminada</string>
 	<string
-		name="viewdelete_ask">Your task is going to be delete it, are you sure?</string>
+		name="viewdelete_ask">Tu alerta se va a eliminar, ¿Estás seguro?</string>
 		
 		
 	<!-- MapActivity -->
 	<string
-		name="searchaddress">Find address</string>
+		name="searchaddress">Encontrar dirección</string>
 		
 	<!-- Add task -->
 	<string
-		name="textname_hint">Set task name</string>
+		name="textname_hint">Establecer nombre alerta</string>
 	<string
-		name="textdescription_hint">Set task description</string>
+		name="textdescription_hint">Establecer descripcion alerta</string>
 	<string
-		name="adress_hint">Set task address</string>
+		name="adress_hint">Establecer dirección alerta</string>
 	<string
-		name="radius_hint">Set task action radius</string>
+		name="radius_hint">Establecer radio de acción alerta</string>
 	<string
-		name="deletebutton_add">Clean all</string>
+		name="deletebutton_add">Borrar todo</string>
+	<string
+		name="alert_near">Alerta cerca</string>
+	<string
+		name="it_s_here">Está aqui</string>
+	<string
+		name="unknown_distance">Distancia aproximada desconocida</string>
+	<string
+		name="start_time_undefined">Tiempo de inicio indefinido</string>
+	<string
+		name="end_time_undefined">Tiempo de fin indefinido</string>
+	<string
+		name="day_and_time">Día y hora</string>
+	<string
+		name="set_pending">Establecer como pendiente</string>
+	<string
+		name="set_done">Establecer como hecha</string>
+	<string
+		name="location_not_available">Localización no disponible</string>
+	<string
+		name="yes">Si</string>
+	<string
+		name="alert_needs_to_have_a_name">Es necesario un nombre para la alerta</string>
+	<string
+		name="no">No</string>
+	<string
+		name="address_finding_your_address">Buscando tu dirección actual...</string>
+	<string
+		name="address_error_finding_your_address">Error al encontrar tu dirección...</string>
+	<string
+		name="address">Dirección</string>
+	<string
+		name="address_not_available_right_now">Dirección no disponible ahora mismo</string>
+	<string
+		name="change_mode">Cambiar modo</string>
+	<string
+		name="logging">Conectando</string>
+	<string
+		name="connected">Conectado</string>
+	<string
+		name="disconnected">Desconectado</string>
+	<string
+		name="login_failed">Fallo al conectar</string>
+	<string
+		name="do_you_want_to_enable_any_location_provider">¿Deseas habilitar un proveedor de localización?</string>
+	<string
+		name="pending">Pendientes</string>
+	<string
+		name="done">Hechas</string>
+	<string
+		name="muted">Silenciadas</string>
+	<string
+		name="log_in_started">Conexión comenzada</string>
+	<string
+		name="log_in_failed">Ha fallado la conexión</string>
+	<string
+		name="login_successful">Conectado</string>
+	<string
+		name="log_out">Desconectar</string>
+	<string
+		name="log_in">Conectar</string>
+	<string
+		name="not_available_right_now">No disponible ahora mismo</string>
+	<string
+		name="edit_view_alert">Editar/Ver alerta</string>
+	<string
+		name="delete_alert">Eliminar alerta</string>
+	<string
+		name="sync">Sincronizar</string>
+	<string
+		name="quit">Salir</string>
+	<string
+		name="name">Nombre</string>
+	<string
+		name="description">Descripción</string>
+	<string
+		name="active_period">Periodo de actividad</string>
+	<string
+		name="set_start">Establecer inicio</string>
+	<string
+		name="set_end">Establecer fin</string>
+	<string
+		name="map_n_address">Mapa y dirección</string>
+	<string
+		name="address_xyz">Dirección: XYZ</string>
+	<string
+		name="save_it">Guardar</string>
+	<string
+		name="mode">Modo</string>
+	<string
+		name="new_alert">Nueva alerta</string>
+	<string
+		name="list">Ver listas de alertas</string>
+	<string
+		name="password">Password</string>
+	<string
+		name="pick_a_day">Establece un día</string>
+	<string
+		name="pick_the_time">Establece una hora</string>
+	<string
+		name="ok">Ok</string>
+	<string
+		name="there_are_no_tasks_to_see">No hay alertas que mostrar.</string>
+	<string
+		name="high_precision">Alta precisión</string>
+	<string name="low_precision">Baja precisión</string>
+	<string name="high_consume">Consumo alto</string>
+	<string name="medium_consume">Consumo medio</string>
+	<string name="low_consume">Consumo bajo</string>
 </resources>

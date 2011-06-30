@@ -6,6 +6,7 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.georemindme.community.R;
 import org.georemindme.community.controller.appserver.Server;
 import org.georemindme.community.controller.appserver.UpdateService;
 import org.georemindme.community.controller.location.LocationServer;
@@ -201,7 +202,7 @@ public class Controller
 		switch (obj)
 		{
 			case P_AUTOUPDATE_CHANGED:
-				if (preferencesController.isAutoupdate())
+				if (PreferencesController.isAutoupdate())
 					setPeriodicalUpdates();
 				else
 					cancelPeriodicalUpdates();

@@ -15,7 +15,7 @@
 			<TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Pick a day"></TextView>
+				android:text="@string/pick_a_day"></TextView>
 			<DatePicker
 				android:id="@+id/datepicker"
 				android:layout_width="fill_parent"
@@ -23,7 +23,7 @@
 			<TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Pick the time"></TextView>
+				android:text="@string/pick_the_time"></TextView>
 			<TimePicker
 				android:id="@+id/timepicker"
 				android:layout_width="fill_parent"
@@ -37,7 +37,7 @@
 				android:id="@+id/okButtonDialogTime"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Ok"></Button>
+				android:text="@string/ok"></Button>
 		</LinearLayout>
 	</ScrollView>
 

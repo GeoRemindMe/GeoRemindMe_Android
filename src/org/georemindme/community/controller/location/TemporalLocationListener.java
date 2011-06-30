@@ -1,6 +1,7 @@
 package org.georemindme.community.controller.location;
 
 
+import org.georemindme.community.R;
 import org.georemindme.community.tools.Logger;
 
 import android.location.Location;

@@ -132,7 +132,7 @@ public class MapDialogActivity extends MapActivity implements Callback,
 			locationUsed.setLatitude(latitude);
 			locationUsed.setLongitude(longitude);
 			
-			addressTextView.setText("Address: " + address);
+			addressTextView.setText(R.string.address + ": " + address);
 			
 		}
 		else
@@ -238,24 +238,24 @@ public class MapDialogActivity extends MapActivity implements Callback,
 
 				return true;
 			case LS_GETTING_ADDRESS_STARTED:
-				address = "finding your address...";
-				addressTextView.setText("Address: " + address);
+				address = getString(R.string.address_error_finding_your_address);
+				addressTextView.setText(getString(R.string.address) + ": " + address);
 				return true;
 			case LS_GETTING_ADDRESS_FINISHED:
 				if (msg.obj != null)
 				{
 					address = ((Address) msg.obj).getAddressLine(0);
-					addressTextView.setText("Address: " + address);
+					addressTextView.setText(getString(R.string.address) + ": " + address);
 				}
 				else
 				{
-					address = "not available right now.";
-					addressTextView.setText("Address: " + address);
+					address = getString(R.string.not_available_right_now);
+					addressTextView.setText(getString(R.string.address) + ": " + address);
 				}
 				return true;
 			case LS_GETTING_ADDRESS_FAILED:
-				address = "error finding your address.";
-				addressTextView.setText("Address: " + address);
+				address = getString(R.string.address_error_finding_your_address);
+				addressTextView.setText(getString(R.string.address) + ": " + address);
 				return true;
 		}
 		return false;

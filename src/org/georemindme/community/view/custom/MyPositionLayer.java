@@ -16,6 +16,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import org.georemindme.community.R;
 
 
 public class MyPositionLayer extends ItemizedOverlay<OverlayItem>

@@ -35,7 +35,7 @@
 				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Name"></TextView>
+				android:text="@string/name"></TextView>
 			<EditText
 				android:id="@+id/nameEditText"
 				android:layout_width="fill_parent"
@@ -44,7 +44,7 @@
 				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Description"></TextView>
+				android:text="@string/description"></TextView>
 			<EditText
 				android:id="@+id/descriptionEditText"
 				android:layout_width="fill_parent"
@@ -54,7 +54,7 @@
 				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Active Period"
+				android:text="@string/active_period"
 			></TextView>
 			<LinearLayout
 				android:layout_width="fill_parent"
@@ -62,13 +62,13 @@
 				android:orientation="horizontal">
 				<Button
 					android:id="@+id/startButton"
-					android:text="Set start"
+					android:text="@string/set_start"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_weight="1.0"></Button>
 				<Button
 					android:id="@+id/endButton"
-					android:text="Set end"
+					android:text="@string/set_end"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_weight="1.0"></Button>
@@ -78,7 +78,7 @@
 				style="@style/DefaultTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Map'n Address"
+				android:text="@string/map_n_address"
 			></TextView>
 			<org.georemindme.community.view.custom.DummyMap
 				android:id="@+id/dummymap"
@@ -93,7 +93,7 @@
 				android:id="@+id/addressTextView"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="Address: XYZ"
+				android:text="@string/address_xyz"
 			></TextView>
 			
 			<LinearLayout
@@ -109,7 +109,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="bottom"
-					android:text ="Save it!"
+					android:text ="@string/save_it"
 				android:layout_weight="1"></Button>
 				
 				<Button

@@ -22,7 +22,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="fill_parent"
 			android:id="@+id/modebutton"
-			android:text="Mode"
+			android:text="@string/mode"
 			android:layout_gravity="center"
 			android:gravity="center"
 			android:layout_marginLeft="10dip"
@@ -45,13 +45,13 @@
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/createalertButton"
-				android:text="New Alert"
+				android:text="@string/new_alert"
 				android:drawableTop="@drawable/alert"
 				></Button>
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/preferencesbutton"
-				android:text="Settings"
+				android:text="@string/settings"
 				android:drawableTop="@drawable/settings"
 				></Button>
 		</LinearLayout>
@@ -71,7 +71,7 @@
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/listbutton"
-				android:text="List"
+				android:text="@string/list"
 				android:drawableTop="@drawable/list"
 				></Button>
 		</LinearLayout>
