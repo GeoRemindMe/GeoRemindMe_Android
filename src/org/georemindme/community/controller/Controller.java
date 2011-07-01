@@ -84,7 +84,7 @@ public class Controller
 		
 		server = Server.getInstance(context, inboxHandler);
 		
-		locationServer = locationServer.getInstance(this);
+		locationServer = LocationServer.getInstance(this);
 		locationServer.startTrackingPosition();
 		
 		alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

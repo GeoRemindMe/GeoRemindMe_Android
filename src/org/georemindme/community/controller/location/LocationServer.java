@@ -65,7 +65,7 @@ public class LocationServer implements Callback
 	private LocationServer(Controller controller)
 	{
 		this.controller = controller;
-		
+Log.i("LOCATION SERVER", "Constructor");		
 		ownInbox = new Handler(this);
 		controllerInbox = controller.getInboxHandler();
 		controller.addOutboxHandler(ownInbox);
@@ -193,6 +193,7 @@ public class LocationServer implements Callback
 
 	private synchronized void updateLocation(Location location)
 	{
+Log.i("LOCATION SERVER", "updateLocation " + location.getLatitude() + " // "+ location.getLongitude());
 		// TODO Auto-generated method stub
 		if (isBetterLocation(location, lastKnownLocation))
 			lastKnownLocation = location;

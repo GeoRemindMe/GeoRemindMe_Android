@@ -169,8 +169,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				controllerInbox.obtainMessage(V_REQUEST_ADDRESS, new Double[] {
 						alert.getLatitude(), alert.getLongitude() }).sendToTarget();
 				
-				//Elimino si hay alguna tarea en la barra de notificaciones con el mismo id.
-				Controller.getInstace(getApplicationContext()).removeNotification((int)alert.getId());
 			}
 			else
 			{
