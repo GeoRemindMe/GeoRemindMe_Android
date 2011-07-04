@@ -174,6 +174,7 @@ public final class R {
         public static final int esta_cerca_tuya=0x7f080074;
         public static final int hay_varias_tareas_cerca_de_ti=0x7f080075;
         /**  Help activity 
+ Help activity 
          */
         public static final int help=0x7f080026;
         public static final int help_howuseit=0x7f080029;
@@ -200,6 +201,7 @@ public final class R {
         public static final int medium_consume=0x7f080072;
         public static final int menu_item_filter=0x7f080004;
         /**  Menu items 
+ Menu items 
          */
         public static final int menu_item_help=0x7f080002;
         public static final int menu_item_preferences=0x7f080003;
@@ -219,6 +221,7 @@ public final class R {
         public static final int radius_hint=0x7f08003a;
         public static final int save_it=0x7f080066;
         /**  MapActivity 
+ MapActivity 
          */
         public static final int searchaddress=0x7f080036;
         public static final int set_done=0x7f080043;
@@ -226,6 +229,7 @@ public final class R {
         public static final int set_pending=0x7f080042;
         public static final int set_start=0x7f080062;
         /**  Settings 
+ Settings 
          */
         public static final int settings=0x7f080005;
         public static final int settings_3g_location=0x7f080020;
@@ -260,14 +264,17 @@ public final class R {
         public static final int sync=0x7f08005d;
         public static final int tasklist_tasks_string=0x7f080025;
         /**  Tasklist View 
+ Tasklist View 
          */
         public static final int tasklist_therearenotaskstoshow=0x7f080024;
         public static final int textdescription=0x7f08002c;
         public static final int textdescription_hint=0x7f080038;
         /**  View/modify/delete task 
+ View/modify/delete task 
          */
         public static final int textname=0x7f08002b;
         /**  Add task 
+ Add task 
          */
         public static final int textname_hint=0x7f080037;
         public static final int there_are_no_tasks_to_see=0x7f08006e;
