@@ -1,5 +1,7 @@
 package org.georemindme.community.controller;
 
+import java.util.List;
+
 import org.georemindme.community.R;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.User;
@@ -89,11 +91,11 @@ public class ReadyState implements ControllerState
 			case V_REQUEST_CHANGE_ALERT_ACTIVE:
 				Object[] obj = (Object[])msg.obj;
 				
-				controller.changeAlertActive((Boolean)obj[0], (Integer)obj[1]);
+				controller.changeAlertActive((Boolean)obj[0], (Long)obj[1]);
 				return true;
 			case V_REQUEST_CHANGE_ALERT_DONE:
 				Object[] obj2 = (Object[])msg.obj;
-				controller.changeAlertDone((Boolean)obj2[0], (Integer)obj2[1]);
+				controller.changeAlertDone((Boolean)obj2[0], (Long)obj2[1]);
 				return true;
 			case V_REQUEST_DELETE_ALERT:
 				controller.deleteAlert((Alert) msg.obj);
@@ -153,7 +155,7 @@ public class ReadyState implements ControllerState
 				controller.requestAlarmsNear();
 				return true;
 			case S_ALERT_NEAR:
-				controller.notifyAlert((Alert) msg.obj);
+				controller.notifyAlert((List<Alert>) msg.obj);
 				return true;
 		}
 		return false;

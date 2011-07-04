@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
+import org.georemindme.community.controller.NotificationCenter;
 import org.georemindme.community.controller.PreferencesController;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Time;
@@ -156,7 +157,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				else
 					end = new Time(e);
 				
-				if(alert.isDone())
+				if (alert.isDone())
 					setdoneButton.setText(getString(R.string.set_pending));
 				else
 					setdoneButton.setText(getString(R.string.set_done));
@@ -169,6 +170,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				controllerInbox.obtainMessage(V_REQUEST_ADDRESS, new Double[] {
 						alert.getLatitude(), alert.getLongitude() }).sendToTarget();
 				
+				Controller.getInstace(getApplicationContext()).removeNotification(alert.getId());
 			}
 			else
 			{
@@ -282,8 +284,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 						AlertDialog.Builder builder = new AlertDialog.Builder(this);
 						builder.setMessage(R.string.location_not_available);
 						builder.setCancelable(true);
-						builder.setPositiveButton(R.string.yes, 
-								new DialogInterface.OnClickListener()
+						builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
 						{
 							
 							@Override
@@ -345,14 +346,14 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				break;
 			case R.id.resetButton:
 				Object[] data = new Object[2];
-				if(alert.isDone())
+				if (alert.isDone())
 				{
 					data[0] = false;
 				}
 				else
 					data[0] = true;
 				
-				data[1] = (int) alert.getId();
+				data[1] = alert.getId();
 				controllerInbox.obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
 				break;
 			case R.id.startButton:
@@ -422,7 +423,8 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				if (msg.obj != null)
 				{
 					lastAddress = ((Address) msg.obj).getAddressLine(0);
-					addressView.setText(getString(R.string.address) + ": " + lastAddress);
+					addressView.setText(getString(R.string.address) + ": "
+							+ lastAddress);
 				}
 				else
 					addressView.setText(R.string.address_not_available_right_now);
@@ -438,7 +440,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				return true;
 			case C_ALERT_CHANGED:
 			case C_ALERT_SAVED:
-				
+
 				finish();
 				return true;
 		}

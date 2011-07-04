@@ -15,6 +15,7 @@ import org.alexd.jsonrpc.JSONRPCClient;
 import org.alexd.jsonrpc.JSONRPCException;
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
+import org.georemindme.community.controller.location.LocationServer;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.model.User;
@@ -45,11 +46,13 @@ public class Server implements Serializable
 	private static final String	URL					= "https://3.georemindme.appspot.com/service/";
 	private static int			connectionTimeout	= 10000;
 	
+	private LocationServer		locationServer;
 	
-	public static Server getInstance(Context context, Handler controllerInbox)
+	
+	public static Server getInstance(Context context, Controller controller)
 	{
 		if (instance == null)
-			instance = new Server(context, controllerInbox);
+			instance = new Server(context, controller);
 		
 		return instance;
 	}
@@ -68,12 +71,17 @@ public class Server implements Serializable
 	
 	private User			user		= null;
 	
+	private Controller controller;
 	
-	Server(Context context, Handler controllerInbox)
+	Server(Context context, Controller controller)
 	{
-		this.controllerInbox = controllerInbox;
+		this.controllerInbox = controller.getInboxHandler();
+		locationServer = controller.getLocationServer();
+		this.controller = controller;
 		db = Database.getDatabaseInstance(context);
 		sessionId = null;
+		
+		
 	}
 	
 
@@ -195,16 +203,18 @@ public class Server implements Serializable
 	}
 	
 
-	public void changeAlertActive(boolean active, int id)
+	public void changeAlertActive(boolean active, long id)
 	{
 		db.changeAlertActive(active, id);
+		Alert a = db.getAlertWithID(id);
 		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
 	}
 	
 
-	public void changeAlertDone(boolean done, int id)
+	public void changeAlertDone(boolean done, long id)
 	{
 		db.setAlertDone(id, done);
+		Alert a = db.getAlertWithID(id);
 		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
 	}
 	
@@ -325,8 +335,7 @@ public class Server implements Serializable
 				}
 				catch (JSONRPCException e)
 				{
-					Error dbError = new Error("Error JSONRPCException trying to login", 
-							System.currentTimeMillis() / 1000);
+					Error dbError = new Error("Error JSONRPCException trying to login", System.currentTimeMillis() / 1000);
 					db.addError(dbError);
 					controllerInbox.sendEmptyMessage(C_LOGIN_FAILED);
 					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
@@ -463,12 +472,16 @@ public class Server implements Serializable
 		
 		if (c != null && c.moveToFirst())
 		{
+			List<Alert> listado = new ArrayList<Alert>();
 			do
 			{
 				Alert a = getAlertAtActualPosition(c);
-				controllerInbox.obtainMessage(S_ALERT_NEAR, a).sendToTarget();
+				listado.add(a);
+				
 			}
 			while (c.moveToNext());
+			
+			controllerInbox.obtainMessage(S_ALERT_NEAR, listado).sendToTarget();
 		}
 		else
 		{
@@ -584,8 +597,7 @@ public class Server implements Serializable
 			}
 			else
 			{
-				Error dbError = new Error("Server error procesing errors list. Operation cancel", 
-						System.currentTimeMillis() / 1000);
+				Error dbError = new Error("Server error procesing errors list. Operation cancel", System.currentTimeMillis() / 1000);
 				db.addError(dbError);
 			}
 		}
@@ -655,8 +667,7 @@ public class Server implements Serializable
 						
 						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
 						
-						Error dbError = new Error("Error JSONRPCException trying to update data", 
-								System.currentTimeMillis() / 1000);
+						Error dbError = new Error("Error JSONRPCException trying to update data", System.currentTimeMillis() / 1000);
 						db.addError(dbError);
 						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
 						// 0, e);
@@ -670,8 +681,7 @@ public class Server implements Serializable
 						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
 						// 0, e);
-						Error dbError = new Error("Error ParseException trying to parse data from server", 
-								System.currentTimeMillis() / 1000);
+						Error dbError = new Error("Error ParseException trying to parse data from server", System.currentTimeMillis() / 1000);
 						db.addError(dbError);
 					}
 				}

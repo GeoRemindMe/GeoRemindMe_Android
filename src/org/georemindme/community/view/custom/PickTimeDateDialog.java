@@ -22,8 +22,8 @@ public class PickTimeDateDialog extends Dialog implements
 	public static final int			IS_START		= 1;
 	public static final int			IS_END			= 2;
 	
-	private static final String		IS_START_TEXT	= Resources.getSystem().getString(R.string.start_time_undefined);
-	private static final String		IS_END_TEXT		= Resources.getSystem().getString(R.string.end_time_undefined);
+	private static String		IS_START_TEXT;
+	private static String		IS_END_TEXT;
 	
 	private Context					context;
 	
@@ -50,6 +50,9 @@ public class PickTimeDateDialog extends Dialog implements
 		this.mode = mode;
 		this.data = data;
 		this.checked = checked;
+		
+		IS_START_TEXT = context.getString(R.string.start_time_undefined);
+		IS_END_TEXT = context.getString(R.string.end_time_undefined);
 	}
 	
 
@@ -58,7 +61,7 @@ public class PickTimeDateDialog extends Dialog implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pickdayandtimedialog);
 		
-		setTitle(Resources.getSystem().getString(R.string.day_and_time));
+		setTitle(context.getString(R.string.day_and_time));
 		
 		datepicker = (DatePicker) findViewById(R.id.datepicker);
 		timepicker = (TimePicker) findViewById(R.id.timepicker);

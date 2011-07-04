@@ -150,7 +150,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 					CheckBox tmp = (CheckBox) v;
 					Object[] data = new Object[2];
 					data[0] = new Boolean(tmp.isChecked());
-					data[1] = new Integer(id);
+					data[1] = new Long(id);
 					
 					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
 				}
@@ -166,7 +166,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 					ToggleButton tmp = (ToggleButton) v;		
 					Object[] data = new Object[2];
 					data[0] = new Boolean(tmp.isChecked());
-					data[1] = new Integer(id);
+					data[1] = new Long(id);
 					controller.getInboxHandler().obtainMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data).sendToTarget();
 				}
 			});

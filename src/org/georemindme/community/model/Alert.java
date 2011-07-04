@@ -295,4 +295,26 @@ public class Alert implements Serializable
 		this.longitude = longitude;
 	}
 	
+	public boolean hasSameContent(Alert a)
+	{
+		boolean result = false;
+		if(a.isActive() == active
+				&& a.isDone() == done
+				&& a.getCreated() == created
+				&& a.getDescription() == description
+				&& a.getDone_when() == done_when
+				&& a.getEnds() == ends
+				&& a.getId() == id
+				&& a.getIdServer() == id_server
+				&& a.getLatitude() == latitude
+				&& a.getLongitude() == longitude
+				&& a.getModified() == modified
+				&& a.getName() == name
+				&& a.getStarts() == starts)
+		{
+			result = true;
+		}
+		return result;
+	}
+	
 }

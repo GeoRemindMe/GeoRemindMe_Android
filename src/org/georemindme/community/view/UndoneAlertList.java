@@ -74,6 +74,7 @@ public class UndoneAlertList extends ListActivity implements
 		
 		registerForContextMenu(list);
 		
+		controller.removeAllNotification();
 	}
 	
 
@@ -95,9 +96,6 @@ public class UndoneAlertList extends ListActivity implements
 		super.onPause();
 		Log.i("UAL", "onPause()");
 		controller.removeOutboxHandler(ownInbox);
-		
-		if(c != null)
-			c.close();
 	}
 	
 

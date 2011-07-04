@@ -258,4 +258,6 @@
 	<string name="high_consume">Consumo alto</string>
 	<string name="medium_consume">Consumo medio</string>
 	<string name="low_consume">Consumo bajo</string>
+	<string name="esta_cerca_tuya"> está cerca tuya.</string>
+	<string name="hay_varias_tareas_cerca_de_ti">Hay varias tareas cerca de ti.</string>
 </resources>

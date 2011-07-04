@@ -298,7 +298,7 @@ public class Database
 		return c;
 	}
 
-	public synchronized void changeAlertActive(boolean active, int id)
+	public synchronized void changeAlertActive(boolean active, long id)
 	{
 		this.open();
 		
@@ -480,8 +480,8 @@ public class Database
 	{
 		this.open();
 		Cursor c = null;
-		double latitudeOffset = (meters / 110574.61) / 2;
-		double longitudeOffset = (meters / 111302.62) / 2;
+		double latitudeOffset = (meters / 110574.61);
+		double longitudeOffset = (meters / 111302.62);
 		
 		// Log.v("Latitude offset", latitudeOffset + "");
 		// Log.v("Longitude offset", longitudeOffset + "");
@@ -540,7 +540,39 @@ public class Database
 		return c;
 	}
 	
-
+	public Alert getAlertWithID(long id)
+	{
+		this.open();
+		String sql = "Select * from " + ALERT_TABLE + " where " + _ID
+				+ " = " + id;
+		// Log.v("getAlertByServerID", sql);
+		Cursor c = db.rawQuery(sql, null);
+		if (c != null)
+		{
+			c.moveToFirst();
+			boolean done_b;
+			String name = c.getString(c.getColumnIndex(Database.ALERT_NAME));
+			String description = c.getString(c.getColumnIndex(Database.ALERT_DESCRIPTION));
+			long start = c.getInt(c.getColumnIndex(Database.ALERT_START));
+			long end = c.getInt(c.getColumnIndex(Database.ALERT_END));
+			long done = c.getInt(c.getColumnIndex(Database.ALERT_DONE));
+			if (done == 0)
+				done_b = false;
+			else
+				done_b = true;
+			
+			double lat = c.getDouble(c.getColumnIndex(Database.LATITUDE));
+			double lng = c.getDouble(c.getColumnIndex(Database.LONGITUDE));
+			
+			// Log.v("Antes de crear la alerta", "");
+			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng);
+			c.close();
+			return a;
+		}
+		this.close();
+		return null;
+	}
+	
 	public Cursor getAlertsWithID(ArrayList ids)
 	{
 		this.open();
@@ -791,7 +823,7 @@ public class Database
 	}
 	
 
-	public synchronized void setAlertDone(int id, boolean done)
+	public synchronized void setAlertDone(long id, boolean done)
 	{
 		// Log.v("Setting alert done", "Start");
 		this.open();
@@ -866,4 +898,5 @@ public class Database
 		
 		this.close();
 	}
+	
 }

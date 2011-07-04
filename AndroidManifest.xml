@@ -46,6 +46,11 @@
 		></activity>
 		
 		<activity
+			android:name="org.georemindme.community.view.AlertDialog"
+			android:theme="@android:style/Theme.Dialog"
+		></activity>
+		
+		<activity
 			android:name="org.georemindme.community.view.MapDialogActivity"
 			android:theme="@style/Theme.Window"
 			android:noHistory="true"

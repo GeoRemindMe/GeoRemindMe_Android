@@ -58,16 +58,16 @@ public class Controller
 		return instance;
 	}
 	
-
+	public LocationServer getLocationServer()
+	{
+		return locationServer;
+	}
+	
 	private Controller(Context context)
 	{
 		
 		this.context = context;
 		preferencesController = new PreferencesController(context);
-		
-		
-		int millis = PreferencesController.getTime();
-		int meters = PreferencesController.getRadius();
 		
 		inboxHandlerThread = new HandlerThread("Controller Inbox");
 		inboxHandlerThread.start();
@@ -82,10 +82,12 @@ public class Controller
 			}
 		};
 		
-		server = Server.getInstance(context, inboxHandler);
-		
 		locationServer = LocationServer.getInstance(this);
 		locationServer.startTrackingPosition();
+		
+		server = Server.getInstance(context, this);
+		
+		
 		
 		alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManagerIntent = new Intent(context, UpdateService.class);
@@ -280,7 +282,7 @@ public class Controller
 	public void getLastKnownAddress()
 	{
 		// TODO Auto-generated method stub
-		notifyOutboxHandlers(V_REQUEST_LAST_KNOWN_ADDRESS, 0, 0, null);
+		locationServer.getLastKnownAddress();
 	}
 
 
@@ -327,12 +329,12 @@ public class Controller
 		server.requestAllMutedAlerts();
 	}
 	
-	void changeAlertActive(boolean active, int id)
+	void changeAlertActive(boolean active, long id)
 	{
 		server.changeAlertActive(active, id);
 	}
 	
-	void changeAlertDone(boolean done, int id)
+	void changeAlertDone(boolean done, long id)
 	{
 		server.changeAlertDone(done, id);
 	}
@@ -348,18 +350,25 @@ public class Controller
 		server.requestAlarmsNear(latE6, lngE6, meters);
 	}
 	
-	void notifyAlert(Alert a)
+	void notifyAlert(List<Alert> listado)
 	{
-		notificationCenter.notifyAlert(a);
+		for(Alert a : listado)
+			notificationCenter.notifyAlert(a);
+		
+		notificationCenter.refreshNotification();
 	}
 	
 	
-	public void removeNotification(int id)
+	public void removeNotification(long id)
 	{
 		notificationCenter.cancelAlert(id);
 	}
 
-
+	public void removeAllNotification()
+	{
+		notificationCenter.cancelAllAlerts();
+	}
+	
 	public void deleteAlert(Alert obj)
 	{
 		// TODO Auto-generated method stub
