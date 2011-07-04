@@ -41,13 +41,12 @@
 			android:orientation="horizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
-			android:layout_weight="1">
+			android:layout_weight="1.0">
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/createalertButton"
 				android:text="@string/new_alert"
-				android:drawableTop="@drawable/alert"
-				></Button>
+				android:drawableTop="@drawable/alert"></Button>
 			<Button
 				style="@style/DashboardButton"
 				android:id="@+id/preferencesbutton"
@@ -59,7 +58,7 @@
 			android:orientation="horizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
-			android:layout_weight="1">
+			android:layout_weight="1.0">
 			<!-- 
 			<Button
 				style="@style/DashboardButton"

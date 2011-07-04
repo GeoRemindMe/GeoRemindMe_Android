@@ -84,7 +84,7 @@
 				android:id="@+id/dummymap"
 				android:layout_width="fill_parent"
 				android:layout_height = "130dip"
-				android:apiKey="0lxXQNB__9B6gvGoNVuub-_MNnJ9hsY0uTdG83Q"
+				android:apiKey="0lxXQNB__9B4tTP-AIta3dw9ZxVafbEMyXTmYFg"
 				android:clickable="true"
 			>
 			</org.georemindme.community.view.custom.DummyMap>
