@@ -96,10 +96,10 @@ public final class R {
         public static final int mapdialogactitivy_address=0x7f0b0024;
         public static final int mapdialogactivity_map=0x7f0b0023;
         public static final int mapdialogactivity_okbutton=0x7f0b0025;
-        public static final int menu_item_delete_alert=0x7f0b0034;
-        public static final int menu_item_exit=0x7f0b0036;
-        public static final int menu_item_sync=0x7f0b0035;
-        public static final int menu_item_view_edit_alert=0x7f0b0033;
+        public static final int menu_item_delete_alert=0x7f0b0037;
+        public static final int menu_item_exit=0x7f0b0039;
+        public static final int menu_item_sync=0x7f0b0038;
+        public static final int menu_item_view_edit_alert=0x7f0b0036;
         public static final int modebutton=0x7f0b0013;
         public static final int name=0x7f0b0019;
         public static final int nameEditText=0x7f0b0001;
@@ -119,6 +119,9 @@ public final class R {
         public static final int pref_sync_rate=0x7f0b0032;
         public static final int preferencesbutton=0x7f0b0016;
         public static final int radiogroup=0x7f0b001c;
+        public static final int registeractitivy_login=0x7f0b0035;
+        public static final int registeractivity_password=0x7f0b0034;
+        public static final int registeractivity_username=0x7f0b0033;
         public static final int resetButton=0x7f0b0008;
         public static final int startButton=0x7f0b0003;
         public static final int timepicker=0x7f0b0027;
@@ -134,7 +137,8 @@ public final class R {
         public static final int mapdialogactivity=0x7f030006;
         public static final int pickdayandtimedialog=0x7f030007;
         public static final int preferences=0x7f030008;
-        public static final int tasklist=0x7f030009;
+        public static final int registeractivity=0x7f030009;
+        public static final int tasklist=0x7f03000a;
     }
     public static final class menu {
         public static final int alert_context_menu=0x7f0a0000;
@@ -162,6 +166,7 @@ public final class R {
         public static final int change_mode=0x7f08004c;
         public static final int checkdone=0x7f08002f;
         public static final int connected=0x7f08004e;
+        public static final int create_new_user=0x7f080078;
         public static final int day_and_time=0x7f080041;
         public static final int delete_alert=0x7f08005c;
         public static final int deletebutton_add=0x7f08003b;
@@ -209,6 +214,7 @@ public final class R {
         public static final int muted=0x7f080054;
         public static final int name=0x7f08005f;
         public static final int new_alert=0x7f080068;
+        public static final int new_user_name=0x7f080076;
         public static final int no=0x7f080047;
         public static final int not_available_right_now=0x7f08005a;
         public static final int ok=0x7f08006d;
@@ -279,6 +285,7 @@ public final class R {
         public static final int textname_hint=0x7f080037;
         public static final int there_are_no_tasks_to_see=0x7f08006e;
         public static final int unknown_distance=0x7f08003e;
+        public static final int user_password=0x7f080077;
         public static final int viewdelete_ask=0x7f080035;
         public static final int viewdeleted=0x7f080034;
         public static final int viewsaved=0x7f080033;

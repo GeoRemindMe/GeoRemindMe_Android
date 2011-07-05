@@ -260,4 +260,7 @@
 	<string name="low_consume">Consumo bajo</string>
 	<string name="esta_cerca_tuya"> está cerca tuya.</string>
 	<string name="hay_varias_tareas_cerca_de_ti">Hay varias tareas cerca de ti.</string>
+	<string name="new_user_name">Nuevo nombre de usuario</string>
+	<string name="user_password">Contraseña para el usuario</string>
+	<string name="create_new_user">Crear nuevo usuario</string>
 </resources>
