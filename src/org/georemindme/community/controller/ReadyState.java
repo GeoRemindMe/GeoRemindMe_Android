@@ -100,6 +100,12 @@ public class ReadyState implements ControllerState
 			case V_REQUEST_DELETE_ALERT:
 				controller.deleteAlert((Alert) msg.obj);
 				return true;
+			case V_REQUEST_CREATE_NEW_USER:
+				Object[] obj3 = (Object[]) msg.obj;
+				controller.createNewUser((String) obj3[0], (String) obj3[1]);
+			case V_REQUEST_NEXT_TIMELINE_PAGE:
+				controller.requestNextTimelinePage();
+				return true;
 			case P_PREFERENCE_CHANGED:
 				controller.preferencesChanged((Integer)msg.obj);
 				switch((Integer)msg.obj)
@@ -156,6 +162,9 @@ public class ReadyState implements ControllerState
 				return true;
 			case S_ALERT_NEAR:
 				controller.notifyAlert((List<Alert>) msg.obj);
+				return true;
+			case S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED:
+				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
 				return true;
 		}
 		return false;

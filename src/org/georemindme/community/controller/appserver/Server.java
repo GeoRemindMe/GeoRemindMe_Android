@@ -18,6 +18,9 @@ import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.location.LocationServer;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
+import org.georemindme.community.model.Timeline;
+import org.georemindme.community.model.TimelineEvent;
+import org.georemindme.community.model.TimelinePage;
 import org.georemindme.community.model.User;
 import org.georemindme.community.model.Error;
 import org.json.JSONException;
@@ -48,6 +51,10 @@ public class Server implements Serializable
 	
 	private LocationServer		locationServer;
 	
+	// /
+	
+	private Timeline			user_timeline		= null;
+	
 	
 	public static Server getInstance(Context context, Controller controller)
 	{
@@ -71,7 +78,8 @@ public class Server implements Serializable
 	
 	private User			user		= null;
 	
-	private Controller controller;
+	private Controller		controller;
+	
 	
 	Server(Context context, Controller controller)
 	{
@@ -80,7 +88,6 @@ public class Server implements Serializable
 		this.controller = controller;
 		db = Database.getDatabaseInstance(context);
 		sessionId = null;
-		
 		
 	}
 	
@@ -707,5 +714,124 @@ public class Server implements Serializable
 	{
 		db.refreshAlert(alert);
 		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
+	}
+	
+
+	public void requestNextTimelinePage()
+	{
+		if (isUserlogin())
+			if (user_timeline == null)
+			{
+				user_timeline = new Timeline();
+				_setTimelinePage(user_timeline.getPageIndex());
+			}
+			else
+			{
+				_setTimelinePage(user_timeline.getPageIndex() + 1);
+			}
+		
+	}
+	
+
+	private void _setTimelinePage(final int page_index)
+	{
+		Thread thread = new Thread("_getTimelinePage_Thread")
+		{
+			String	data	= "";
+			
+			
+			public void run()
+			{
+				openConnection();
+				try
+				{
+					if (user_timeline.isCached())
+						data = connection.callString("view_timeline", new Long(user_timeline.getTimelineId()), new Integer(page_index));
+					else
+						data = connection.callString("view_timeline");
+				
+					JSONParser parser = new JSONParser();
+					JSONArray jsondata = (JSONArray) parser.parse(data);
+					
+					long id_query = (Long) jsondata.get(0);
+					JSONArray jsonTimelineEvents = (JSONArray) jsondata.get(1);
+					
+					TimelinePage timelinePage = new TimelinePage();
+					
+					for (int i = 0; i < jsonTimelineEvents.size(); i++)
+					{
+						JSONObject element = (JSONObject) jsonTimelineEvents.get(i);
+						long id = (Long) element.get("id");
+						long created = (Long) element.get("created");
+						String msg = (String) element.get("msg");
+						String username = (String) element.get("username");
+						
+						TimelineEvent timelineEvent = new TimelineEvent(id, created, msg, username);
+						timelinePage.queueTimelineEvent(timelineEvent);
+					}
+					
+					if (user_timeline == null)
+						user_timeline = new Timeline();
+					
+					user_timeline.setTimelineId(id_query);
+					user_timeline.setTimelinePageAtPosition(timelinePage, page_index);
+					
+					controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED, user_timeline.getActualTimelinePage()).sendToTarget();
+				}
+				catch (JSONRPCException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FAILED, e).sendToTarget();
+				}
+				catch (ParseException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FAILED, e).sendToTarget();
+				}
+				closeConnection();
+			}
+		};
+		
+		thread.start();
+		controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_STARTED).sendToTarget();
+	}
+
+
+	public void createNewUser(final String string, final String string2)
+	{
+		Thread thread = new Thread("createUserThread")
+		{
+			boolean data;
+			public void run()
+			{
+				openConnection();
+				try
+				{
+					data = connection.callBoolean("register", string, string2);
+					
+					if(!data)
+					{
+						controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_FAILED,
+								R.string.el_usuario_no_se_ha_podido_registrar).sendToTarget();
+					}
+					else
+					{
+						controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_FINISHED).sendToTarget();
+					}
+				}
+				catch (JSONRPCException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_FAILED, e.getMessage()).sendToTarget();
+				}
+				closeConnection();
+			}
+		};
+		
+		thread.start();
+		controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_STARTED).sendToTarget();
 	}
 }

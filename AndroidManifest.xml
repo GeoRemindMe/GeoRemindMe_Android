@@ -106,8 +106,8 @@
 		</activity>
 		
 		<activity
-			android:name="org.georemindme.community.view.RegisterActivity"
-			android:noHistory="true"
+			android:name="org.georemindme.community.view.TimelineActivity"
+			android:label="@string/ultimas_noticias"
 		></activity>
 		
 		<service

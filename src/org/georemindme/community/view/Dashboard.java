@@ -30,7 +30,7 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 {
 	private final static String	LOG				= "Dashboard-debug";
 	
-	private Button				mode;
+	private Button 				timelineButton;
 	private Button				map;
 	private Button				list;
 	private Button				settings;
@@ -49,16 +49,14 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.dashboard);
 		
-		// Get buttons from UI
-		mode = (Button) findViewById(R.id.modebutton);
-		mode.setOnClickListener(this);
-		
 		list = (Button) findViewById(R.id.listbutton);
 		list.setOnClickListener(this);
 		settings = (Button) findViewById(R.id.preferencesbutton);
 		settings.setOnClickListener(this);
 		addAlertButton = (Button) findViewById(R.id.createalertButton);
 		addAlertButton.setOnClickListener(this);
+		timelineButton = (Button) findViewById(R.id.timelinebutton);
+		timelineButton.setOnClickListener(this);
 		
 		// Create login dialog.
 		loginDialog = new Dialog(Dashboard.this);
@@ -71,6 +69,7 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		controller = Controller.getInstace(getApplicationContext());
 		
 		controller.getInboxHandler().sendEmptyMessage(V_REQUEST_LAST_LOCATION);
+		
 	}
 	
 
@@ -108,10 +107,6 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		// TODO Auto-generated method stub
 		switch (v.getId())
 		{
-			case R.id.modebutton:
-				i = new Intent(getApplicationContext(), LoginActivity.class);
-				startActivity(i);
-				break;
 			case R.id.preferencesbutton:
 				i = new Intent(getApplicationContext(), Settings.class);
 				startActivity(i);
@@ -124,6 +119,10 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 				i = new Intent(getApplicationContext(), ListTabActivity.class);
 				startActivity(i);
 				break;
+			case R.id.timelinebutton:
+				i = new Intent(getApplicationContext(), TimelineActivity.class);
+				startActivity(i);
+				break;
 		}
 	}
 	
@@ -134,21 +133,17 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		switch (msg.what)
 		{
 			case C_LOGIN_STARTED:
-				mode.setText(R.string.logging);
 				return true;
 			case C_IS_LOGGED:
-				mode.setText(R.string.connected);
 				return true;
 			case C_IS_NOT_LOGGED:
-				mode.setText(R.string.disconnected);
 				return true;
 			case C_LOGIN_FINISHED:
-				mode.setText(R.string.connected);
 				Message m = Message.obtain(controller.getInboxHandler(), V_REQUEST_UPDATE);
 				m.sendToTarget();
+
 				return true;
 			case C_LOGIN_FAILED:
-				mode.setText(R.string.login_failed);
 				return true;
 			case C_UPDATE_STARTED:
 				
@@ -227,6 +222,12 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 			{
 				controller.getInboxHandler().obtainMessage(V_REQUEST_UPDATE).sendToTarget();
 				System.exit(0);
+				break;
+			}
+			case (R.id.main_menu_login):
+			{
+				Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+				startActivity(i);
 				break;
 			}
 		

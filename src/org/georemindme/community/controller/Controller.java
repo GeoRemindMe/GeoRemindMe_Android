@@ -375,4 +375,16 @@ public class Controller
 		server.deleteAlert(obj);
 	}
 
+	public void requestNextTimelinePage()
+	{
+		// TODO Auto-generated method stub
+		server.requestNextTimelinePage();
+	}
+
+	public void createNewUser(String string, String string2)
+	{
+		// TODO Auto-generated method stub
+		server.createNewUser(string, string2);
+	}
+
 }

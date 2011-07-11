@@ -4,47 +4,106 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
-  
-  <!-- Linear layout to hold the ActionBar if exists -->
-	<LinearLayout
-		android:orientation="horizontal"
-		android:id="@+id/actionBar"
+
+	<ImageView
+		android:id="@+id/loginactivity_logo"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
+		android:layout_height="wrap_content"
+		android:layout_weight="1.0"/>
 
 	<LinearLayout
+		android:id="@+id/loginactivity_login_layout"
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_weight="1.0">
+		android:layout_weight="2.0"
+		android:visibility="gone">
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/name"
-		/>
+			android:text="@string/name"/>
 		<EditText
-			android:id="@+id/name"
+			android:id="@+id/loginactivity_login_name"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-		/>
-		
+			android:layout_height="wrap_content"/>
+
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/password"
-		/>
-		
+			android:text="@string/password"/>
+
 		<EditText
-			android:id="@+id/pass"
+			android:id="@+id/loginactivity_login_pass"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:inputType="textPassword"
-		/>
+			android:inputType="textPassword"/>
+		<Button
+			android:id="@+id/loginactivity_login_login"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/log_in"/>
 	</LinearLayout>
 
-	<Button
-		android:id="@+id/okButton"
+	<LinearLayout
+		android:id="@+id/loginactivity_createuser_layout"
+		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:text="@string/log_in"/>
+		android:layout_weight="2.0"
+		android:visibility="gone">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/email"/>
+
+		<EditText
+			android:id="@+id/loginactivity_create_name"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/password"/>
+		<EditText
+			android:id="@+id/loginactivity_create_pass"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/repeat_password"/>
+
+		<EditText
+			android:id="@+id/loginactivity_create_pass_repeat"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"/>
+		
+		<Button
+			android:id="@+id/loginactivity_create_login"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/create_new_user"/>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/loginactivity_buttons_layout"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<Button
+			android:id="@+id/loginactivity_show_login"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/im_already_user"/>
+
+		<Button
+			android:id="@+id/loginactivity_show_register"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/im_new"/>
+	</LinearLayout>
+
 </LinearLayout>

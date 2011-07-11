@@ -1,5 +1,6 @@
 package org.georemindme.community.controller;
 
+
 import org.georemindme.community.R;
 
 
@@ -30,7 +31,11 @@ public interface ControllerProtocol
 	int	V_REQUEST_CHANGE_ALERT_DONE				= 118;
 	int	V_REQUEST_UPDATE_ALERT					= 119;	// Object = Alert.
 	int	V_REQUEST_DELETE_ALERT					= 120;	// Object = alert.
+														
+	int	V_REQUEST_NEXT_TIMELINE_PAGE			= 121;
 	
+	int	V_REQUEST_CREATE_NEW_USER				= 122;	// obj -> {name, pass}
+														
 	int	C_QUIT									= 201;	// empty
 	int	C_LOGIN_STARTED							= 202;	// empty
 	int	C_LOGIN_FINISHED						= 203;	// empty
@@ -54,6 +59,15 @@ public interface ControllerProtocol
 	
 	int	S_REQUEST_UPDATE						= 301;	// empty
 	int	S_ALERT_NEAR							= 302;	// Object alert
+	int	S_RESPONSE_NEXT_TIMELINE_PAGE			= 303;	// Object ->
+														// TimelinePage
+	int	S_REQUEST_NEXT_TIMELINE_PAGE_STARTED	= 304;
+	int	S_REQUEST_NEXT_TIMELINE_PAGE_FAILED		= 305;
+	int	S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED	= 306;
+	
+	int	S_REQUEST_CREATE_NEW_USER_STARTED		= 307;
+	int	S_REQUEST_CREATE_NEW_USER_FAILED		= 308;	// obj -> excp.
+	int	S_REQUEST_CREATE_NEW_USER_FINISHED		= 309;	// Obj -> true/false
 														
 	int	P_PREFERENCE_CHANGED					= 401;	// obj = (Integer)
 														// P_XXX_YYY_CHANGED

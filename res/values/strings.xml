@@ -263,4 +263,14 @@
 	<string name="new_user_name">Nuevo nombre de usuario</string>
 	<string name="user_password">Contraseña para el usuario</string>
 	<string name="create_new_user">Crear nuevo usuario</string>
+	<string name="repeat_password">Repite la contraseña</string>
+	<string name="im_already_user">Ya soy usuario</string>
+	<string name="im_new">Soy nuevo</string>
+	<string name="email">Email</string>
+	<string name="debes_de_introducir_un_email_valido">Debes de introducir un email válido.</string>
+	<string name="no_coinciden_las_contrasenias">No coinciden las contraseñas.</string>
+	<string name="el_usuario_no_se_ha_podido_registrar">El usuario no se ha podido registrar.</string>
+	<string name="cuentas">Cuentas</string>
+	<string name="ultimas_noticias">Ultimas noticias</string>
+	<string name="no_hay_ultimas_noticias_que_mostrar">No hay últimas noticias que mostrar</string>
 </resources>

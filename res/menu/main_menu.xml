@@ -9,6 +9,13 @@
 	></item>
 		
 	<item
+		android:id="@+id/main_menu_login"
+		android:title="@string/cuentas"
+		android:icon="@drawable/ic_menu_login"
+	></item>
+	
+	
+	<item
 		android:icon="@android:drawable/ic_lock_power_off"
 		android:id="@+id/menu_item_exit"
 		android:title="@string/quit"
