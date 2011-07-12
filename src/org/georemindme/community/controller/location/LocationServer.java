@@ -13,6 +13,7 @@ import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.PreferencesController;
 import org.georemindme.community.model.Alert;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.tools.Logger;
 
 import android.app.PendingIntent;
@@ -38,12 +39,11 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 
 public class LocationServer implements Callback
 {
-	private static LocationManager		locationManager;
+	private static LocationManager	locationManager;
 	
-	private static final String			LOG								= "LocationServer";
+	private static final String		LOG			= "LocationServer";
 	
-	
-	private static LocationServer		singleton						= null;
+	private static LocationServer	singleton	= null;
 	
 	
 	public static LocationServer getInstance(Controller controller)
@@ -58,7 +58,6 @@ public class LocationServer implements Callback
 	private String						bestLocationProvider	= null;
 	private Controller					controller;
 	
-	private Handler						controllerInbox;
 	private int							distanceToRefresh;
 	
 	private Location					lastKnownLocation		= null;
@@ -77,9 +76,6 @@ public class LocationServer implements Callback
 	{
 		this.controller = controller;
 		Log.i("LOCATION SERVER", "Constructor");
-		ownInbox = new Handler(this);
-		controllerInbox = controller.getInboxHandler();
-		controller.addOutboxHandler(ownInbox);
 		
 		locationManager = (LocationManager) controller.getContext().getSystemService(Context.LOCATION_SERVICE);
 		
@@ -175,6 +171,7 @@ public class LocationServer implements Callback
 		};
 		
 	}
+	
 
 	public void getAddress(final Double double1, final Double double2)
 	{
@@ -191,17 +188,17 @@ public class LocationServer implements Callback
 					
 					if (!addresses.isEmpty())
 					{
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0)).sendToTarget();
+						controller.sendMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0));
 					}
 					else
 					{
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED, null);
+						controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
 					}
 				}
 				catch (IOException e)
 				{
 					// TODO Auto-generated catch block
-					controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED).sendToTarget();
+					controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
 					e.printStackTrace();
 				}
 				catch (Exception e)
@@ -211,7 +208,7 @@ public class LocationServer implements Callback
 			}
 		};
 		t.start();
-		controllerInbox.sendEmptyMessage(LS_GETTING_ADDRESS_STARTED);
+		controller.sendMessage(LS_GETTING_ADDRESS_STARTED);
 	}
 	
 
@@ -228,20 +225,20 @@ public class LocationServer implements Callback
 					if (lastKnownLocation != null)
 						addresses = gc.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 5);
 					else
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED).sendToTarget();
+						controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
 					if (addresses != null && !addresses.isEmpty())
 					{
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0)).sendToTarget();
+						controller.sendMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0));
 					}
 					else
 					{
-						controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FINISHED, null).sendToTarget();
+						controller.sendMessage(LS_GETTING_ADDRESS_FINISHED);
 					}
 				}
 				catch (IOException e)
 				{
 					// TODO Auto-generated catch block
-					controllerInbox.obtainMessage(LS_GETTING_ADDRESS_FAILED).sendToTarget();
+					controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
 					e.printStackTrace();
 				}
 				catch (Exception e)
@@ -251,7 +248,7 @@ public class LocationServer implements Callback
 			}
 		};
 		t.start();
-		controllerInbox.sendEmptyMessage(LS_GETTING_ADDRESS_STARTED);
+		controller.sendMessage(LS_GETTING_ADDRESS_STARTED);
 	}
 	
 
@@ -259,7 +256,7 @@ public class LocationServer implements Callback
 	{
 		if (bestLocationProvider == null)
 		{
-			controllerInbox.obtainMessage(LS_NO_PROVIDER_AVAILABLE).sendToTarget();
+			controller.sendMessage(LS_NO_PROVIDER_AVAILABLE);
 			return null;
 		}
 		
@@ -401,7 +398,7 @@ public class LocationServer implements Callback
 		{
 			// TODO Auto-generated catch block
 			// Send message to controller.
-			controllerInbox.obtainMessage(LS_NO_PROVIDER_AVAILABLE).sendToTarget();
+			controller.sendMessage(LS_NO_PROVIDER_AVAILABLE);
 			e.printStackTrace();
 		}
 		
@@ -423,7 +420,7 @@ public class LocationServer implements Callback
 		if (isBetterLocation(location, lastKnownLocation))
 			lastKnownLocation = location;
 		
-		controllerInbox.obtainMessage(LS_LOCATION_CHANGED, lastKnownLocation).sendToTarget();
+		controller.sendMessage(LS_LOCATION_CHANGED, lastKnownLocation);
 	}
 	
 }

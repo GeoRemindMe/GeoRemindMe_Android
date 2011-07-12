@@ -20,9 +20,7 @@ public class UpdateService extends Service
 	{
 		controller = Controller.getInstace(getApplicationContext());
 		
-		Message msg = Message.obtain(controller.getInboxHandler(), S_REQUEST_UPDATE);
-		msg.sendToTarget();
-		
+		controller.sendMessage(S_REQUEST_UPDATE);
 		stopSelf();
 		
 		return START_NOT_STICKY;

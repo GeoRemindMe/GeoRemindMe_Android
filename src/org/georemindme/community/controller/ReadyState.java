@@ -27,7 +27,7 @@ public class ReadyState implements ControllerState
 		Log.i("Ready state received new message", "What: " + msg.what + " || Obj: " + msg.obj);
 		switch(msg.what)
 		{
-			case V_REQUEST_SAVE_ALERT:
+			case ControllerProtocol.V_REQUEST_SAVE_ALERT:
 				controller.saveAlert((Alert) (msg.obj));
 				return true;
 				
@@ -72,6 +72,7 @@ public class ReadyState implements ControllerState
 			case V_REQUEST_ADDRESS:
 				Double[] data = (Double[])msg.obj;
 				controller.getAddress(data[0], data[1]);
+				return true;
 			case S_REQUEST_UPDATE:
 			case V_REQUEST_UPDATE:
 				controller.getServerInstance().sync_data();
@@ -128,34 +129,34 @@ public class ReadyState implements ControllerState
 			case C_LOGIN_FINISHED:
 			case C_LOGOUT_FINISHED:
 			case C_LOGOUT_STARTED:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case C_ALERT_SAVED:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case C_ALERT_CHANGED:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case C_ALERT_DELETED:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case C_ALL_UNDONE_ALERTS:
 			case C_ALL_DONE_ALERTS:
 			case C_ALL_MUTED_ALERTS:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case LS_LOCATION_CHANGED:
 				Log.e("NEW LOCATION", msg.obj.toString());
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case LS_NO_PROVIDER_AVAILABLE:
 				Log.e("No provider available.", " Please check settings");
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case LS_GETTING_ADDRESS_STARTED:
 			case LS_GETTING_ADDRESS_FAILED:
 			case LS_GETTING_ADDRESS_FINISHED:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 			case NS_REQUEST_ALERTS_NEAR:
 				controller.requestAlarmsNear();
@@ -164,7 +165,7 @@ public class ReadyState implements ControllerState
 				controller.notifyAlert((List<Alert>) msg.obj);
 				return true;
 			case S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED:
-				controller.notifyOutboxHandlers(msg.what, msg.arg1, msg.arg2, msg.obj);
+				controller.broadcastMessage(msg);
 				return true;
 		}
 		return false;

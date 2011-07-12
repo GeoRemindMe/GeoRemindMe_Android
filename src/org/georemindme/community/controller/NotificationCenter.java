@@ -1,34 +1,21 @@
 package org.georemindme.community.controller;
 
 
-import static org.georemindme.community.controller.ControllerProtocol.LS_LOCATION_CHANGED;
-import static org.georemindme.community.controller.ControllerProtocol.NS_REQUEST_ALERTS_NEAR;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.georemindme.community.R;
-import org.georemindme.community.controller.location.LocationServer;
 import org.georemindme.community.model.Alert;
-import org.georemindme.community.view.AddAlarmActivity;
 import org.georemindme.community.view.AlertDialog;
-import org.georemindme.community.view.ListTabActivity;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Handler.Callback;
-import android.os.Message;
 import android.util.Log;
 
 
-public class NotificationCenter implements Callback
+public class NotificationCenter
 {
 	private static Controller			controller;
 	private static NotificationCenter	singleton				= null;
@@ -49,17 +36,11 @@ public class NotificationCenter implements Callback
 	private Handler				controllerInbox;
 	private NotificationManager	notificationManager;
 	
-	private Handler				ownInbox;
-	
 	private NotificationCenter(Controller controller)
 	{
 		this.controller = controller;
 		
 		notificationManager = (NotificationManager) controller.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		ownInbox = new Handler(this);
-		controllerInbox = controller.getInboxHandler();
-		controller.addOutboxHandler(ownInbox);
 		
 		alertCenter = new ArrayList<Alert>();
 		
@@ -105,25 +86,6 @@ public class NotificationCenter implements Callback
 		
 		return exist;
 	}
-	
-
-	@Override
-	public boolean handleMessage(Message msg)
-	{
-		// TODO Auto-generated method stub
-		switch (msg.what)
-		{
-			case LS_LOCATION_CHANGED:
-				/*
-				 * Con cada cambio de localizaci—n vamos a comprobar las alertas
-				 * que tenemos cerca que cumplen las restricciones.
-				 */
-				controllerInbox.obtainMessage(NS_REQUEST_ALERTS_NEAR).sendToTarget();
-				return true;
-		}
-		return false;
-	}
-	
 
 	public void notifyAlert(Alert a)
 	{

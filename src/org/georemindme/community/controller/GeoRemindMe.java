@@ -10,6 +10,7 @@ import java.util.List;
 import org.georemindme.community.R;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.model.User;
+import org.georemindme.community.mvcandroidframework.controller.MVCControllerMessages;
 import org.georemindme.community.tools.Logger;
 
 import static org.georemindme.community.controller.ControllerProtocol.*;
@@ -59,11 +60,12 @@ public class GeoRemindMe extends Application
 		
 		controller = Controller.getInstace(getApplicationContext());
 		
-		controller.getInboxHandler().sendEmptyMessage(V_REQUEST_AUTOLOGIN);
-		if (PreferencesController.isStart_on_boot() && PreferencesController.isAutoupdate())
-			controller.getInboxHandler().sendEmptyMessage(V_REQUEST_PERIODICAL_UPDATES);
+		controller.sendMessage(V_REQUEST_AUTOLOGIN);
+		if (PreferencesController.isStart_on_boot()
+				&& PreferencesController.isAutoupdate())
+			controller.sendMessage(V_REQUEST_PERIODICAL_UPDATES);
 		
-		//Logger.start(getApplicationContext(), 0);
+		// Logger.start(getApplicationContext(), 0);
 	}
 	
 
@@ -90,9 +92,9 @@ public class GeoRemindMe extends Application
 		super.onTerminate();
 		
 		controller.cancelPeriodicalUpdates();
-		controller.dispose();
+		controller.sendMessage(MVCControllerMessages.MVCCONTROLLER_QUIT);
 		
-		//Logger.finish();
+		// Logger.finish();
 	}
 	
 	// -------------------------------------------------------------

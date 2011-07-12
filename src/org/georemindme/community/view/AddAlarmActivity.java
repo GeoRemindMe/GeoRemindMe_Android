@@ -9,6 +9,7 @@ import org.georemindme.community.controller.NotificationCenter;
 import org.georemindme.community.controller.PreferencesController;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Time;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.custom.DummyMap;
 import org.georemindme.community.view.custom.MyPositionLayer;
 import org.georemindme.community.view.custom.PickTimeDateDialog;
@@ -48,10 +49,11 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 
 
 public class AddAlarmActivity extends MapActivity implements OnClickListener,
-		PickTimeDateSetListener, Callback
+		PickTimeDateSetListener
 {
-	private Handler				controllerInbox;
-	private Handler				ownInbox;
+	
+	private Controller			controller			= null;
+	private MVCViewComponent	connector			= null;
 	
 	private static final int	PICK_DATE_START		= 1;
 	private static final int	PICK_DATE_END		= 2;
@@ -93,9 +95,52 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.addtaskactivity);
 		
-		ownInbox = new Handler(this);
-		controllerInbox = Controller.getInstace(getApplicationContext()).getInboxHandler();
-		Controller.getInstace(getApplicationContext()).addOutboxHandler(ownInbox);
+		controller = Controller.getInstace(getApplicationContext());
+		connector = new MVCViewComponent(controller)
+		{
+			
+			@Override
+			public boolean handleMessage(Message msg)
+			{
+				// TODO Auto-generated method stub
+				switch (msg.what)
+				{
+					case LS_GETTING_ADDRESS_STARTED:
+						addressView.setText(R.string.address_finding_your_address);
+						return true;
+					case LS_GETTING_ADDRESS_FAILED:
+						addressView.setText(R.string.address_error_finding_your_address);
+						return true;
+					case LS_GETTING_ADDRESS_FINISHED:
+						if (msg.obj != null)
+						{
+							lastAddress = ((Address) msg.obj).getAddressLine(0);
+							addressView.setText(getString(R.string.address) + ": "
+									+ lastAddress);
+						}
+						else
+							addressView.setText(R.string.address_not_available_right_now);
+						return true;
+					case LS_LOCATION_CHANGED:
+					case C_LAST_LOCATION:
+						if (!userSetNewLocation)
+						{
+							controller.sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
+							lastLocation = (Location) msg.obj;
+							setPosition();
+						}
+						return true;
+					case C_ALERT_CHANGED:
+					case C_ALERT_SAVED:
+
+						finish();
+						return true;
+				}
+				
+				return false;
+			}
+		};
+		
 		
 		dashboardButton = (ImageButton) findViewById(R.id.homeButton);
 		dashboardButton.setOnClickListener(this);
@@ -167,8 +212,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				lastLocation = new Location("unknown");
 				lastLocation.setLatitude(alert.getLatitude());
 				lastLocation.setLongitude(alert.getLongitude());
-				controllerInbox.obtainMessage(V_REQUEST_ADDRESS, new Double[] {
-						alert.getLatitude(), alert.getLongitude() }).sendToTarget();
+				controller.sendMessage(V_REQUEST_ADDRESS, new Double[]{alert.getLatitude(), alert.getLongitude()});
 				
 				Controller.getInstace(getApplicationContext()).removeNotification(alert.getId());
 			}
@@ -184,7 +228,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 			
 			if (lastAddress == null)
 			{
-				controllerInbox.sendEmptyMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
+				controller.sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
 			}
 			else
 			{
@@ -193,7 +237,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 			
 			if (lastLocation == null)
 			{
-				controllerInbox.sendEmptyMessage(V_REQUEST_LAST_LOCATION);
+				controller.sendMessage(V_REQUEST_LAST_LOCATION);
 			}
 			else
 			{
@@ -210,12 +254,12 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 	{
 		super.onResume();
 		
-		Controller.getInstace(getApplicationContext()).addOutboxHandler(ownInbox);
+		controller.registerMVCComponent(connector);
 		
 		if (lastAddress == null)
 		{
 			if (mode != EDIT)
-				controllerInbox.sendEmptyMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
+				controller.sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
 		}
 		else
 		{
@@ -307,11 +351,11 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 						alert.setActive(true);
 						alert.setCreated(System.currentTimeMillis() / 1000);
 						
-						controllerInbox.obtainMessage(V_REQUEST_SAVE_ALERT, alert).sendToTarget();
+						controller.sendMessage(V_REQUEST_SAVE_ALERT, alert);
 					}
 					else if (mode == EDIT)
 					{
-						controllerInbox.obtainMessage(V_REQUEST_UPDATE_ALERT, alert).sendToTarget();
+						controller.sendMessage(V_REQUEST_UPDATE_ALERT, alert);
 					}
 					
 				}
@@ -354,7 +398,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					data[0] = true;
 				
 				data[1] = alert.getId();
-				controllerInbox.obtainMessage(V_REQUEST_CHANGE_ALERT_DONE, data).sendToTarget();
+				controller.sendMessage(V_REQUEST_CHANGE_ALERT_DONE, data);
 				break;
 			case R.id.startButton:
 				showDialog(PICK_DATE_START);
@@ -405,49 +449,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		Log.v("Time", time.log());
 	}
-	
-
-	@Override
-	public boolean handleMessage(Message msg)
-	{
-		// TODO Auto-generated method stub
-		switch (msg.what)
-		{
-			case LS_GETTING_ADDRESS_STARTED:
-				addressView.setText(R.string.address_finding_your_address);
-				return true;
-			case LS_GETTING_ADDRESS_FAILED:
-				addressView.setText(R.string.address_error_finding_your_address);
-				return true;
-			case LS_GETTING_ADDRESS_FINISHED:
-				if (msg.obj != null)
-				{
-					lastAddress = ((Address) msg.obj).getAddressLine(0);
-					addressView.setText(getString(R.string.address) + ": "
-							+ lastAddress);
-				}
-				else
-					addressView.setText(R.string.address_not_available_right_now);
-				return true;
-			case LS_LOCATION_CHANGED:
-			case C_LAST_LOCATION:
-				if (!userSetNewLocation)
-				{
-					controllerInbox.obtainMessage(V_REQUEST_LAST_KNOWN_ADDRESS).sendToTarget();
-					lastLocation = (Location) msg.obj;
-					setPosition();
-				}
-				return true;
-			case C_ALERT_CHANGED:
-			case C_ALERT_SAVED:
-
-				finish();
-				return true;
-		}
 		
-		return false;
-	}
-	
 
 	public void setPosition()
 	{
@@ -469,7 +471,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 	public void onStop()
 	{
 		super.onStop();
-		Controller.getInstace(getApplicationContext()).removeOutboxHandler(ownInbox);
+		controller.unregisterMVCComponent(connector);
 	}
 	
 
@@ -477,19 +479,27 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 	{
 		// TODO Auto-generated method stub
 		Intent i = new Intent(AddAlarmActivity.this, MapDialogActivity.class);
-		
-		if (mode == EDIT)
+		Bundle b = new Bundle();
+		if (alert == null)
 		{
-			Bundle b = new Bundle();
 			b.putDouble("LATITUDE", lastLocation.getLatitude());
 			b.putDouble("LONGITUDE", lastLocation.getLongitude());
-			i.putExtra("MODE_FROM_INTENT", MapDialogActivity.MODE_EDIT);
-			i.putExtras(b);
 		}
 		else
 		{
-			i.putExtra("MODE_FROM_INTENT", MapDialogActivity.MODE_SELECT_ADDRESS);
+			b.putDouble("LATITUDE", alert.getLatitude());
+			b.putDouble("LONGITUDE", alert.getLongitude());
 		}
+		i.putExtra("MODE_FROM_INTENT", MapDialogActivity.MODE_EDIT);
+		i.putExtras(b);
+		/*
+		 * if (mode == EDIT) { Bundle b = new Bundle(); b.putDouble("LATITUDE",
+		 * lastLocation.getLatitude()); b.putDouble("LONGITUDE",
+		 * lastLocation.getLongitude()); i.putExtra("MODE_FROM_INTENT",
+		 * MapDialogActivity.MODE_EDIT); i.putExtras(b); } else {
+		 * i.putExtra("MODE_FROM_INTENT",
+		 * MapDialogActivity.MODE_SELECT_ADDRESS); }
+		 */
 		startActivityForResult(i, MAP_DIALOG_ACTIVITY);
 	}
 	

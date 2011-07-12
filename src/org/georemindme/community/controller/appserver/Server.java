@@ -1,12 +1,29 @@
 package org.georemindme.community.controller.appserver;
 
 
-import static org.georemindme.community.controller.ControllerProtocol.*;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_CHANGED;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_DELETED;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_SAVED;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALL_DONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALL_MUTED_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALL_UNDONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.C_LOGIN_FAILED;
+import static org.georemindme.community.controller.ControllerProtocol.C_LOGIN_FINISHED;
+import static org.georemindme.community.controller.ControllerProtocol.C_LOGIN_STARTED;
+import static org.georemindme.community.controller.ControllerProtocol.C_LOGOUT_FINISHED;
+import static org.georemindme.community.controller.ControllerProtocol.C_LOGOUT_STARTED;
+import static org.georemindme.community.controller.ControllerProtocol.C_UPDATE_FAILED;
+import static org.georemindme.community.controller.ControllerProtocol.C_UPDATE_FINISHED;
+import static org.georemindme.community.controller.ControllerProtocol.C_UPDATE_STARTED;
+import static org.georemindme.community.controller.ControllerProtocol.S_ALERT_NEAR;
+import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_CREATE_NEW_USER_FAILED;
+import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_CREATE_NEW_USER_FINISHED;
+import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_CREATE_NEW_USER_STARTED;
+import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_NEXT_TIMELINE_PAGE_FAILED;
+import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED;
+import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_NEXT_TIMELINE_PAGE_STARTED;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,11 +35,12 @@ import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.location.LocationServer;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
+import org.georemindme.community.model.Error;
 import org.georemindme.community.model.Timeline;
 import org.georemindme.community.model.TimelineEvent;
 import org.georemindme.community.model.TimelinePage;
 import org.georemindme.community.model.User;
-import org.georemindme.community.model.Error;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -31,7 +49,6 @@ import org.json.simple.parser.ParseException;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
@@ -72,18 +89,27 @@ public class Server implements Serializable
 	
 	private Database		db;
 	
-	private Handler			controllerInbox;
-	
 	private Thread			loginThread;
 	
 	private User			user		= null;
 	
 	private Controller		controller;
 	
+	private MVCViewComponent connector = null;
+	
 	
 	Server(Context context, Controller controller)
 	{
-		this.controllerInbox = controller.getInboxHandler();
+		connector = new MVCViewComponent(controller)
+		{
+			
+			@Override
+			public boolean handleMessage(Message msg)
+			{
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
 		locationServer = controller.getLocationServer();
 		this.controller = controller;
 		db = Database.getDatabaseInstance(context);
@@ -214,7 +240,7 @@ public class Server implements Serializable
 	{
 		db.changeAlertActive(active, id);
 		Alert a = db.getAlertWithID(id);
-		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
+		controller.sendMessage(C_ALERT_CHANGED);
 	}
 	
 
@@ -222,7 +248,7 @@ public class Server implements Serializable
 	{
 		db.setAlertDone(id, done);
 		Alert a = db.getAlertWithID(id);
-		controllerInbox.obtainMessage(C_ALERT_CHANGED).sendToTarget();
+		controller.sendMessage(C_ALERT_CHANGED);
 	}
 	
 
@@ -236,7 +262,7 @@ public class Server implements Serializable
 	{
 		// TODO Auto-generated method stub
 		db.removeAlert(obj);
-		controllerInbox.obtainMessage(C_ALERT_DELETED).sendToTarget();
+		controller.sendMessage(C_ALERT_DELETED);
 	}
 	
 
@@ -344,7 +370,7 @@ public class Server implements Serializable
 				{
 					Error dbError = new Error("Error JSONRPCException trying to login", System.currentTimeMillis() / 1000);
 					db.addError(dbError);
-					controllerInbox.sendEmptyMessage(C_LOGIN_FAILED);
+					controller.sendMessage(C_LOGIN_FAILED);
 					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
 					// null);
 					e.printStackTrace();
@@ -353,7 +379,7 @@ public class Server implements Serializable
 				{
 					Error dbError = new Error("Login error due maybe autologin and db empty - Not important", System.currentTimeMillis() / 1000);
 					db.addError(dbError);
-					controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
+					controller.sendMessage(C_UPDATE_FAILED);
 					// controller.notifyOutboxHandlers(C_LOGIN_FAILED, 0, 0,
 					// null);
 					e.printStackTrace();
@@ -361,25 +387,17 @@ public class Server implements Serializable
 				finally
 				{
 					if (sessionId != null)
-						controllerInbox.post(new Runnable()
-						{
-							
-							@Override
-							public void run()
-							{
-								Message msg = controllerInbox.obtainMessage(C_LOGIN_FINISHED, user);
-								msg.sendToTarget();
-								// controller.notifyOutboxHandlers(C_LOGIN_FINISHED,
-								// 0, 0, user);
-								Server.this.user = user;
-							}
-						});
+					{
+						controller.sendMessage(C_LOGIN_FINISHED, user);
+						Server.this.user = user;
+					}
+					
 				}
 			}
 		};
 		
 		loginThread.start();
-		controllerInbox.sendEmptyMessage(C_LOGIN_STARTED);
+		controller.sendMessage(C_LOGIN_STARTED);
 		// controller.notifyOutboxHandlers(C_LOGIN_STARTED, 0, 0, null);
 	}
 	
@@ -410,7 +428,7 @@ public class Server implements Serializable
 				}
 				finally
 				{
-					controllerInbox.sendEmptyMessage(C_LOGOUT_FINISHED);
+					controller.sendMessage(C_LOGOUT_FINISHED);
 					// controller.notifyOutboxHandlers(C_LOGOUT_FINISHED, 0, 0,
 					// null);
 				}
@@ -418,7 +436,7 @@ public class Server implements Serializable
 		};
 		
 		t.start();
-		controllerInbox.sendEmptyMessage(C_LOGOUT_STARTED);
+		controller.sendMessage(C_LOGOUT_STARTED);
 		// controller.notifyOutboxHandlers(C_LOGOUT_STARTED, 0, 0, null);
 	}
 	
@@ -488,7 +506,7 @@ public class Server implements Serializable
 			}
 			while (c.moveToNext());
 			
-			controllerInbox.obtainMessage(S_ALERT_NEAR, listado).sendToTarget();
+			controller.sendMessage(S_ALERT_NEAR, listado);
 		}
 		else
 		{
@@ -500,14 +518,14 @@ public class Server implements Serializable
 	public void requestAllDoneAlerts()
 	{
 		Cursor c = db.getAlertsDone();
-		controllerInbox.obtainMessage(C_ALL_DONE_ALERTS, c).sendToTarget();
+		controller.sendMessage(C_ALL_DONE_ALERTS, c);
 	}
 	
 
 	public void requestAllMutedAlerts()
 	{
 		Cursor c = db.getAlertsInactive();
-		controllerInbox.obtainMessage(C_ALL_MUTED_ALERTS, c).sendToTarget();
+		controller.sendMessage(C_ALL_MUTED_ALERTS, c);
 	}
 	
 
@@ -515,7 +533,7 @@ public class Server implements Serializable
 	{
 		// TODO Auto-generated method stub
 		Cursor c = db.getAlertsUndone();
-		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
+		controller.sendMessage(C_ALL_UNDONE_ALERTS, c);
 	}
 	
 
@@ -524,7 +542,7 @@ public class Server implements Serializable
 	{
 		// TODO Auto-generated method stub
 		Cursor c = db.getNearestAlertsUndone(latitude, longitude, radio);
-		controllerInbox.obtainMessage(C_ALL_UNDONE_ALERTS, c).sendToTarget();
+		controller.sendMessage(C_ALL_UNDONE_ALERTS, c);
 	}
 	
 
@@ -532,7 +550,7 @@ public class Server implements Serializable
 	{
 		// TODO Auto-generated method stub
 		db.addAlert(obj);
-		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
+		controller.sendMessage(C_ALERT_SAVED);
 	}
 	
 
@@ -663,7 +681,7 @@ public class Server implements Serializable
 						
 						sendErrorsToServer();
 						
-						controllerInbox.sendEmptyMessage(C_UPDATE_FINISHED);
+						controller.sendMessage(C_UPDATE_FINISHED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FINISHED, 0,
 						// 0, null);
 						
@@ -672,7 +690,7 @@ public class Server implements Serializable
 					{
 						e.printStackTrace();
 						
-						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
+						controller.sendMessage(C_UPDATE_FAILED);
 						
 						Error dbError = new Error("Error JSONRPCException trying to update data", System.currentTimeMillis() / 1000);
 						db.addError(dbError);
@@ -685,7 +703,7 @@ public class Server implements Serializable
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						
-						controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
+						controller.sendMessage(C_UPDATE_FAILED);
 						// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0,
 						// 0, e);
 						Error dbError = new Error("Error ParseException trying to parse data from server", System.currentTimeMillis() / 1000);
@@ -696,12 +714,12 @@ public class Server implements Serializable
 			};
 			
 			t.start();
-			controllerInbox.sendEmptyMessage(C_UPDATE_STARTED);
+			controller.sendMessage(C_UPDATE_STARTED);
 			// controller.notifyOutboxHandlers(C_UPDATE_STARTED, 0, 0, null);
 		}
 		else
 		{
-			controllerInbox.sendEmptyMessage(C_UPDATE_FAILED);
+			controller.sendMessage(C_UPDATE_FAILED);
 			// controller.notifyOutboxHandlers(C_UPDATE_FAILED, 0, 0, null);
 			
 			Error dbError = new Error("Update failed. User tried to update without being log in", System.currentTimeMillis() / 1000);
@@ -713,7 +731,7 @@ public class Server implements Serializable
 	public void updateAlert(Alert alert)
 	{
 		db.refreshAlert(alert);
-		controllerInbox.obtainMessage(C_ALERT_SAVED).sendToTarget();
+		controller.sendMessage(C_ALERT_SAVED);
 	}
 	
 
@@ -746,64 +764,68 @@ public class Server implements Serializable
 				try
 				{
 					if (user_timeline.isCached())
-						data = connection.callString("view_timeline", new Long(user_timeline.getTimelineId()), new Integer(page_index));
+						data = connection.callString("view_timeline", user.getName(), new Long(user_timeline.getTimelineId()), new Integer(page_index));
 					else
-						data = connection.callString("view_timeline");
-				
-					JSONParser parser = new JSONParser();
-					JSONArray jsondata = (JSONArray) parser.parse(data);
-					
-					long id_query = (Long) jsondata.get(0);
-					JSONArray jsonTimelineEvents = (JSONArray) jsondata.get(1);
-					
-					TimelinePage timelinePage = new TimelinePage();
-					
-					for (int i = 0; i < jsonTimelineEvents.size(); i++)
+						data = connection.callString("view_timeline", user.getName());
+					Log.w("DATA for timeline " + page_index, data);
+					if (!data.equals("null"))
 					{
-						JSONObject element = (JSONObject) jsonTimelineEvents.get(i);
-						long id = (Long) element.get("id");
-						long created = (Long) element.get("created");
-						String msg = (String) element.get("msg");
-						String username = (String) element.get("username");
+						JSONParser parser = new JSONParser();
+						JSONArray jsondata = (JSONArray) parser.parse(data);
 						
-						TimelineEvent timelineEvent = new TimelineEvent(id, created, msg, username);
-						timelinePage.queueTimelineEvent(timelineEvent);
+						long id_query = (Long) jsondata.get(0);
+						JSONArray jsonTimelineEvents = (JSONArray) jsondata.get(1);
+						
+						TimelinePage timelinePage = new TimelinePage();
+						
+						for (int i = 0; i < jsonTimelineEvents.size(); i++)
+						{
+							JSONObject element = (JSONObject) jsonTimelineEvents.get(i);
+							long id = (Long) element.get("id");
+							long created = (Long) element.get("created");
+							String msg = (String) element.get("msg");
+							String username = (String) element.get("username");
+							
+							TimelineEvent timelineEvent = new TimelineEvent(id, created, msg, username);
+							timelinePage.queueTimelineEvent(timelineEvent);
+						}
+						
+						if (user_timeline == null)
+							user_timeline = new Timeline();
+						
+						user_timeline.setTimelineId(id_query);
+						user_timeline.setTimelinePageAtPosition(timelinePage, page_index);
 					}
-					
-					if (user_timeline == null)
-						user_timeline = new Timeline();
-					
-					user_timeline.setTimelineId(id_query);
-					user_timeline.setTimelinePageAtPosition(timelinePage, page_index);
-					
-					controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED, user_timeline.getActualTimelinePage()).sendToTarget();
+					controller.sendMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED, user_timeline.getActualTimelinePage());
 				}
 				catch (JSONRPCException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FAILED, e).sendToTarget();
+					controller.sendMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FAILED, e);
 				}
 				catch (ParseException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FAILED, e).sendToTarget();
+					controller.sendMessage(S_REQUEST_NEXT_TIMELINE_PAGE_FAILED, e);
 				}
 				closeConnection();
 			}
 		};
 		
 		thread.start();
-		controllerInbox.obtainMessage(S_REQUEST_NEXT_TIMELINE_PAGE_STARTED).sendToTarget();
+		controller.sendMessage(S_REQUEST_NEXT_TIMELINE_PAGE_STARTED);
 	}
-
+	
 
 	public void createNewUser(final String string, final String string2)
 	{
 		Thread thread = new Thread("createUserThread")
 		{
-			boolean data;
+			boolean	data;
+			
+			
 			public void run()
 			{
 				openConnection();
@@ -811,27 +833,26 @@ public class Server implements Serializable
 				{
 					data = connection.callBoolean("register", string, string2);
 					
-					if(!data)
+					if (!data)
 					{
-						controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_FAILED,
-								R.string.el_usuario_no_se_ha_podido_registrar).sendToTarget();
+						controller.sendMessage(S_REQUEST_CREATE_NEW_USER_FAILED, R.string.el_usuario_no_se_ha_podido_registrar);
 					}
 					else
 					{
-						controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_FINISHED).sendToTarget();
+						controller.sendMessage(S_REQUEST_CREATE_NEW_USER_FINISHED);
 					}
 				}
 				catch (JSONRPCException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_FAILED, e.getMessage()).sendToTarget();
+					controller.sendMessage(S_REQUEST_CREATE_NEW_USER_FAILED, e.getMessage());
 				}
 				closeConnection();
 			}
 		};
 		
 		thread.start();
-		controllerInbox.obtainMessage(S_REQUEST_CREATE_NEW_USER_STARTED).sendToTarget();
+		controller.sendMessage(S_REQUEST_CREATE_NEW_USER_STARTED);
 	}
 }

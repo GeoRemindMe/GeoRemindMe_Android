@@ -1,10 +1,12 @@
 package org.georemindme.community.view;
 
+
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Database;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.adapters.AlertAdapter;
 
 import android.app.ListActivity;
@@ -20,19 +22,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class MutedAlertList extends ListActivity implements OnItemClickListener, Callback
-{	
-	private Cursor			c			= null;
-	private ListView		list;
-	private Bundle			data;
+
+public class MutedAlertList extends ListActivity implements
+		OnItemClickListener
+{
+	private Cursor				c			= null;
+	private ListView			list;
+	private Bundle				data;
 	
-	private Handler			controllerInbox;
-	private Handler			ownInbox;
-	private Controller		controller;
+	private MVCViewComponent	connector	= null;
+	private Controller			controller	= null;
 	
-	private Location		location	= null;
+	private Location			location	= null;
 	
-	private AlertAdapter	adapter		= null;
+	private AlertAdapter		adapter		= null;
 	
 	
 	public void onCreate(Bundle savedInstanceState)
@@ -44,28 +47,48 @@ public class MutedAlertList extends ListActivity implements OnItemClickListener,
 		list.setOnItemClickListener(this);
 		
 		controller = Controller.getInstace(getApplicationContext());
-		controllerInbox = controller.getInboxHandler();
-		ownInbox = new Handler(this);
-		
+		connector = new MVCViewComponent(controller)
+		{
+			
+			@Override
+			public boolean handleMessage(Message msg)
+			{
+				// TODO Auto-generated method stub
+				switch (msg.what)
+				{
+					case C_ALL_MUTED_ALERTS:
+						c = (Cursor) msg.obj;
+						processData();
+						return true;
+					case C_LAST_LOCATION:
+						location = (Location) msg.obj;
+						processData();
+						return true;
+					case C_ALERT_CHANGED:
+						// controllerInbox.obtainMessage(V_REQUEST_ALL_DONE_ALERTS).sendToTarget();
+						return true;
+				}
+				return false;
+			}
+		};
 	}
 	
 
 	public void onResume()
 	{
 		super.onResume();
-		controller.removeOutboxHandler(ownInbox);
-		controller.addOutboxHandler(ownInbox);
+		controller.registerMVCComponent(connector);
 		
-		controllerInbox.obtainMessage(V_REQUEST_ALL_MUTED_ALERTS).sendToTarget();
+		controller.sendMessage(V_REQUEST_ALL_MUTED_ALERTS);
 		if (location == null)
-			controllerInbox.obtainMessage(V_REQUEST_LAST_LOCATION).sendToTarget();
+			controller.sendMessage(V_REQUEST_LAST_LOCATION);
 	}
 	
 
 	public void onStop()
 	{
 		super.onStop();
-		controller.removeOutboxHandler(ownInbox);
+		controller.unregisterMVCComponent(connector);
 	}
 	
 
@@ -82,29 +105,7 @@ public class MutedAlertList extends ListActivity implements OnItemClickListener,
 	{
 		// TODO Auto-generated method stub
 	}
-	
 
-	@Override
-	public boolean handleMessage(Message msg)
-	{
-		// TODO Auto-generated method stub
-		switch (msg.what)
-		{
-			case C_ALL_MUTED_ALERTS:
-				c = (Cursor) msg.obj;
-				processData();
-				return true;
-			case C_LAST_LOCATION:
-				location = (Location) msg.obj;
-				processData();
-				return true;
-			case C_ALERT_CHANGED:
-				//controllerInbox.obtainMessage(V_REQUEST_ALL_DONE_ALERTS).sendToTarget();
-				return true;
-		}
-		return false;
-	}
-	
 
 	private void processData()
 	{
@@ -120,8 +121,7 @@ public class MutedAlertList extends ListActivity implements OnItemClickListener,
 		
 		adapter = new AlertAdapter(this, R.layout.alert_list_item, c, from, to, controller, location);
 		setListAdapter(adapter);
-		//list.invalidate();
-		
+		// list.invalidate();
 		
 	}
 }

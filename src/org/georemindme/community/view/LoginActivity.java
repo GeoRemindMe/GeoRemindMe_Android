@@ -4,6 +4,7 @@ package org.georemindme.community.view;
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.User;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,13 +31,12 @@ import android.widget.Toast;
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
 
-public class LoginActivity extends Activity implements Callback
+public class LoginActivity extends Activity
 {
 	private static final String	LOG			= "Login-Debug";
 	
-	private Controller			controller;
-	private Handler				controllerInbox;
-	private Handler				myHandler;
+	private Controller			controller	= null;
+	private MVCViewComponent	connector	= null;
 	
 	private Button				registerButton, createButton;
 	private EditText			name, pass;
@@ -94,13 +94,11 @@ public class LoginActivity extends Activity implements Callback
 				// TODO Auto-generated method stub
 				if (islogged)
 				{
-					controllerInbox.sendEmptyMessage(V_REQUEST_LOGOUT);
+					controller.sendMessage(V_REQUEST_LOGOUT);
 				}
 				else
 				{
-					controllerInbox.obtainMessage(V_REQUEST_LOGIN, 
-							new User(name.getText().toString(), pass.getText().toString())).sendToTarget();
-					
+					controller.sendMessage(V_REQUEST_LOGIN, new User(name.getText().toString(), pass.getText().toString()));
 				}
 				
 			}
@@ -118,32 +116,85 @@ public class LoginActivity extends Activity implements Callback
 			public void onClick(View v)
 			{
 				// TODO Auto-generated method stub
-				if(!createName.getText().toString().equals(""))
+				if (!createName.getText().toString().equals(""))
 				{
-					if(createPass.getText().toString().equals(createPassConfirm.getText().toString()) 
+					if (createPass.getText().toString().equals(createPassConfirm.getText().toString())
 							&& !createPassConfirm.getText().toString().equals(""))
 					{
-						Object[] data = new Object[] { createName.getText().toString(),
+						Object[] data = new Object[] {
+								createName.getText().toString(),
 								createPassConfirm.getText().toString() };
-						controllerInbox.obtainMessage(V_REQUEST_CREATE_NEW_USER, data).sendToTarget();
+						controller.sendMessage(V_REQUEST_CREATE_NEW_USER, data);
 					}
 					else
 					{
-						//Alerta diciendo que tienen que los pass ser iguales.
+						// Alerta diciendo que tienen que los pass ser iguales.
 						showAlertDialogPasswordsNotEquals();
 					}
 				}
 				else
 				{
-					//Alerta diciendo que tiene que introducir un email.
+					// Alerta diciendo que tiene que introducir un email.
 					showAlertDialogEmailEmpty();
 				}
 				
 			}
 		});
 		controller = Controller.getInstace(getApplicationContext());
-		controllerInbox = controller.getInboxHandler();
-		myHandler = new Handler(this);
+		connector = new MVCViewComponent(controller)
+		{
+			
+			@Override
+			public boolean handleMessage(Message msg)
+			{
+				// TODO Auto-generated method stub
+				switch (msg.what)
+				{
+					case C_IS_LOGGED:
+						setUserIsLoggedIn((User) msg.obj);
+						setScreenFocusOnRegister();
+						setButtonsAsLogged();
+						return true;
+					case C_IS_NOT_LOGGED:
+						setUserIsLoggedOut((User) msg.obj);
+						return true;
+					case C_LOGIN_STARTED:
+						Toast.makeText(getApplicationContext(), R.string.log_in_started, Toast.LENGTH_SHORT).show();
+						return true;
+					case C_LOGIN_FAILED:
+						Toast.makeText(getApplicationContext(), R.string.log_in_failed, Toast.LENGTH_SHORT).show();
+						setScreenFocusOnRegister();
+						return true;
+					case C_LOGIN_FINISHED:
+						Toast.makeText(getApplicationContext(), R.string.login_successful, Toast.LENGTH_SHORT).show();
+						setUserIsLoggedIn((User) msg.obj);
+						controller.sendMessage(V_REQUEST_UPDATE);
+						finish();
+						return true;
+					case C_LOGOUT_STARTED:
+						// Toast.makeText(getApplicationContext(), "Log out started",
+						// Toast.LENGTH_SHORT).show();
+						return true;
+					case C_LOGOUT_FINISHED:
+						// Toast.makeText(getApplicationContext(), "Log out finished",
+						// Toast.LENGTH_SHORT).show();
+						setUserIsLoggedOut(null);
+						setButtonsAsLoggedOut();
+						return true;
+					case S_REQUEST_CREATE_NEW_USER_FINISHED:
+						controller.sendMessage(V_REQUEST_LOGIN, new User(createName.getText().toString(), 
+								createPassConfirm.getText().toString()));
+						return true;
+					case S_REQUEST_CREATE_NEW_USER_STARTED:
+						Toast.makeText(getApplicationContext(), "Creando usuario", Toast.LENGTH_LONG).show();
+						return true;
+					case S_REQUEST_CREATE_NEW_USER_FAILED:
+						Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+						return true;
+				}
+				return false;
+			}
+		};
 		
 	}
 	
@@ -175,8 +226,8 @@ public class LoginActivity extends Activity implements Callback
 	public void onResume()
 	{
 		super.onResume();
-		controller.addOutboxHandler(myHandler);
-		controllerInbox.sendEmptyMessage(V_REQUEST_IS_LOGGED);
+		controller.registerMVCComponent(connector);
+		controller.sendMessage(V_REQUEST_IS_LOGGED);
 	}
 	
 
@@ -189,7 +240,7 @@ public class LoginActivity extends Activity implements Callback
 	public void onStop()
 	{
 		super.onStop();
-		controller.removeOutboxHandler(myHandler);
+		controller.unregisterMVCComponent(connector);
 	}
 	
 
@@ -197,59 +248,6 @@ public class LoginActivity extends Activity implements Callback
 	{
 		super.onDestroy();
 	}
-	
-
-	@Override
-	public boolean handleMessage(Message msg)
-	{
-		// TODO Auto-generated method stub
-		switch (msg.what)
-		{
-			case C_IS_LOGGED:
-				setUserIsLoggedIn((User) msg.obj);
-				setScreenFocusOnRegister();
-				setButtonsAsLogged();
-				return true;
-			case C_IS_NOT_LOGGED:
-				setUserIsLoggedOut((User) msg.obj);
-				return true;
-			case C_LOGIN_STARTED:
-				Toast.makeText(getApplicationContext(), R.string.log_in_started, Toast.LENGTH_SHORT).show();
-				return true;
-			case C_LOGIN_FAILED:
-				Toast.makeText(getApplicationContext(), R.string.log_in_failed, Toast.LENGTH_SHORT).show();
-				setScreenFocusOnRegister();
-				return true;
-			case C_LOGIN_FINISHED:
-				Toast.makeText(getApplicationContext(), R.string.login_successful, Toast.LENGTH_SHORT).show();
-				setUserIsLoggedIn((User) msg.obj);
-				controllerInbox.obtainMessage(V_REQUEST_UPDATE).sendToTarget();
-				finish();
-				return true;
-			case C_LOGOUT_STARTED:
-				// Toast.makeText(getApplicationContext(), "Log out started",
-				// Toast.LENGTH_SHORT).show();
-				return true;
-			case C_LOGOUT_FINISHED:
-				// Toast.makeText(getApplicationContext(), "Log out finished",
-				// Toast.LENGTH_SHORT).show();
-				setUserIsLoggedOut(null);
-				setButtonsAsLoggedOut();
-				return true;
-			case S_REQUEST_CREATE_NEW_USER_FINISHED:
-				controllerInbox.obtainMessage(V_REQUEST_LOGIN, 
-						new User(createName.getText().toString(), createPassConfirm.getText().toString())).sendToTarget();
-				return true;
-			case S_REQUEST_CREATE_NEW_USER_STARTED:
-				Toast.makeText(getApplicationContext(), "Creando usuario", Toast.LENGTH_LONG).show();
-				return true;
-			case S_REQUEST_CREATE_NEW_USER_FAILED:
-				Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
-				return true;
-		}
-		return false;
-	}
-	
 
 	private void setUserIsLoggedIn(User user)
 	{
@@ -316,6 +314,7 @@ public class LoginActivity extends Activity implements Callback
 		showCreate.setEnabled(true);
 	}
 	
+
 	private void showAlertDialogEmailEmpty()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -333,6 +332,7 @@ public class LoginActivity extends Activity implements Callback
 		builder.create().show();
 	}
 	
+
 	private void showAlertDialogPasswordsNotEquals()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -1,62 +1,52 @@
 package org.georemindme.community.view;
 
 
-import java.security.acl.LastOwnerException;
-import java.util.ArrayList;
-import java.util.List;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_CHANGED;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_DELETED;
+import static org.georemindme.community.controller.ControllerProtocol.C_ALL_UNDONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.C_LAST_LOCATION;
+import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_ALL_UNDONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_DELETE_ALERT;
+import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_LAST_LOCATION;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
-import org.georemindme.community.controller.GeoRemindMe;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.adapters.AlertAdapter;
 
 import android.app.ListActivity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CursorAdapter;
-import android.widget.ProgressBar;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import static org.georemindme.community.controller.ControllerProtocol.*;
 
 
 public class UndoneAlertList extends ListActivity implements
-		OnItemClickListener, Callback
+		OnItemClickListener
 {
 	
-	private Cursor			c			= null;
-	private ListView		list;
-	private Bundle			data;
+	private Cursor				c			= null;
+	private ListView			list;
 	
-	private Handler			controllerInbox;
-	private Handler			ownInbox;
-	private Controller		controller;
+	private MVCViewComponent	connector	= null;
+	private Controller			controller	= null;
 	
-	private Location		location	= null;
+	private Location			location	= null;
 	
-	private AlertAdapter	adapter		= null;
+	private AlertAdapter		adapter		= null;
 	
 	
 	public void onCreate(Bundle savedInstanceState)
@@ -69,8 +59,33 @@ public class UndoneAlertList extends ListActivity implements
 		list.setOnItemClickListener(this);
 		
 		controller = Controller.getInstace(getApplicationContext());
-		controllerInbox = controller.getInboxHandler();
-		ownInbox = new Handler(this);
+		connector = new MVCViewComponent(controller)
+		{
+			
+			@Override
+			public boolean handleMessage(Message msg)
+			{
+				// TODO Auto-generated method stub
+				switch (msg.what)
+				{
+					case C_ALL_UNDONE_ALERTS:
+						if (c != null)
+							c.close();
+						c = (Cursor) msg.obj;
+						processData();
+						return true;
+					case C_LAST_LOCATION:
+						location = (Location) msg.obj;
+						processData();
+						return true;
+					case C_ALERT_DELETED:
+					case C_ALERT_CHANGED:
+						controller.sendMessage(V_REQUEST_ALL_UNDONE_ALERTS);
+						return true;
+				}
+				return false;
+			}
+		};
 		
 		registerForContextMenu(list);
 		
@@ -82,11 +97,9 @@ public class UndoneAlertList extends ListActivity implements
 	{
 		super.onResume();
 		Log.i("UAL", "onResume()");
-		controller.removeOutboxHandler(ownInbox);
-		controller.addOutboxHandler(ownInbox);
+		controller.registerMVCComponent(connector);
 		
-		controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
-		controllerInbox.obtainMessage(V_REQUEST_LAST_LOCATION).sendToTarget();
+		controller.sendMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendMessage(V_REQUEST_LAST_LOCATION);
 		
 	}
 	
@@ -95,7 +108,7 @@ public class UndoneAlertList extends ListActivity implements
 	{
 		super.onPause();
 		Log.i("UAL", "onPause()");
-		controller.removeOutboxHandler(ownInbox);
+		controller.unregisterMVCComponent(connector);
 	}
 	
 
@@ -162,61 +175,39 @@ public class UndoneAlertList extends ListActivity implements
 		
 		return null;
 	}
-	
 
-	@Override
-	public boolean handleMessage(Message msg)
+
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo)
 	{
-		// TODO Auto-generated method stub
-		switch (msg.what)
-		{
-			case C_ALL_UNDONE_ALERTS:
-				if(c != null)
-					c.close();
-				c = (Cursor) msg.obj;
-				processData();
-				return true;
-			case C_LAST_LOCATION:
-				location = (Location) msg.obj;
-				processData();
-				return true;
-			case C_ALERT_DELETED:
-			case C_ALERT_CHANGED:
-				controllerInbox.obtainMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendToTarget();
-				return true;
-		}
-		return false;
-	}
-	
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
-	{
-		if(v.equals(list))
+		if (v.equals(list))
 		{
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.alert_context_menu, menu);
 		}
 	}
+	
 
 	public boolean onContextItemSelected(MenuItem item)
 	{
 		AdapterContextMenuInfo adaptercontextmenu = (AdapterContextMenuInfo) item.getMenuInfo();
 		
-		switch(item.getItemId())
+		switch (item.getItemId())
 		{
 			case R.id.menu_item_delete_alert:
 				Alert a = convertCursorPositionToAlert(c, adaptercontextmenu.position);
-				controllerInbox.obtainMessage(V_REQUEST_DELETE_ALERT, a).sendToTarget();
+				controller.sendMessage(V_REQUEST_DELETE_ALERT, a);
 				break;
-				
+			
 			case R.id.menu_item_view_edit_alert:
-				
+
 				break;
 		}
-		
 		
 		return true;
 	}
 	
+
 	private void processData()
 	{
 		if (adapter != null)

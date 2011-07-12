@@ -5,6 +5,7 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
+import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,7 +27,7 @@ import android.widget.Button;
 import android.widget.LinearLayout.LayoutParams;
 
 
-public class Dashboard extends Activity implements OnClickListener, Callback
+public class Dashboard extends Activity implements OnClickListener
 {
 	private final static String	LOG				= "Dashboard-debug";
 	
@@ -43,6 +44,7 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 	
 	private boolean				flag_location	= false;
 	
+	private MVCViewComponent connector = null;
 	
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -67,8 +69,78 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		loginDialog.getWindow().setAttributes(params);
 		
 		controller = Controller.getInstace(getApplicationContext());
+		connector = new MVCViewComponent(controller)
+		{
+			
+			@Override
+			public boolean handleMessage(Message msg)
+			{
+				switch (msg.what)
+				{
+					case C_LOGIN_STARTED:
+						return true;
+					case C_IS_LOGGED:
+						return true;
+					case C_IS_NOT_LOGGED:
+						return true;
+					case C_LOGIN_FINISHED:
+						controller.sendMessage(V_REQUEST_UPDATE);
+						return true;
+					case C_LOGIN_FAILED:
+						return true;
+					case C_UPDATE_STARTED:
+						
+						return true;
+					case C_UPDATE_FINISHED:
+
+						return true;
+					case C_UPDATE_FAILED:
+
+						return true;
+					case LS_NO_PROVIDER_AVAILABLE:
+						// Aqui tengo que ofrecer al usuario la opcion de habilitar la
+						// localizacion.!!!!
+						AlertDialog.Builder builder = new AlertDialog.Builder(Dashboard.this);
+						builder.setMessage(R.string.do_you_want_to_enable_any_location_provider);
+						builder.setCancelable(true);
+						builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+						{
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								// TODO Auto-generated method stub
+								flag_location = true;
+								Intent settingsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+								settingsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+								startActivity(settingsIntent);
+							}
+						});
+						builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+						{
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								// TODO Auto-generated method stub
+								flag_location = false;
+								dialog.cancel();
+							}
+						});
+						builder.create().show();
+						return true;
+					case C_LAST_LOCATION:
+
+						return true;
+					case C_NO_LAST_LOCATION_AVAILABLE:
+
+						return true;
+				}
+				return false;
+			}
+		};
 		
-		controller.getInboxHandler().sendEmptyMessage(V_REQUEST_LAST_LOCATION);
+		controller.sendMessage(V_REQUEST_LAST_LOCATION);
 		
 	}
 	
@@ -77,26 +149,25 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 	{
 		super.onResume();
 		Log.v("DASHBOARD", "onResume");
-		inboxHandler = new Handler(this);
-		controller.addOutboxHandler(inboxHandler);
-		controller.getInboxHandler().sendEmptyMessage(V_REQUEST_IS_LOGGED);
+		
+		controller.registerMVCComponent(connector);
+		controller.sendMessage(V_REQUEST_IS_LOGGED);
 		
 		if(flag_location)
 		{
 			flag_location = false;
-			controller.getInboxHandler().sendEmptyMessage(V_RESET_LOCATION_PROVIDERS);
+			controller.sendMessage(V_RESET_LOCATION_PROVIDERS);
 			
 		}
 		
-		controller.getInboxHandler().sendEmptyMessage(V_REQUEST_LAST_LOCATION);
+		controller.sendMessage(V_REQUEST_LAST_LOCATION);
 	}
 	
 
 	public void onStop()
 	{
 		super.onStop();
-		controller.removeOutboxHandler(inboxHandler);
-		
+		controller.unregisterMVCComponent(connector);
 	}
 	
 
@@ -127,75 +198,6 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 	}
 	
 
-	@Override
-	public boolean handleMessage(Message msg)
-	{
-		switch (msg.what)
-		{
-			case C_LOGIN_STARTED:
-				return true;
-			case C_IS_LOGGED:
-				return true;
-			case C_IS_NOT_LOGGED:
-				return true;
-			case C_LOGIN_FINISHED:
-				Message m = Message.obtain(controller.getInboxHandler(), V_REQUEST_UPDATE);
-				m.sendToTarget();
-
-				return true;
-			case C_LOGIN_FAILED:
-				return true;
-			case C_UPDATE_STARTED:
-				
-				return true;
-			case C_UPDATE_FINISHED:
-
-				return true;
-			case C_UPDATE_FAILED:
-
-				return true;
-			case LS_NO_PROVIDER_AVAILABLE:
-				// Aqui tengo que ofrecer al usuario la opcion de habilitar la
-				// localizacion.!!!!
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage(R.string.do_you_want_to_enable_any_location_provider);
-				builder.setCancelable(true);
-				builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-				{
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
-						// TODO Auto-generated method stub
-						flag_location = true;
-						Intent settingsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-						settingsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-						startActivity(settingsIntent);
-					}
-				});
-				builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
-				{
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
-						// TODO Auto-generated method stub
-						flag_location = false;
-						dialog.cancel();
-					}
-				});
-				builder.create().show();
-				return true;
-			case C_LAST_LOCATION:
-
-				return true;
-			case C_NO_LAST_LOCATION_AVAILABLE:
-
-				return true;
-		}
-		return false;
-	}
-	
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		super.onCreateOptionsMenu(menu);
@@ -214,13 +216,12 @@ public class Dashboard extends Activity implements OnClickListener, Callback
 		{
 			case (R.id.menu_item_sync):
 			{
-				controller.getInboxHandler().obtainMessage(V_REQUEST_UPDATE).sendToTarget();
+				controller.sendMessage(V_REQUEST_UPDATE);
 				break;
 			}
 				
 			case (R.id.menu_item_exit):
 			{
-				controller.getInboxHandler().obtainMessage(V_REQUEST_UPDATE).sendToTarget();
 				System.exit(0);
 				break;
 			}

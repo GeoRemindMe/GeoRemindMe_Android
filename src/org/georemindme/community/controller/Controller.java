@@ -12,6 +12,7 @@ import org.georemindme.community.controller.appserver.UpdateService;
 import org.georemindme.community.controller.location.LocationServer;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.User;
+import org.georemindme.community.mvcandroidframework.controller.MVCController;
 import org.georemindme.community.tools.Logger;
 
 import android.app.AlarmManager;
@@ -26,17 +27,13 @@ import android.os.Message;
 import android.util.Log;
 
 
-public class Controller
+public class Controller extends MVCController
 {
 	private static final String		LOG							= "Controller-debug";
 	
 	private Server					server;
 	private LocationServer			locationServer;
-	private NotificationCenter notificationCenter;
-	
-	private final HandlerThread		inboxHandlerThread;
-	private final Handler			inboxHandler;
-	private final List<Handler>		outboxHandlers				= new ArrayList<Handler>();
+	private NotificationCenter		notificationCenter;
 	
 	private ControllerState			state;
 	
@@ -58,97 +55,31 @@ public class Controller
 		return instance;
 	}
 	
+
 	public LocationServer getLocationServer()
 	{
 		return locationServer;
 	}
 	
+
 	private Controller(Context context)
 	{
-		
+		super(context);
 		this.context = context;
 		preferencesController = new PreferencesController(context);
 		
-		inboxHandlerThread = new HandlerThread("Controller Inbox");
-		inboxHandlerThread.start();
-		
 		state = new ReadyState(this);
-		
-		inboxHandler = new Handler(inboxHandlerThread.getLooper())
-		{
-			public void handleMessage(Message msg)
-			{
-				Controller.this.handleMessage(msg);
-			}
-		};
 		
 		locationServer = LocationServer.getInstance(this);
 		locationServer.startTrackingPosition();
 		
 		server = Server.getInstance(context, this);
 		
-		
-		
 		alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManagerIntent = new Intent(context, UpdateService.class);
 		alarmManagerPendingIntent = PendingIntent.getService(context, 0, alarmManagerIntent, 0);
 		
 		notificationCenter = NotificationCenter.setUp(this);
-	}
-	
-
-	private void handleMessage(Message msg)
-	{
-		// TODO Auto-generated method stub
-		if (!state.handleMessage(msg))
-		{
-			Log.e(LOG, "Unknown message " + msg.toString());
-		}
-	}
-	
-	public Context getContext()
-	{
-		return context;
-	}
-
-	public final Handler getInboxHandler()
-	{
-		return inboxHandler;
-	}
-	
-
-	public final void addOutboxHandler(Handler handler)
-	{
-		outboxHandlers.add(handler);
-	}
-	
-
-	public final void removeOutboxHandler(Handler handler)
-	{
-		outboxHandlers.remove(handler);
-	}
-	
-
-	final synchronized void notifyOutboxHandlers(int what, int arg1, int arg2, Object obj)
-	{
-		if (outboxHandlers.isEmpty())
-		{
-			Logger.write(this, "There is no outbox handlers available");
-		}
-		else
-		{
-			Log.i("Controller send new message", "What: " + what + " || Obj: " + obj);
-			for (Handler h : outboxHandlers)
-			{
-				Message msg = Message.obtain(h, what, arg1, arg2, obj);
-				msg.sendToTarget();
-			}
-		}
-	}
-
-	final void quit()
-	{
-		notifyOutboxHandlers(C_QUIT, 0, 0, null);
 	}
 	
 
@@ -162,13 +93,6 @@ public class Controller
 	final void login(User user)
 	{
 		server.login(user);
-	}
-	
-
-	final void dispose()
-	{
-		inboxHandlerThread.getLooper().quit();
-		locationServer.stopTrackingPosition();
 	}
 	
 
@@ -196,7 +120,7 @@ public class Controller
 			alarmManager.cancel(alarmManagerPendingIntent);
 		}
 	}
-
+	
 
 	final void preferencesChanged(Integer obj)
 	{
@@ -244,32 +168,35 @@ public class Controller
 	void isLogged()
 	{
 		if (server.isUserlogin())
-			notifyOutboxHandlers(C_IS_LOGGED, 0, 0, server.getUser());
+			notifyAllMVCComponents(C_IS_LOGGED, 0, 0, server.getUser());
 		else
 		{
-			notifyOutboxHandlers(C_IS_NOT_LOGGED, 0, 0, server.getDatabaseUser());
-			
+			notifyAllMVCComponents(C_IS_NOT_LOGGED, 0, 0, server.getDatabaseUser());
 		}
 	}
-
+	
+	public Context getContext()
+	{
+		return context;
+	}
 
 	public Server getServerInstance()
 	{
 		// TODO Auto-generated method stub
 		return server;
 	}
-
+	
 
 	public void getLastLocation()
 	{
 		// TODO Auto-generated method stub
 		Location l = locationServer.getLastKnownLocation();
-		if(l == null)
-			notifyOutboxHandlers(C_NO_LAST_LOCATION_AVAILABLE, 0, 0, null);
+		if (l == null)
+			notifyAllMVCComponents(C_NO_LAST_LOCATION_AVAILABLE, 0, 0, null);
 		else
-			notifyOutboxHandlers(C_LAST_LOCATION, 0, 0, l);
+			notifyAllMVCComponents(C_LAST_LOCATION, 0, 0, l);
 	}
-
+	
 
 	public final void restartLocationServer()
 	{
@@ -277,41 +204,43 @@ public class Controller
 		locationServer.stopTrackingPosition();
 		locationServer.startTrackingPosition();
 	}
-
+	
 
 	public void getLastKnownAddress()
 	{
 		// TODO Auto-generated method stub
 		locationServer.getLastKnownAddress();
 	}
-
+	
 
 	void getAddress(Double double1, Double double2)
 	{
 		// TODO Auto-generated method stub
 		locationServer.getAddress(double1, double2);
 	}
-
+	
 
 	void saveAlert(Alert alert)
 	{
 		// TODO Auto-generated method stub
 		server.saveAlert(alert);
 	}
+	
 
 	void updateAlert(Alert alert)
 	{
 		server.updateAlert(alert);
 	}
 	
+
 	void requestAllUndoneAlerts()
 	{
 		// TODO Auto-generated method stub
 		
 		Location lastLocation = locationServer.getLastKnownLocation();
-		if(lastLocation != null)
+		if (lastLocation != null)
 		{
-			server.requestAllUndoneNearestAlerts(lastLocation.getLatitude(), lastLocation.getLongitude(), (int)1E6);
+			server.requestAllUndoneNearestAlerts(lastLocation.getLatitude(), lastLocation.getLongitude(), (int) 1E6);
 		}
 		else
 		{
@@ -319,26 +248,31 @@ public class Controller
 		}
 	}
 	
+
 	void requestAllDoneAlerts()
 	{
 		server.requestAllDoneAlerts();
 	}
 	
+
 	void requestAllMutedAlerts()
 	{
 		server.requestAllMutedAlerts();
 	}
 	
+
 	void changeAlertActive(boolean active, long id)
 	{
 		server.changeAlertActive(active, id);
 	}
 	
+
 	void changeAlertDone(boolean done, long id)
 	{
 		server.changeAlertDone(done, id);
 	}
 	
+
 	void requestAlarmsNear()
 	{
 		Location l = locationServer.getLastKnownLocation();
@@ -350,41 +284,46 @@ public class Controller
 		server.requestAlarmsNear(latE6, lngE6, meters);
 	}
 	
+
 	void notifyAlert(List<Alert> listado)
 	{
-		for(Alert a : listado)
+		for (Alert a : listado)
 			notificationCenter.notifyAlert(a);
 		
 		notificationCenter.refreshNotification();
 	}
 	
-	
+
 	public void removeNotification(long id)
 	{
 		notificationCenter.cancelAlert(id);
 	}
+	
 
 	public void removeAllNotification()
 	{
 		notificationCenter.cancelAllAlerts();
 	}
 	
+
 	public void deleteAlert(Alert obj)
 	{
 		// TODO Auto-generated method stub
 		server.deleteAlert(obj);
 	}
+	
 
 	public void requestNextTimelinePage()
 	{
 		// TODO Auto-generated method stub
 		server.requestNextTimelinePage();
 	}
+	
 
 	public void createNewUser(String string, String string2)
 	{
 		// TODO Auto-generated method stub
 		server.createNewUser(string, string2);
 	}
-
+	
 }

@@ -30,6 +30,7 @@ public class MyPositionLayer extends ItemizedOverlay<OverlayItem>
 	private int							xDragTouchOffset	= 0;
 	private int							yDragTouchOffset	= 0;
 	
+	private long						lastEventTime		= 0;
 	private UserSetNewLocationListener	newlocationlistener;
 	
 	private boolean						draggable;
@@ -53,6 +54,7 @@ public class MyPositionLayer extends ItemizedOverlay<OverlayItem>
 		
 		populate();
 		// TODO Auto-generated constructor stub
+		
 	}
 	
 
@@ -89,7 +91,6 @@ public class MyPositionLayer extends ItemizedOverlay<OverlayItem>
 		final int x = (int) event.getX();
 		final int y = (int) event.getY();
 		boolean result = false;
-		
 		if (draggable)
 		{
 			if (action == MotionEvent.ACTION_DOWN)
@@ -126,20 +127,44 @@ public class MyPositionLayer extends ItemizedOverlay<OverlayItem>
 				populate();
 				result = true;
 			}
-			else if (action == MotionEvent.ACTION_UP && onDrag != null)
+			else if(action == MotionEvent.ACTION_UP)
 			{
-				// dragImage.setVisibility(View.GONE);
-				GeoPoint pt = mapView.getProjection().fromPixels(x
-						- xDragTouchOffset, y - yDragTouchOffset);
-				OverlayItem toDrop = new OverlayItem(pt, onDrag.getTitle(), onDrag.getSnippet());
-				position = toDrop;
-				// populate();
-				
-				newlocationlistener.userSetNewLocationListener(pt);
-				
-				onDrag = null;
-				result = true;
+				if(onDrag != null)
+				{
+					// dragImage.setVisibility(View.GONE);
+					GeoPoint pt = mapView.getProjection().fromPixels(x
+							- xDragTouchOffset, y - yDragTouchOffset);
+					OverlayItem toDrop = new OverlayItem(pt, onDrag.getTitle(), onDrag.getSnippet());
+					position = toDrop;
+					// populate();
+					
+					
+					
+					newlocationlistener.userSetNewLocationListener(pt);
+					
+					onDrag = null;
+					result = true;
+				}
+				else
+				{
+					if(lastEventTime + 1000 > event.getEventTime())
+					{
+						//newlocationlistener.userSetNewLocationListener(pt);
+						Log.i("Double tap", "Oh fuck yeah!!");
+						
+						GeoPoint pt = mapView.getProjection().fromPixels(x
+								- xDragTouchOffset, y - yDragTouchOffset);
+						
+						OverlayItem toDrop = new OverlayItem(pt, "", "");
+						position = toDrop;
+						populate();
+						newlocationlistener.userSetNewLocationListener(pt);
+					}
+					
+					lastEventTime = event.getEventTime();
+				}
 			}
+			
 		}
 		return (result || super.onTouchEvent(event, mapView));
 	}
