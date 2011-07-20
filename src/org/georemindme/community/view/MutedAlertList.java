@@ -6,8 +6,9 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Database;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.adapters.AlertAdapter;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -56,15 +57,15 @@ public class MutedAlertList extends ListActivity implements
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case C_ALL_MUTED_ALERTS:
+					case RESPONSE_ALL_MUTED_ALERTS:
 						c = (Cursor) msg.obj;
 						processData();
 						return true;
-					case C_LAST_LOCATION:
+					case RESPONSE_LAST_LOCATION:
 						location = (Location) msg.obj;
 						processData();
 						return true;
-					case C_ALERT_CHANGED:
+					case RESPONSE_ALERT_CHANGED:
 						// controllerInbox.obtainMessage(V_REQUEST_ALL_DONE_ALERTS).sendToTarget();
 						return true;
 				}
@@ -79,9 +80,9 @@ public class MutedAlertList extends ListActivity implements
 		super.onResume();
 		controller.registerMVCComponent(connector);
 		
-		controller.sendMessage(V_REQUEST_ALL_MUTED_ALERTS);
+		controller.sendMessage(REQUEST_ALL_MUTED_ALERTS);
 		if (location == null)
-			controller.sendMessage(V_REQUEST_LAST_LOCATION);
+			controller.sendMessage(REQUEST_LAST_LOCATION);
 	}
 	
 

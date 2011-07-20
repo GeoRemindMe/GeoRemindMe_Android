@@ -12,7 +12,9 @@ import org.georemindme.community.controller.appserver.UpdateService;
 import org.georemindme.community.controller.location.LocationServer;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.User;
-import org.georemindme.community.mvcandroidframework.controller.MVCController;
+import com.franciscojavierfernandez.android.libraries.mvcframework.controller.MVCController;
+import com.franciscojavierfernandez.android.libraries.mvcframework.controller.MVCControllerStateInterface;
+
 import org.georemindme.community.tools.Logger;
 
 import android.app.AlarmManager;
@@ -26,25 +28,63 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
-
+/**
+ * Clase que representa el controlador de la aplicaci—n siguiendo el modelo MVC. El controlador est‡ basado en un modelo
+ * de estados por lo cual puede presentar diferentes respuestas a los mismos mensajes segœn el estado en el que se
+ * encuentre. Cada componente de la aplicaci—n que implemente la interfaz MVCViewComponent es capaz de recibir mensajes
+ * de este y actuar en consecuencia. 
+ * 
+ * @author franciscojavierfernandeztoro
+ * @version 1.0
+ * @see MVCViewController, MVCControllerExceptionMessageUnknown, MVCControllerExceptionUnknown, MVCController.
+ */
 public class Controller extends MVCController
 {
-	private static final String		LOG							= "Controller-debug";
+	/**
+	 * Instancia del servidor de la aplicaci—n.
+	 */
+	private Server						server;
 	
-	private Server					server;
-	private LocationServer			locationServer;
-	private NotificationCenter		notificationCenter;
+	/**
+	 * Instancia del motor de localizaci—n.
+	 */
+	private LocationServer				locationServer;
 	
-	private ControllerState			state;
+	/**
+	 * Instancia del sistema gestor de notificaciones de la aplicaci—n.
+	 */
+	private NotificationCenter			notificationCenter;
 	
-	private Context					context;
+	/**
+	 * Estado actual del controlador.
+	 */
+	private MVCControllerStateInterface	state;
 	
-	private static Controller		instance;
+	/**
+	 * Contexto del controlador.
+	 */
+	private Context						context;
 	
-	private AlarmManager			alarmManager;
-	private Intent					alarmManagerIntent			= null;
-	private PendingIntent			alarmManagerPendingIntent	= null;
-	private PreferencesController	preferencesController;
+	/**
+	 * Instancia del controlador. Patron de dise–o: singleton.
+	 */
+	private static Controller			instance;
+	
+	/**
+	 * Gestor de alarmas del android framework.
+	 */
+	private AlarmManager				alarmManager;
+	
+	/**
+	 * Intent a ejecutar cuando se dispare la alarma.
+	 */
+	private Intent						alarmManagerIntent			= null;
+	private PendingIntent				alarmManagerPendingIntent	= null;
+	
+	/**
+	 * Controlador de preferencias del sistema.
+	 */
+	private PreferencesController		preferencesController;
 	
 	
 	public static Controller getInstace(Context context)
@@ -70,10 +110,12 @@ public class Controller extends MVCController
 		
 		state = new ReadyState(this);
 		
+		this.changeMVCState(state);
+		
 		locationServer = LocationServer.getInstance(this);
 		locationServer.startTrackingPosition();
 		
-		server = Server.getInstance(context, this);
+		server = Server.getServerInstance(context, this);
 		
 		alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManagerIntent = new Intent(context, UpdateService.class);
@@ -127,38 +169,38 @@ public class Controller extends MVCController
 		// TODO Auto-generated method stub
 		switch (obj)
 		{
-			case P_AUTOUPDATE_CHANGED:
+			case PREFERENCE_AUTOUPDATE_CHANGED:
 				if (PreferencesController.isAutoupdate())
 					setPeriodicalUpdates();
 				else
 					cancelPeriodicalUpdates();
 				break;
-			case P_LOCATION_PROVIDER_ACCURACY_CHANGED:
+			case PREFERENCE_LOCATION_PROVIDER_ACCURACY_CHANGED:
 
 				break;
-			case P_LOCATION_PROVIDER_POWER_CHANGED:
+			case PREFERENCE_LOCATION_PROVIDER_POWER_CHANGED:
 
 				break;
-			case P_LOCATION_UPDATE_RADIUS_CHANGED:
+			case PREFERENCE_LOCATION_UPDATE_RADIUS_CHANGED:
 
 				break;
-			case P_LOCATION_UPDATE_RATE_CHANGED:
+			case PREFERENCE_LOCATION_UPDATE_RATE_CHANGED:
 
 				break;
-			case P_SHOW_SATELLITE_CHANGED:
+			case PREFERENCE_SHOW_SATELLITE_CHANGED:
 
 				break;
-			case P_SHOW_TRAFFIC_CHANGED:
+			case PREFERENCE_SHOW_TRAFFIC_CHANGED:
 
 				break;
-			case P_START_ON_BOOT_CHANGED:
+			case PREFERENCE_START_ON_BOOT_CHANGED:
 
 				break;
-			case P_SYNC_RATE_CHANGED:
+			case PREFERENCE_SYNC_RATE_CHANGED:
 				if (PreferencesController.isAutoupdate())
 					setPeriodicalUpdates();
 				break;
-			case P_ZOOM_LEVEL_CHANGED:
+			case PREFERENCE_ZOOM_LEVEL_CHANGED:
 
 				break;
 		}
@@ -168,17 +210,19 @@ public class Controller extends MVCController
 	void isLogged()
 	{
 		if (server.isUserlogin())
-			notifyAllMVCComponents(C_IS_LOGGED, 0, 0, server.getUser());
+			notifyAllMVCComponents(RESPONSE_IS_LOGGED, 0, 0, server.getUser());
 		else
 		{
-			notifyAllMVCComponents(C_IS_NOT_LOGGED, 0, 0, server.getDatabaseUser());
+			notifyAllMVCComponents(RESPONSE_IS_NOT_LOGGED, 0, 0, server.getLocalUser());
 		}
 	}
 	
+
 	public Context getContext()
 	{
 		return context;
 	}
+	
 
 	public Server getServerInstance()
 	{
@@ -192,9 +236,9 @@ public class Controller extends MVCController
 		// TODO Auto-generated method stub
 		Location l = locationServer.getLastKnownLocation();
 		if (l == null)
-			notifyAllMVCComponents(C_NO_LAST_LOCATION_AVAILABLE, 0, 0, null);
+			notifyAllMVCComponents(RESPONSE_NO_LAST_LOCATION_AVAILABLE, 0, 0, null);
 		else
-			notifyAllMVCComponents(C_LAST_LOCATION, 0, 0, l);
+			notifyAllMVCComponents(RESPONSE_LAST_LOCATION, 0, 0, l);
 	}
 	
 
@@ -219,6 +263,10 @@ public class Controller extends MVCController
 		locationServer.getAddress(double1, double2);
 	}
 	
+	void getCoordinatesFromAddress(String address)
+	{
+		locationServer.getCoordinates(address);
+	}
 
 	void saveAlert(Alert alert)
 	{

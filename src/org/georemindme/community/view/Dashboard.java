@@ -5,7 +5,8 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -77,27 +78,27 @@ public class Dashboard extends Activity implements OnClickListener
 			{
 				switch (msg.what)
 				{
-					case C_LOGIN_STARTED:
+					case RESPONSE_LOGIN_STARTED:
 						return true;
-					case C_IS_LOGGED:
+					case RESPONSE_IS_LOGGED:
 						return true;
-					case C_IS_NOT_LOGGED:
+					case RESPONSE_IS_NOT_LOGGED:
 						return true;
-					case C_LOGIN_FINISHED:
-						controller.sendMessage(V_REQUEST_UPDATE);
+					case RESPONSE_LOGIN_FINISHED:
+						controller.sendMessage(REQUEST_UPDATE);
 						return true;
-					case C_LOGIN_FAILED:
+					case RESPONSE_LOGIN_FAILED:
 						return true;
-					case C_UPDATE_STARTED:
+					case RESPONSE_UPDATE_STARTED:
 						
 						return true;
-					case C_UPDATE_FINISHED:
+					case RESPONSE_UPDATE_FINISHED:
 
 						return true;
-					case C_UPDATE_FAILED:
+					case RESPONSE_UPDATE_FAILED:
 
 						return true;
-					case LS_NO_PROVIDER_AVAILABLE:
+					case RESPONSE_NO_PROVIDER_AVAILABLE:
 						// Aqui tengo que ofrecer al usuario la opcion de habilitar la
 						// localizacion.!!!!
 						AlertDialog.Builder builder = new AlertDialog.Builder(Dashboard.this);
@@ -129,10 +130,10 @@ public class Dashboard extends Activity implements OnClickListener
 						});
 						builder.create().show();
 						return true;
-					case C_LAST_LOCATION:
+					case RESPONSE_LAST_LOCATION:
 
 						return true;
-					case C_NO_LAST_LOCATION_AVAILABLE:
+					case RESPONSE_NO_LAST_LOCATION_AVAILABLE:
 
 						return true;
 				}
@@ -140,7 +141,7 @@ public class Dashboard extends Activity implements OnClickListener
 			}
 		};
 		
-		controller.sendMessage(V_REQUEST_LAST_LOCATION);
+		controller.sendMessage(REQUEST_LAST_LOCATION);
 		
 	}
 	
@@ -151,16 +152,16 @@ public class Dashboard extends Activity implements OnClickListener
 		Log.v("DASHBOARD", "onResume");
 		
 		controller.registerMVCComponent(connector);
-		controller.sendMessage(V_REQUEST_IS_LOGGED);
+		controller.sendMessage(REQUEST_IS_LOGGED);
 		
 		if(flag_location)
 		{
 			flag_location = false;
-			controller.sendMessage(V_RESET_LOCATION_PROVIDERS);
+			controller.sendMessage(REQUEST_RESET_LOCATION_PROVIDERS);
 			
 		}
 		
-		controller.sendMessage(V_REQUEST_LAST_LOCATION);
+		controller.sendMessage(REQUEST_LAST_LOCATION);
 	}
 	
 
@@ -216,7 +217,7 @@ public class Dashboard extends Activity implements OnClickListener
 		{
 			case (R.id.menu_item_sync):
 			{
-				controller.sendMessage(V_REQUEST_UPDATE);
+				controller.sendMessage(REQUEST_UPDATE);
 				break;
 			}
 				

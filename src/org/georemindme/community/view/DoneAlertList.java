@@ -1,17 +1,18 @@
 package org.georemindme.community.view;
 
 
-import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_CHANGED;
-import static org.georemindme.community.controller.ControllerProtocol.C_ALL_DONE_ALERTS;
-import static org.georemindme.community.controller.ControllerProtocol.C_LAST_LOCATION;
-import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_ALL_DONE_ALERTS;
-import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_LAST_LOCATION;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_ALERT_CHANGED;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_ALL_DONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_LAST_LOCATION;
+import static org.georemindme.community.controller.ControllerProtocol.REQUEST_ALL_DONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.REQUEST_LAST_LOCATION;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Database;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.adapters.AlertAdapter;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -56,16 +57,16 @@ public class DoneAlertList extends ListActivity implements OnItemClickListener
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case C_ALL_DONE_ALERTS:
+					case RESPONSE_ALL_DONE_ALERTS:
 						c = (Cursor) msg.obj;
 						processData();
 						return true;
-					case C_LAST_LOCATION:
+					case RESPONSE_LAST_LOCATION:
 						location = (Location) msg.obj;
 						processData();
 						return true;
-					case C_ALERT_CHANGED:
-						controller.sendMessage(V_REQUEST_ALL_DONE_ALERTS);
+					case RESPONSE_ALERT_CHANGED:
+						controller.sendMessage(REQUEST_ALL_DONE_ALERTS);
 						return true;
 				}
 				return false;
@@ -80,9 +81,9 @@ public class DoneAlertList extends ListActivity implements OnItemClickListener
 		super.onResume();
 		controller.registerMVCComponent(connector);
 		
-		controller.sendMessage(V_REQUEST_ALL_DONE_ALERTS);
+		controller.sendMessage(REQUEST_ALL_DONE_ALERTS);
 		if (location == null)
-			controller.sendMessage(V_REQUEST_LAST_LOCATION);
+			controller.sendMessage(REQUEST_LAST_LOCATION);
 	}
 	
 

@@ -1,17 +1,21 @@
 package org.georemindme.community.controller.location;
 
 
-import org.georemindme.community.R;
-import org.georemindme.community.tools.Logger;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 
+/**
+ * Clase que realmente no sé que hace. Tampoco me preocupa porque todo este
+ * módulo de la aplicación va a ser reescrito debido a deficiencias en su
+ * funcionamiento.
+ * 
+ * @author franciscojavierfernandeztoro
+ * @version 1.0
+ */
 public class TemporalLocationListener implements LocationListener
 {
 	private static int				counter	= 0;

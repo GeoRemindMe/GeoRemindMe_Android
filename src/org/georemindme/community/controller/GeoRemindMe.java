@@ -10,8 +10,9 @@ import java.util.List;
 import org.georemindme.community.R;
 import org.georemindme.community.model.Database;
 import org.georemindme.community.model.User;
-import org.georemindme.community.mvcandroidframework.controller.MVCControllerMessages;
 import org.georemindme.community.tools.Logger;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.controller.MVCControllerMessages;
 
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
@@ -60,10 +61,10 @@ public class GeoRemindMe extends Application
 		
 		controller = Controller.getInstace(getApplicationContext());
 		
-		controller.sendMessage(V_REQUEST_AUTOLOGIN);
+		controller.sendMessage(REQUEST_AUTOLOGIN);
 		if (PreferencesController.isStart_on_boot()
 				&& PreferencesController.isAutoupdate())
-			controller.sendMessage(V_REQUEST_PERIODICAL_UPDATES);
+			controller.sendMessage(REQUEST_PERIODICAL_UPDATES_ON);
 		
 		// Logger.start(getApplicationContext(), 0);
 	}

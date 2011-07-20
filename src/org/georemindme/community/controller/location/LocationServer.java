@@ -1,26 +1,16 @@
 package org.georemindme.community.controller.location;
 
 
+import static org.georemindme.community.controller.ControllerProtocol.*;
+
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.TimerTask;
 
-import org.apache.http.client.CircularRedirectException;
-import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.PreferencesController;
-import org.georemindme.community.model.Alert;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
-import org.georemindme.community.tools.Logger;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -29,23 +19,37 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Handler.Callback;
-import android.os.Message;
 import android.util.Log;
 
-import static org.georemindme.community.controller.ControllerProtocol.*;
 
-
-public class LocationServer implements Callback
+/**
+ * Clase que representa el motor de localización de la aplicación.
+ * 
+ * @author franciscojavierfernandeztoro
+ * @version 1.0
+ */
+public class LocationServer
 {
+	/**
+	 * Gestor de localización suministrado por el framework Android.
+	 */
 	private static LocationManager	locationManager;
 	
-	private static final String		LOG			= "LocationServer";
-	
+	/**
+	 * Unica instancia del LocationServer en el sistema. Patrón de diseño:
+	 * Singleton.
+	 */
 	private static LocationServer	singleton	= null;
 	
 	
+	/**
+	 * Metodo para obtener la única instancia del location server que existe en
+	 * el sistema.
+	 * 
+	 * @param controller
+	 *            Controlador el cual recibirá mensajes del esta clase.
+	 * @return Instancia local del LocationServer que existe.
+	 */
 	public static LocationServer getInstance(Controller controller)
 	{
 		if (singleton == null)
@@ -54,24 +58,69 @@ public class LocationServer implements Callback
 		return singleton;
 	}
 	
-	private LocationListener			bestLocationListener;
-	private String						bestLocationProvider	= null;
-	private Controller					controller;
+	/**
+	 * Interfaz que escuchará los cambios en el mejor proveedor de localización
+	 * seleccionador por el sistema según las preferencias establecidas por el
+	 * usuario.
+	 */
+	private LocationListener	bestLocationListener;
 	
-	private int							distanceToRefresh;
+	/**
+	 * Nombre del mejor proveedor de localización encontrado en el sistema según
+	 * las preferencias establecidas por el usuario en las preferencias del
+	 * sistema.
+	 */
+	private String				bestLocationProvider	= null;
 	
-	private Location					lastKnownLocation		= null;
+	/**
+	 * Controlador del sistema con el cual recibirá mensajes de esta clase.
+	 */
+	private Controller			controller;
 	
-	private List<String>				locationProviders		= null;
-	private Map<Long, PendingIntent>	map						= new HashMap<Long, PendingIntent>();
+	/**
+	 * Valor que representa la distancia en metros a la cual se debe refrescar
+	 * el proveedor de localización. Se obtiene de las preferencias del sistema.
+	 */
+	private int					distanceToRefresh;
 	
-	private Handler						ownInbox;
-	private LocationListener			temporalLocationListener;
-	private int							timeToRefresh;
+	/**
+	 * Ultima localización conocida por el sistema. No tiene porqué estar
+	 * vinculada al bestLocationListener.
+	 */
+	private Location			lastKnownLocation		= null;
 	
-	private Criteria					userCriteria			= null;
+	/**
+	 * Listado de los proveedores de localización del sistema.
+	 */
+	private List<String>		locationProviders		= null;
+	
+	/**
+	 * Interfaz que escuchará cambios producidos en los proveedores de
+	 * localización diferentes al bestLocationProvider.
+	 */
+	private LocationListener	temporalLocationListener;
+	
+	/**
+	 * Valor del tiempo mínimo en, minutos, con el cual se debe refrescar el
+	 * proveedor de localización. Se obtiene de las preferencias del sistema.
+	 */
+	private int					timeToRefresh;
+	
+	/**
+	 * Configuración establecida por el usuario en las preferencias del sistema
+	 * indicando las características deseadas para el proveedor de localización
+	 * favorito.
+	 */
+	private Criteria			userCriteria			= null;
 	
 	
+	/**
+	 * Constructor el cual inicializa el motor de localización para su uso en el
+	 * sistema.
+	 * 
+	 * @param controller
+	 *            Controlador el cual recibirá mensajes del esta clase.
+	 */
 	private LocationServer(Controller controller)
 	{
 		this.controller = controller;
@@ -84,7 +133,8 @@ public class LocationServer implements Callback
 		
 		bestLocationListener = new LocationListener()
 		{
-			
+			// Cuando cambia la localización en el proveedor favorito, se pide
+			// una actualización de la misma.
 			@Override
 			public void onLocationChanged(Location location)
 			{
@@ -93,6 +143,9 @@ public class LocationServer implements Callback
 			}
 			
 
+			// Si el proveedor favorito está desabilitado, se piden
+			// actualizaciones de localización al resto de
+			// proveedores del sistema.
 			@Override
 			public void onProviderDisabled(String provider)
 			{
@@ -103,6 +156,9 @@ public class LocationServer implements Callback
 			}
 			
 
+			// Si el proveedor favorito está activo, se eliminan las
+			// actulizaciones de localización
+			// del resto de proveedores del sistema.
 			@Override
 			public void onProviderEnabled(String provider)
 			{
@@ -111,6 +167,11 @@ public class LocationServer implements Callback
 			}
 			
 
+			// Cuando cambia el estado del proveedor favorito, si está
+			// temporalmente inalcanzable, se piden actualizaciones
+			// al resto de proveedores del sistema; en caso de que se haya
+			// vuelto a activar, se eliminan las actualizaciones
+			// del resto de proveedores.
 			@Override
 			public void onStatusChanged(String provider, int status,
 					Bundle extras)
@@ -136,7 +197,8 @@ public class LocationServer implements Callback
 		
 		temporalLocationListener = new LocationListener()
 		{
-			
+			// Cuando cambia la localizacion en algunos de los proveedores no
+			// favoritos, se pide una actualización.
 			@Override
 			public void onLocationChanged(Location location)
 			{
@@ -173,6 +235,15 @@ public class LocationServer implements Callback
 	}
 	
 
+	/**
+	 * Método para obtener la dirección física aproximada a un par de
+	 * coordenadas. La llamada al método se hace en background.
+	 * 
+	 * @param double1
+	 *            Latitud de la coordenada.
+	 * @param double2
+	 *            Longitud de la coordenada.
+	 */
 	public void getAddress(final Double double1, final Double double2)
 	{
 		// TODO Auto-generated method stub
@@ -188,17 +259,17 @@ public class LocationServer implements Callback
 					
 					if (!addresses.isEmpty())
 					{
-						controller.sendMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0));
+						controller.sendMessage(RESPONSE_GETTING_ADDRESS_FINISHED, addresses.get(0));
 					}
 					else
 					{
-						controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
+						controller.sendMessage(RESPONSE_GETTING_ADDRESS_FAILED);
 					}
 				}
 				catch (IOException e)
 				{
 					// TODO Auto-generated catch block
-					controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
+					controller.sendMessage(RESPONSE_GETTING_ADDRESS_FAILED);
 					e.printStackTrace();
 				}
 				catch (Exception e)
@@ -208,10 +279,61 @@ public class LocationServer implements Callback
 			}
 		};
 		t.start();
-		controller.sendMessage(LS_GETTING_ADDRESS_STARTED);
+		controller.sendMessage(RESPONSE_GETTING_ADDRESS_STARTED);
 	}
 	
+	/**
+	 * Método para obtener las coordinadas aproximadas de una dirección pasada por parámetro.
+	 * La llamada al método se hace en background.
+	 * 
+	 * @param address Dirección física de la que buscar sus coordinadas.
+	 */
+	public void getCoordinates(final String address)
+	{
+		Thread t = new Thread("getCoordinatesThread")
+		{
+			public void run()
+			{
+				Geocoder gc = new Geocoder(controller.getContext().getApplicationContext(), Locale.getDefault());
+				try
+				{
+					List<Address> addresses = null;
+					addresses = gc.getFromLocationName(address, 5);
+					
+					if (!addresses.isEmpty())
+					{
+						Address bestCoordinates = addresses.get(0);
+						Location loc = new Location("unknown");
+						loc.setLatitude(bestCoordinates.getLatitude());
+						loc.setLongitude(bestCoordinates.getLongitude());
+						controller.sendMessage(RESPONSE_COORDINATES_FROM_ADDRESS_FINISHED, loc);
+					}
+					else
+					{
+						controller.sendMessage(RESPONSE_COORDINATES_FROM_ADDRESS_FAILED);
+					}
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					controller.sendMessage(RESPONSE_COORDINATES_FROM_ADDRESS_FAILED);
+					e.printStackTrace();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		};
+		t.start();
+		controller.sendMessage(RESPONSE_COORDINATES_FROM_ADDRESS_STARTED);
+	}
 
+	/**
+	 * Método que devuelve la dirección fisica aproximada a la ultima
+	 * localización generada por el sistema. La llamada al método se hace en
+	 * background.
+	 */
 	public void getLastKnownAddress()
 	{
 		Thread t = new Thread("AddressThread")
@@ -225,20 +347,20 @@ public class LocationServer implements Callback
 					if (lastKnownLocation != null)
 						addresses = gc.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 5);
 					else
-						controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
+						controller.sendMessage(RESPONSE_GETTING_ADDRESS_FAILED);
 					if (addresses != null && !addresses.isEmpty())
 					{
-						controller.sendMessage(LS_GETTING_ADDRESS_FINISHED, addresses.get(0));
+						controller.sendMessage(RESPONSE_GETTING_ADDRESS_FINISHED, addresses.get(0));
 					}
 					else
 					{
-						controller.sendMessage(LS_GETTING_ADDRESS_FINISHED);
+						controller.sendMessage(RESPONSE_GETTING_ADDRESS_FINISHED);
 					}
 				}
 				catch (IOException e)
 				{
 					// TODO Auto-generated catch block
-					controller.sendMessage(LS_GETTING_ADDRESS_FAILED);
+					controller.sendMessage(RESPONSE_GETTING_ADDRESS_FAILED);
 					e.printStackTrace();
 				}
 				catch (Exception e)
@@ -248,15 +370,20 @@ public class LocationServer implements Callback
 			}
 		};
 		t.start();
-		controller.sendMessage(LS_GETTING_ADDRESS_STARTED);
+		controller.sendMessage(RESPONSE_GETTING_ADDRESS_STARTED);
 	}
 	
 
+	/**
+	 * Método que devuelve la última localización conocida en el sistema.
+	 * 
+	 * @return
+	 */
 	public Location getLastKnownLocation()
 	{
 		if (bestLocationProvider == null)
 		{
-			controller.sendMessage(LS_NO_PROVIDER_AVAILABLE);
+			controller.sendMessage(RESPONSE_NO_PROVIDER_AVAILABLE);
 			return null;
 		}
 		
@@ -277,20 +404,16 @@ public class LocationServer implements Callback
 	}
 	
 
-	@Override
-	public boolean handleMessage(Message msg)
-	{
-		// TODO Auto-generated method stub
-		switch (msg.what)
-		{
-			case V_REQUEST_LAST_KNOWN_ADDRESS:
-				getLastKnownAddress();
-				return true;
-		}
-		return false;
-	}
-	
-
+	/**
+	 * Método para decidir si una localización es mejor que otra localización y
+	 * establecerla como última localización del sistema.
+	 * 
+	 * @param location
+	 *            Nueva localización a comprobar.
+	 * @param currentBestLocation
+	 *            Ultima mejor localización conocida en el sistema.
+	 * @return
+	 */
 	private boolean isBetterLocation(Location location,
 			Location currentBestLocation)
 	{
@@ -338,7 +461,15 @@ public class LocationServer implements Callback
 	}
 	
 
-	/** Checks whether two providers are the same */
+	/**
+	 * Método para comprobar si dos proveedores de localización son iguales.
+	 * 
+	 * @param provider1
+	 *            Primer proveedor.
+	 * @param provider2
+	 *            Segundo proveedor.
+	 * @return True si son iguales, false en otro caso.
+	 */
 	private boolean isSameProvider(String provider1, String provider2)
 	{
 		if (provider1 == null)
@@ -349,6 +480,11 @@ public class LocationServer implements Callback
 	}
 	
 
+	/**
+	 * Método para establecer la distancia, en metros, a la cual el proveedor de
+	 * localización se debe actualizar. Se obtiene de las preferencias del
+	 * sistema.
+	 */
 	private void setDistanceToRefresh()
 	{
 		// TODO Auto-generated method stub
@@ -358,6 +494,16 @@ public class LocationServer implements Callback
 	}
 	
 
+	/**
+	 * Método para obtener el listado de proveedores de localización activos de
+	 * los cuales dispone el sistema. Se establece el mejor proveedor y el
+	 * listado de los proveedores auxiliares.
+	 * 
+	 * Las preferencias con las cuales se dedide el mejor se obtienen de las
+	 * preferencias del sistema.
+	 * 
+	 * @throws LocationProviderUnavailableException
+	 */
 	private void setLocationProviders()
 			throws LocationProviderUnavailableException
 	{
@@ -378,6 +524,10 @@ public class LocationServer implements Callback
 	}
 	
 
+	/**
+	 * Método para establecer el tiempo, en minutos, por el cual el proveedor de
+	 * localización se debe actualizar.
+	 */
 	private void setTimeToRefresh()
 	{
 		// TODO Auto-generated method stub
@@ -385,6 +535,9 @@ public class LocationServer implements Callback
 	}
 	
 
+	/**
+	 * Método para comenzar el tracking de posiciones.
+	 */
 	public void startTrackingPosition()
 	{
 		setTimeToRefresh();
@@ -398,13 +551,16 @@ public class LocationServer implements Callback
 		{
 			// TODO Auto-generated catch block
 			// Send message to controller.
-			controller.sendMessage(LS_NO_PROVIDER_AVAILABLE);
+			controller.sendMessage(RESPONSE_NO_PROVIDER_AVAILABLE);
 			e.printStackTrace();
 		}
 		
 	}
 	
 
+	/**
+	 * Método para detener el tracking de posiciones.
+	 */
 	public void stopTrackingPosition()
 	{
 		locationManager.removeUpdates(bestLocationListener);
@@ -412,6 +568,12 @@ public class LocationServer implements Callback
 	}
 	
 
+	/**
+	 * Método para establecer una nueva localización en caso de que sea mejor
+	 * que la anterior.
+	 * 
+	 * @param location
+	 */
 	private synchronized void updateLocation(Location location)
 	{
 		Log.i("LOCATION SERVER", "updateLocation " + location.getLatitude()
@@ -420,7 +582,7 @@ public class LocationServer implements Callback
 		if (isBetterLocation(location, lastKnownLocation))
 			lastKnownLocation = location;
 		
-		controller.sendMessage(LS_LOCATION_CHANGED, lastKnownLocation);
+		controller.sendMessage(RESPONSE_LOCATION_CHANGED, lastKnownLocation);
 	}
 	
 }

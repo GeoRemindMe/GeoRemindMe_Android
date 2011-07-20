@@ -273,4 +273,8 @@
 	<string name="cuentas">Cuentas</string>
 	<string name="ultimas_noticias">Ultimas noticias</string>
 	<string name="no_hay_ultimas_noticias_que_mostrar">No hay últimas noticias que mostrar</string>
+	<string name="buscar_direccion">Buscar dirección</string>
+	<string name="establecer_alerta_en_posicion_actual">Establecer alerta en posicion actual</string>
+	<string name="direccion">Dirección</string>
+	<string name="direccion_a_buscar">Dirección a buscar</string>
 </resources>

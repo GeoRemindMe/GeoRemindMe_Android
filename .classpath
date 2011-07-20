@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="json_simple-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/franciscojavierfernandeztoro/Documents/workspace/GeoRemindMe_CE/android_mvc_framework.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

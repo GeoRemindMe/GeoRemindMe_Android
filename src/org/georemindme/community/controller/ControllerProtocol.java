@@ -6,89 +6,89 @@ import org.georemindme.community.R;
 
 public interface ControllerProtocol
 {
-	int	V_REQUEST_QUIT							= 101;	// empty
-	int	V_REQUEST_LOGIN							= 102;	// obj = (User) data
-	int	V_REQUEST_AUTOLOGIN						= 103;	// empty
-	int	V_REQUEST_LOGOUT						= 104;	// empty
-	int	V_REQUEST_PERIODICAL_UPDATES			= 105;	// empty
-	int	V_REQUEST_QUIT_PERIODICAL_UPDATES		= 106;	// empty
-	int	V_REQUEST_UPDATE						= 107;	// empty
-	int	V_REQUEST_IS_LOGGED						= 108;
-	int	V_REQUEST_LAST_LOCATION					= 109;
-	int	V_RESET_LOCATION_PROVIDERS				= 110;
-	int	V_REQUEST_LAST_KNOWN_ADDRESS			= 111;
-	int	V_REQUEST_ADDRESS						= 112;	// obj = new
-														// Double[latitude,
-														// longitude]
-	int	V_REQUEST_ALL_UNDONE_ALERTS				= 113;
-	int	V_REQUEST_ALL_DONE_ALERTS				= 114;
-	int	V_REQUEST_ALL_MUTED_ALERTS				= 115;
 	
-	int	V_REQUEST_SAVE_ALERT					= 116;	// obj = (Alert) new
-														// alert.
-	int	V_REQUEST_CHANGE_ALERT_ACTIVE			= 117;	// obj = (Object[])
-														// on/off | id;
-	int	V_REQUEST_CHANGE_ALERT_DONE				= 118;
-	int	V_REQUEST_UPDATE_ALERT					= 119;	// Object = Alert.
-	int	V_REQUEST_DELETE_ALERT					= 120;	// Object = alert.
-														
-	int	V_REQUEST_NEXT_TIMELINE_PAGE			= 121;
+	int	PREFERENCE_3G_LOCATION							= 101;
+	int	PREFERENCE_AUTOUPDATE_CHANGED					= 102;
+	int	PREFERENCE_LOCATION_PROVIDER_ACCURACY_CHANGED	= 103;
+	int	PREFERENCE_LOCATION_PROVIDER_POWER_CHANGED		= 104;
+	int	PREFERENCE_LOCATION_UPDATE_RADIUS_CHANGED		= 105;
+	int	PREFERENCE_LOCATION_UPDATE_RATE_CHANGED			= 106;
+	int	PREFERENCE_PREFERENCE_CHANGED					= 107;	// obj =
+																// (Integer)
+	int	PREFERENCE_SHOW_SATELLITE_CHANGED				= 108;
+	int	PREFERENCE_SHOW_TRAFFIC_CHANGED					= 109;
+	int	PREFERENCE_START_ON_BOOT_CHANGED				= 110;
+	int	PREFERENCE_SYNC_RATE_CHANGED					= 111;	// P_XXX_YYY_CHANGED
+	int	PREFERENCE_ZOOM_LEVEL_CHANGED					= 112;
 	
-	int	V_REQUEST_CREATE_NEW_USER				= 122;	// obj -> {name, pass}
-														
-	int	C_QUIT									= 201;	// empty
-	int	C_LOGIN_STARTED							= 202;	// empty
-	int	C_LOGIN_FINISHED						= 203;	// empty
-	int	C_LOGOUT_STARTED						= 204;	// empty
-	int	C_LOGOUT_FINISHED						= 205;	// obj = (User)
-	int	C_LOGIN_FAILED							= 206;	// empty
-	int	C_UPDATE_STARTED						= 207;
-	int	C_UPDATE_FINISHED						= 208;
-	int	C_UPDATE_FAILED							= 209;
-	int	C_IS_LOGGED								= 210;	// obj = (User) data
-	int	C_IS_NOT_LOGGED							= 211;
-	int	C_NO_LAST_LOCATION_AVAILABLE			= 212;
-	int	C_LAST_LOCATION							= 213;	// obj = (Location)
-														// lastlocation
-	int	C_ALERT_SAVED							= 214;
-	int	C_ALL_UNDONE_ALERTS						= 215;	// obj = (Cursor) data
-	int	C_ALL_DONE_ALERTS						= 216;	// obj = (Cursor) data
-	int	C_ALL_MUTED_ALERTS						= 217;	// obj = (Cursor) data
-	int	C_ALERT_CHANGED							= 218;
-	int	C_ALERT_DELETED							= 219;
+	int	REQUEST_ADDRESS									= 201;	// obj = new
+	int	REQUEST_ALL_DONE_ALERTS							= 202;
+	int	REQUEST_ALL_MUTED_ALERTS						= 203;	// Double[latitude,longitude]
+	int	REQUEST_ALL_UNDONE_ALERTS						= 204;
+	int	REQUEST_AUTOLOGIN								= 205;	// empty alert.
+	int	REQUEST_CHANGE_ALERT_ACTIVE						= 206;	// obj =
+																// (Object[])
+																// on/off | id;
+	int	REQUEST_CHANGE_ALERT_DONE						= 207;
+	int	REQUEST_CREATE_NEW_USER							= 208;	// obj -> {name,
+																// pass}
+	int	REQUEST_DELETE_ALERT							= 209;	// Object =
+																// alert.
+	int	REQUEST_IS_LOGGED								= 210;
+	int	REQUEST_LAST_KNOW_ADDRESS						= 211;
+	int	REQUEST_LAST_LOCATION							= 212;
+	int	REQUEST_LOGIN									= 213;	// obj = (User)
+																// data
+	int	REQUEST_LOGOUT									= 214;	// empty
+	int	REQUEST_NEXT_TIMELINE_PAGE						= 215;
+	int	REQUEST_PERIODICAL_UPDATES_OFF					= 216;	// empty
+	int	REQUEST_PERIODICAL_UPDATES_ON					= 217;	// empty
+	int	REQUEST_QUIT									= 218;	// empty
+	int	REQUEST_RESET_LOCATION_PROVIDERS				= 219;
+	int	REQUEST_SAVE_ALERT								= 220;	// obj = (Alert)
+																// new
+	int	REQUEST_UPDATE									= 221;	// empty
+	int	REQUEST_UPDATE_ALERT							= 222;	// Object =
+																// Alert.
+	int	REQUEST_COORDINATES_FROM_ADDRESS				= 223;	// Object =
+																// String
+																// (address)
+																
+	int	RESPONSE_ALERT_CHANGED							= 301;
+	int	RESPONSE_ALERT_DELETED							= 302;	// lastlocation
+	int	RESPONSE_ALERT_NEAR								= 303;	// Object alert
+	int	RESPONSE_ALERT_SAVED							= 304;
+	int	RESPONSE_ALL_DONE_ALERTS						= 305;	// obj =
+																// (Cursor) data
+	int	RESPONSE_ALL_MUTED_ALERTS						= 306;	// obj =
+	int	RESPONSE_ALL_UNDONE_ALERTS						= 307;	// obj =
+	int	RESPONSE_CREATE_NEW_USER_FAILED					= 308;	// obj -> excp.
+	int	RESPONSE_CREATE_NEW_USER_FINISHED				= 309;	// Obj ->
+	int	RESPONSE_CREATE_NEW_USER_STARTED				= 310;
+	int	RESPONSE_GETTING_ADDRESS_FAILED					= 311;
+	int	RESPONSE_GETTING_ADDRESS_FINISHED				= 312;
+	int	RESPONSE_GETTING_ADDRESS_STARTED				= 313;
+	int	RESPONSE_IS_LOGGED								= 314;	// obj = (User)
+	int	RESPONSE_IS_NOT_LOGGED							= 315;
+	int	RESPONSE_LAST_LOCATION							= 316;	// obj =
+	int	RESPONSE_LOCATION_CHANGED						= 317;	// obj =
+	int	RESPONSE_LOGIN_FAILED							= 318;	// empty
+	int	RESPONSE_LOGIN_FINISHED							= 319;	// empty
+	int	RESPONSE_LOGIN_STARTED							= 320;	// empty
+	int	RESPONSE_LOGOUT_FINISHED						= 321;	// obj = (User)
+	int	RESPONSE_LOGOUT_STARTED							= 322;	// empty
+	int	RESPONSE_NEXT_TIMELINE_PAGE_FAILED				= 323;
+	int	RESPONSE_NEXT_TIMELINE_PAGE_FINISHED			= 324;
+	int	RESPONSE_NEXT_TIMELINE_PAGE_STARTED				= 325;
+	int	RESPONSE_NO_LAST_LOCATION_AVAILABLE				= 326;
+	int	RESPONSE_NO_PROVIDER_AVAILABLE					= 327;
+	int	RESPONSE_QUIT									= 328;	// empty
+	int	RESPONSE_REQUEST_ALERTS_NEAR					= 329;
+	int	RESPONSE_UPDATE_FAILED							= 330;
+	int	RESPONSE_UPDATE_FINISHED						= 331;
+	int	RESPONSE_UPDATE_STARTED							= 332;
+	int	RESPONSE_COORDINATES_FROM_ADDRESS_STARTED		= 333;
+	int	RESPONSE_COORDINATES_FROM_ADDRESS_FAILED		= 334;
+	int	RESPONSE_COORDINATES_FROM_ADDRESS_FINISHED		= 335; // Obj -> Location
 	
-	int	S_REQUEST_UPDATE						= 301;	// empty
-	int	S_ALERT_NEAR							= 302;	// Object alert
-	int	S_RESPONSE_NEXT_TIMELINE_PAGE			= 303;	// Object ->
-														// TimelinePage
-	int	S_REQUEST_NEXT_TIMELINE_PAGE_STARTED	= 304;
-	int	S_REQUEST_NEXT_TIMELINE_PAGE_FAILED		= 305;
-	int	S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED	= 306;
-	
-	int	S_REQUEST_CREATE_NEW_USER_STARTED		= 307;
-	int	S_REQUEST_CREATE_NEW_USER_FAILED		= 308;	// obj -> excp.
-	int	S_REQUEST_CREATE_NEW_USER_FINISHED		= 309;	// Obj -> true/false
-														
-	int	P_PREFERENCE_CHANGED					= 401;	// obj = (Integer)
-														// P_XXX_YYY_CHANGED
-	int	P_ZOOM_LEVEL_CHANGED					= 401;
-	int	P_SHOW_SATELLITE_CHANGED				= 402;
-	int	P_SHOW_TRAFFIC_CHANGED					= 403;
-	int	P_LOCATION_UPDATE_RADIUS_CHANGED		= 404;
-	int	P_LOCATION_UPDATE_RATE_CHANGED			= 405;
-	int	P_LOCATION_PROVIDER_ACCURACY_CHANGED	= 406;
-	int	P_LOCATION_PROVIDER_POWER_CHANGED		= 407;
-	int	P_SYNC_RATE_CHANGED						= 408;
-	int	P_START_ON_BOOT_CHANGED					= 409;
-	int	P_AUTOUPDATE_CHANGED					= 410;
-	int	P_3G_LOCATION							= 411;
-	
-	int	LS_LOCATION_CHANGED						= 501;	// obj = (Location)
-														// lastKnownLocation
-	int	LS_NO_PROVIDER_AVAILABLE				= 502;
-	int	LS_GETTING_ADDRESS_STARTED				= 503;
-	int	LS_GETTING_ADDRESS_FAILED				= 504;
-	int	LS_GETTING_ADDRESS_FINISHED				= 505;
-	
-	int	NS_REQUEST_ALERTS_NEAR					= 601;
 }

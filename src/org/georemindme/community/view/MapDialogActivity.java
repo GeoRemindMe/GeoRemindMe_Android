@@ -4,10 +4,10 @@ package org.georemindme.community.view;
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.controller.PreferencesController;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.custom.MyPositionLayer;
 import org.georemindme.community.view.custom.MyPositionLayer.UserSetNewLocationListener;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Address;
@@ -17,12 +17,20 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -35,8 +43,8 @@ import static org.georemindme.community.controller.ControllerProtocol.*;
 public class MapDialogActivity extends MapActivity implements
 		UserSetNewLocationListener
 {
-	private Controller			controller			= null;
-	private MVCViewComponent	connector			= null;
+	private Controller			controller		= null;
+	private MVCViewComponent	connector		= null;
 	
 	private double				latitude, longitude;
 	private String				address;
@@ -52,14 +60,11 @@ public class MapDialogActivity extends MapActivity implements
 	private MyPositionLayer		positionOverlay;
 	
 	private Location			locationUsed;
+	private Location			userLocation	= null;
 	
-	private Intent				intent;
+	private Bundle				data			= null;
 	
-	public static final int		MODE_SHOW			= 0;
-	public static final int		MODE_SELECT_ADDRESS	= 1;
-	public static final int		MODE_EDIT			= 2;
-	
-	private int					mode				= 0;
+	private int					mode			= 0;
 	
 	
 	public void onCreate(Bundle savedInstanceState)
@@ -67,15 +72,9 @@ public class MapDialogActivity extends MapActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mapdialogactivity);
 		
-		intent = getIntent();
-		if (intent != null)
+		data = getIntent().getExtras();
+		if (data != null)
 		{
-			mode = intent.getIntExtra("MODE_FROM_INTENT", MODE_SHOW);
-		}
-		
-		if (mode == MODE_EDIT)
-		{
-			Bundle data = getIntent().getExtras();
 			locationUsed = new Location("unknown");
 			locationUsed.setLatitude(data.getDouble("LATITUDE"));
 			locationUsed.setLongitude(data.getDouble("LONGITUDE"));
@@ -91,49 +90,53 @@ public class MapDialogActivity extends MapActivity implements
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case C_LAST_LOCATION:
-						if (mode != MODE_EDIT)
-						{
-							Location l = (Location) msg.obj;
-							if (l != null)
-							{
-								locationUsed = l;
-								setPosition();
-							}
-						}
+					case RESPONSE_LAST_LOCATION:
+					case RESPONSE_LOCATION_CHANGED:
+						userLocation = (Location) msg.obj;
 						return true;
-					case C_NO_LAST_LOCATION_AVAILABLE:
+					case RESPONSE_NO_LAST_LOCATION_AVAILABLE:
 
 						return true;
-					case LS_GETTING_ADDRESS_STARTED:
+					case RESPONSE_GETTING_ADDRESS_STARTED:
 						address = getString(R.string.address_error_finding_your_address);
-						addressTextView.setText(getString(R.string.address) + ": "
-								+ address);
+						addressTextView.setText(getString(R.string.address)
+								+ ": " + address);
 						return true;
-					case LS_GETTING_ADDRESS_FINISHED:
+					case RESPONSE_GETTING_ADDRESS_FINISHED:
 						if (msg.obj != null)
 						{
 							address = ((Address) msg.obj).getAddressLine(0);
-							addressTextView.setText(getString(R.string.address) + ": "
-									+ address);
+							addressTextView.setText(getString(R.string.address)
+									+ ": " + address);
 						}
 						else
 						{
 							address = getString(R.string.not_available_right_now);
-							addressTextView.setText(getString(R.string.address) + ": "
-									+ address);
+							addressTextView.setText(getString(R.string.address)
+									+ ": " + address);
 						}
 						return true;
-					case LS_GETTING_ADDRESS_FAILED:
+					case RESPONSE_GETTING_ADDRESS_FAILED:
 						address = getString(R.string.address_error_finding_your_address);
-						addressTextView.setText(getString(R.string.address) + ": "
-								+ address);
+						addressTextView.setText(getString(R.string.address)
+								+ ": " + address);
+						return true;
+					case RESPONSE_COORDINATES_FROM_ADDRESS_FINISHED:
+						setPosition((Location) msg.obj);
+						return true;
+					case RESPONSE_COORDINATES_FROM_ADDRESS_FAILED:
+						Log.i("Conversi—n err—nea", ".... ups!....");
+						return true;
+					case RESPONSE_COORDINATES_FROM_ADDRESS_STARTED:
+						Log.i("Conversi—n empezada", ".... esperando....");
 						return true;
 				}
 				return false;
 			}
 		};
 		controller.registerMVCComponent(connector);
+		
+		controller.sendMessage(REQUEST_LAST_LOCATION);
 		
 		okButton = (Button) findViewById(R.id.mapdialogactivity_okbutton);
 		okButton.setOnClickListener(new View.OnClickListener()
@@ -143,16 +146,19 @@ public class MapDialogActivity extends MapActivity implements
 			public void onClick(View v)
 			{
 				// TODO Auto-generated method stub
-				Intent data = new Intent();
-				Bundle b = new Bundle();
+				Intent data = null;
+				if (locationUsed != null)
+				{
+					data = new Intent();
+					Bundle b = new Bundle();
+					
+					b.putDouble("LATITUDE", locationUsed.getLatitude());
+					b.putDouble("LONGITUDE", locationUsed.getLongitude());
+					b.putString("ADDRESS", address);
+					data.putExtras(b);
+				}
 				
-				b.putDouble("LATITUDE", locationUsed.getLatitude());
-				b.putDouble("LONGITUDE", locationUsed.getLongitude());
-				b.putString("ADDRESS", address);
-				
-				data.putExtras(b);
-				
-				PreferencesController.setZoom(map.getZoomLevel());
+				// PreferencesController.setZoom(map.getZoomLevel());
 				
 				setResult(RESULT_OK, data);
 				finish();
@@ -167,20 +173,111 @@ public class MapDialogActivity extends MapActivity implements
 			public void onClick(View v)
 			{
 				// TODO Auto-generated method stub
-				controller.sendMessage(V_REQUEST_LAST_LOCATION);
+				setCenterAtUserLocation();
 			}
 		});
+		
 		map = (MapView) findViewById(R.id.mapdialogactivity_map);
 		mapController = map.getController();
 		
 		map.setBuiltInZoomControls(true);
 		map.setTraffic(PreferencesController.isTraffic());
 		map.setSatellite(PreferencesController.isSatellite());
-		
+		final GestureDetector mapGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener()
+		{
+			public void onLongPress(MotionEvent e)
+			{
+			}
+			
+
+			public boolean onDoubleTap(MotionEvent e)
+			{
+				
+				GeoPoint doubletap_gp = map.getProjection().fromPixels((int) e.getX(), (int) e.getY());
+				locationUsed.setLatitude(doubletap_gp.getLatitudeE6() / 1E6);
+				locationUsed.setLongitude(doubletap_gp.getLongitudeE6() / 1E6);
+				userSetNewLocationListener(doubletap_gp);
+				return super.onDoubleTap(e);
+			}
+			
+
+			public boolean onSingleTapUp(MotionEvent e)
+			{
+				
+				return super.onDown(e);
+			}
+		});
+		map.setOnTouchListener(new View.OnTouchListener()
+		{
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event)
+			{
+				// TODO Auto-generated method stub
+				mapGestureDetector.onTouchEvent(event);
+				return false;
+			}
+		});
 		addressTextView = (TextView) findViewById(R.id.mapdialogactivity_address);
 		
-		setData(savedInstanceState);
+		if (savedInstanceState == null)
+			setData(data);
+		else
+			setData(savedInstanceState);
 		
+	}
+	
+
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		super.onCreateOptionsMenu(menu);
+		
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.mapdialogactivity_menu, menu);
+		
+		return true;
+	}
+	
+
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		super.onOptionsItemSelected(item);
+		
+		switch (item.getItemId())
+		{
+			case (R.id.mapdialogactivity_menu_findaddress):
+			{
+				android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(this);
+				
+				alert.setTitle(R.string.direccion);
+				alert.setMessage(R.string.direccion_a_buscar);
+				
+				// Set an EditText view to get user input
+				final EditText input = new EditText(this);
+				alert.setView(input);
+				
+				alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int whichButton)
+					{
+						String value = input.getText().toString();
+						controller.sendMessage(REQUEST_COORDINATES_FROM_ADDRESS, value);
+					}
+				});
+				
+				alert.show();
+				break;
+			}
+				
+			case (R.id.mapdialogactivity_menu_setalertatuserlocation):
+			{
+				locationUsed = userLocation;
+				GeoPoint point = new GeoPoint((int) (locationUsed.getLatitude() * 1E6), (int) (locationUsed.getLongitude() * 1E6));
+				userSetNewLocationListener(point);
+				break;
+			}
+		}
+		return true;
 	}
 	
 
@@ -196,23 +293,12 @@ public class MapDialogActivity extends MapActivity implements
 			locationUsed.setLatitude(latitude);
 			locationUsed.setLongitude(longitude);
 			
-			addressTextView.setText(R.string.address + ": " + address);
+			addressTextView.setText(getString(R.string.address) + ": "
+					+ address);
 			
 		}
-		else
-		{
-			if (mode != MODE_EDIT)
-			{
-				controller.sendMessage(V_REQUEST_LAST_LOCATION).sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
-			}
-			else
-			{
-				controller.sendMessage(V_REQUEST_ADDRESS, new Double[] {
-						locationUsed.getLatitude(), locationUsed.getLongitude() });
-			}
-		}
 		
-		// setPosition();
+		setPosition();
 		
 	}
 	
@@ -231,24 +317,27 @@ public class MapDialogActivity extends MapActivity implements
 			map.getOverlays().clear();
 			map.getOverlays().add(positionOverlay);
 			
-			if (mode != MODE_SHOW)
-			{
-				
-				positionOverlay.setDraggable(true);
-			}
-			else
-			{
-				putAllAlerts();
-				positionOverlay.setDraggable(false);
-			}
+			positionOverlay.setDraggable(true);
+			
 		}
 		
 	}
 	
-
-	private void putAllAlerts()
+	private void setPosition(Location l)
 	{
-		
+		if(l != null)
+		{
+			GeoPoint tmp = new GeoPoint((int) (l.getLatitude() * 1E6), (int) (l.getLongitude() * 1E6));
+			mapController.animateTo(tmp);
+		}
+	}
+	private void setCenterAtUserLocation()
+	{
+		if (userLocation != null)
+		{
+			gp = new GeoPoint((int) (userLocation.getLatitude() * 1E6), (int) (userLocation.getLongitude() * 1E6));
+			mapController.animateTo(gp);
+		}
 	}
 	
 
@@ -278,6 +367,7 @@ public class MapDialogActivity extends MapActivity implements
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
 
 	@Override
 	public void userSetNewLocationListener(GeoPoint gp)
@@ -287,12 +377,12 @@ public class MapDialogActivity extends MapActivity implements
 		locationUsed.setLatitude(gp.getLatitudeE6() / 1E6 * 1.0);
 		locationUsed.setLongitude(gp.getLongitudeE6() / 1E6 * 1.0);
 		
-		// setPosition();
+		setPosition();
 		Double[] data = new Double[2];
 		data[0] = locationUsed.getLatitude();
 		data[1] = locationUsed.getLongitude();
 		
-		controller.sendMessage(V_REQUEST_ADDRESS, data);
+		controller.sendMessage(REQUEST_ADDRESS, data);
 	}
 	
 

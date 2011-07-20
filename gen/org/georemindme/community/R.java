@@ -110,6 +110,8 @@ public final class R {
         public static final int mapdialogactivity_address=0x7f0b002f;
         public static final int mapdialogactivity_getpositionbutton=0x7f0b0031;
         public static final int mapdialogactivity_map=0x7f0b0030;
+        public static final int mapdialogactivity_menu_findaddress=0x7f0b004a;
+        public static final int mapdialogactivity_menu_setalertatuserlocation=0x7f0b004b;
         public static final int mapdialogactivity_okbutton=0x7f0b002e;
         public static final int menu_item_delete_alert=0x7f0b0046;
         public static final int menu_item_exit=0x7f0b0049;
@@ -162,6 +164,7 @@ public final class R {
     public static final class menu {
         public static final int alert_context_menu=0x7f0a0000;
         public static final int main_menu=0x7f0a0001;
+        public static final int mapdialogactivity_menu=0x7f0a0002;
     }
     public static final class raw {
         public static final int bird=0x7f040000;
@@ -179,6 +182,7 @@ public final class R {
         public static final int alert_near=0x7f08003c;
         public static final int alert_needs_to_have_a_name=0x7f080046;
         public static final int app_name=0x7f080000;
+        public static final int buscar_direccion=0x7f080083;
         public static final int buttondelete=0x7f080031;
         public static final int buttonmap=0x7f080030;
         public static final int buttonsave=0x7f080032;
@@ -192,6 +196,8 @@ public final class R {
         public static final int delete_alert=0x7f08005c;
         public static final int deletebutton_add=0x7f08003b;
         public static final int description=0x7f080060;
+        public static final int direccion=0x7f080085;
+        public static final int direccion_a_buscar=0x7f080086;
         public static final int disconnected=0x7f08004f;
         public static final int do_you_want_to_enable_any_location_provider=0x7f080051;
         public static final int done=0x7f080053;
@@ -200,6 +206,7 @@ public final class R {
         public static final int email=0x7f08007c;
         public static final int end_time_undefined=0x7f080040;
         public static final int esta_cerca_tuya=0x7f080074;
+        public static final int establecer_alerta_en_posicion_actual=0x7f080084;
         public static final int hay_varias_tareas_cerca_de_ti=0x7f080075;
         /**  Help activity 
  Help activity 

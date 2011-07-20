@@ -72,7 +72,7 @@ public class AlertDialog extends Activity
 				{
 					Object[] data = new Object[]{new Boolean("true"), alert.getId()};
 					
-					Controller.getInstace(getApplicationContext()).sendMessage(V_REQUEST_CHANGE_ALERT_DONE, data);
+					Controller.getInstace(getApplicationContext()).sendMessage(REQUEST_CHANGE_ALERT_DONE, data);
 					finish();
 				}
 			}
@@ -88,7 +88,7 @@ public class AlertDialog extends Activity
 				if(v.equals(buttonSilenciar))
 				{
 					Object[] data = new Object[]{new Boolean("false"), alert.getId()};
-					Controller.getInstace(getApplicationContext()).sendMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data);
+					Controller.getInstace(getApplicationContext()).sendMessage(REQUEST_CHANGE_ALERT_ACTIVE, data);
 					finish();
 				}
 			}

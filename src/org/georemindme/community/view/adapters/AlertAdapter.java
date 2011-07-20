@@ -151,7 +151,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 					Object[] data = new Object[2];
 					data[0] = new Boolean(tmp.isChecked());
 					data[1] = new Long(id);
-					controller.sendMessage(V_REQUEST_CHANGE_ALERT_DONE, data);
+					controller.sendMessage(REQUEST_CHANGE_ALERT_DONE, data);
 				}
 			});
 			
@@ -166,7 +166,7 @@ public class AlertAdapter extends SimpleCursorAdapter
 					Object[] data = new Object[2];
 					data[0] = new Boolean(tmp.isChecked());
 					data[1] = new Long(id);
-					controller.sendMessage(V_REQUEST_CHANGE_ALERT_ACTIVE, data);
+					controller.sendMessage(REQUEST_CHANGE_ALERT_ACTIVE, data);
 				}
 			});
 			

@@ -1,20 +1,21 @@
 package org.georemindme.community.view;
 
 
-import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_CHANGED;
-import static org.georemindme.community.controller.ControllerProtocol.C_ALERT_DELETED;
-import static org.georemindme.community.controller.ControllerProtocol.C_ALL_UNDONE_ALERTS;
-import static org.georemindme.community.controller.ControllerProtocol.C_LAST_LOCATION;
-import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_ALL_UNDONE_ALERTS;
-import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_DELETE_ALERT;
-import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_LAST_LOCATION;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_ALERT_CHANGED;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_ALERT_DELETED;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_ALL_UNDONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_LAST_LOCATION;
+import static org.georemindme.community.controller.ControllerProtocol.REQUEST_ALL_UNDONE_ALERTS;
+import static org.georemindme.community.controller.ControllerProtocol.REQUEST_DELETE_ALERT;
+import static org.georemindme.community.controller.ControllerProtocol.REQUEST_LAST_LOCATION;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Database;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.adapters.AlertAdapter;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -68,19 +69,19 @@ public class UndoneAlertList extends ListActivity implements
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case C_ALL_UNDONE_ALERTS:
+					case RESPONSE_ALL_UNDONE_ALERTS:
 						if (c != null)
 							c.close();
 						c = (Cursor) msg.obj;
 						processData();
 						return true;
-					case C_LAST_LOCATION:
+					case RESPONSE_LAST_LOCATION:
 						location = (Location) msg.obj;
 						processData();
 						return true;
-					case C_ALERT_DELETED:
-					case C_ALERT_CHANGED:
-						controller.sendMessage(V_REQUEST_ALL_UNDONE_ALERTS);
+					case RESPONSE_ALERT_DELETED:
+					case RESPONSE_ALERT_CHANGED:
+						controller.sendMessage(REQUEST_ALL_UNDONE_ALERTS);
 						return true;
 				}
 				return false;
@@ -99,7 +100,7 @@ public class UndoneAlertList extends ListActivity implements
 		Log.i("UAL", "onResume()");
 		controller.registerMVCComponent(connector);
 		
-		controller.sendMessage(V_REQUEST_ALL_UNDONE_ALERTS).sendMessage(V_REQUEST_LAST_LOCATION);
+		controller.sendMessage(REQUEST_ALL_UNDONE_ALERTS).sendMessage(REQUEST_LAST_LOCATION);
 		
 	}
 	
@@ -133,15 +134,19 @@ public class UndoneAlertList extends ListActivity implements
 		
 		Alert alert = convertCursorPositionToAlert(this.c, position);
 		
-		Intent i = new Intent(UndoneAlertList.this, AddAlarmActivity.class);
-		Bundle extras = new Bundle();
-		extras.putSerializable("ALERT", alert);
-		i.putExtras(extras);
-		startActivity(i);
+		launchActivityToEditAlert(alert);
 		
 	}
 	
-
+	private void launchActivityToEditAlert(Alert a)
+	{
+		Intent i = new Intent(UndoneAlertList.this, AddAlarmActivity.class);
+		Bundle extras = new Bundle();
+		extras.putSerializable("ALERT", a);
+		i.putExtras(extras);
+		startActivity(i);
+	}
+	
 	private Alert convertCursorPositionToAlert(Cursor c, int position)
 	{
 		if (c != null)
@@ -169,6 +174,7 @@ public class UndoneAlertList extends ListActivity implements
 			alertSelected.setModified(c.getLong(c.getColumnIndex(Database.ALERT_MODIFY)));
 			alertSelected.setName(c.getString(c.getColumnIndex(Database.ALERT_NAME)));
 			alertSelected.setStarts(c.getLong(c.getColumnIndex(Database.ALERT_START)));
+			alertSelected.setAddress(c.getString(c.getColumnIndex(Database.ALERT_ADDRESS)));
 			
 			return alertSelected;
 		}
@@ -191,16 +197,17 @@ public class UndoneAlertList extends ListActivity implements
 	public boolean onContextItemSelected(MenuItem item)
 	{
 		AdapterContextMenuInfo adaptercontextmenu = (AdapterContextMenuInfo) item.getMenuInfo();
-		
+		Alert a = null;
 		switch (item.getItemId())
 		{
 			case R.id.menu_item_delete_alert:
-				Alert a = convertCursorPositionToAlert(c, adaptercontextmenu.position);
-				controller.sendMessage(V_REQUEST_DELETE_ALERT, a);
+				a = convertCursorPositionToAlert(c, adaptercontextmenu.position);
+				controller.sendMessage(REQUEST_DELETE_ALERT, a);
 				break;
 			
 			case R.id.menu_item_view_edit_alert:
-
+				a = convertCursorPositionToAlert(c, adaptercontextmenu.position);
+				launchActivityToEditAlert(a);
 				break;
 		}
 		

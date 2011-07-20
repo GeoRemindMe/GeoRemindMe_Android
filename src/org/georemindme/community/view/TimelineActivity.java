@@ -1,15 +1,16 @@
 package org.georemindme.community.view;
 
 
-import static org.georemindme.community.controller.ControllerProtocol.S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED;
-import static org.georemindme.community.controller.ControllerProtocol.V_REQUEST_NEXT_TIMELINE_PAGE;
+import static org.georemindme.community.controller.ControllerProtocol.RESPONSE_NEXT_TIMELINE_PAGE_FINISHED;
+import static org.georemindme.community.controller.ControllerProtocol.REQUEST_NEXT_TIMELINE_PAGE;
 
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.Timeline;
 import org.georemindme.community.model.TimelinePage;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.adapters.TimelineAdapter;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 
 import android.app.ListActivity;
 import android.os.Bundle;
@@ -43,11 +44,11 @@ public class TimelineActivity extends ListActivity
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case S_REQUEST_NEXT_TIMELINE_PAGE_FINISHED:
+					case RESPONSE_NEXT_TIMELINE_PAGE_FINISHED:
 						TimelinePage page = (TimelinePage) msg.obj;
 						timeline = new Timeline(page);
 						processData();
-						controller.sendMessage(V_REQUEST_NEXT_TIMELINE_PAGE);
+						controller.sendMessage(REQUEST_NEXT_TIMELINE_PAGE);
 						return true;
 				}
 				return false;
@@ -63,7 +64,7 @@ public class TimelineActivity extends ListActivity
 		super.onResume();
 		
 		controller.registerMVCComponent(connector);
-		controller.sendMessage(V_REQUEST_NEXT_TIMELINE_PAGE);
+		controller.sendMessage(REQUEST_NEXT_TIMELINE_PAGE);
 	}
 	
 

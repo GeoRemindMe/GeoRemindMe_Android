@@ -4,7 +4,8 @@ package org.georemindme.community.view;
 import org.georemindme.community.R;
 import org.georemindme.community.controller.Controller;
 import org.georemindme.community.model.User;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
+
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -94,11 +95,11 @@ public class LoginActivity extends Activity
 				// TODO Auto-generated method stub
 				if (islogged)
 				{
-					controller.sendMessage(V_REQUEST_LOGOUT);
+					controller.sendMessage(REQUEST_LOGOUT);
 				}
 				else
 				{
-					controller.sendMessage(V_REQUEST_LOGIN, new User(name.getText().toString(), pass.getText().toString()));
+					controller.sendMessage(REQUEST_LOGIN, new User(name.getText().toString(), pass.getText().toString()));
 				}
 				
 			}
@@ -124,7 +125,7 @@ public class LoginActivity extends Activity
 						Object[] data = new Object[] {
 								createName.getText().toString(),
 								createPassConfirm.getText().toString() };
-						controller.sendMessage(V_REQUEST_CREATE_NEW_USER, data);
+						controller.sendMessage(REQUEST_CREATE_NEW_USER, data);
 					}
 					else
 					{
@@ -150,45 +151,45 @@ public class LoginActivity extends Activity
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case C_IS_LOGGED:
+					case RESPONSE_IS_LOGGED:
 						setUserIsLoggedIn((User) msg.obj);
 						setScreenFocusOnRegister();
 						setButtonsAsLogged();
 						return true;
-					case C_IS_NOT_LOGGED:
+					case RESPONSE_IS_NOT_LOGGED:
 						setUserIsLoggedOut((User) msg.obj);
 						return true;
-					case C_LOGIN_STARTED:
+					case RESPONSE_LOGIN_STARTED:
 						Toast.makeText(getApplicationContext(), R.string.log_in_started, Toast.LENGTH_SHORT).show();
 						return true;
-					case C_LOGIN_FAILED:
+					case RESPONSE_LOGIN_FAILED:
 						Toast.makeText(getApplicationContext(), R.string.log_in_failed, Toast.LENGTH_SHORT).show();
 						setScreenFocusOnRegister();
 						return true;
-					case C_LOGIN_FINISHED:
+					case RESPONSE_LOGIN_FINISHED:
 						Toast.makeText(getApplicationContext(), R.string.login_successful, Toast.LENGTH_SHORT).show();
 						setUserIsLoggedIn((User) msg.obj);
-						controller.sendMessage(V_REQUEST_UPDATE);
+						controller.sendMessage(REQUEST_UPDATE);
 						finish();
 						return true;
-					case C_LOGOUT_STARTED:
+					case RESPONSE_LOGOUT_STARTED:
 						// Toast.makeText(getApplicationContext(), "Log out started",
 						// Toast.LENGTH_SHORT).show();
 						return true;
-					case C_LOGOUT_FINISHED:
+					case RESPONSE_LOGOUT_FINISHED:
 						// Toast.makeText(getApplicationContext(), "Log out finished",
 						// Toast.LENGTH_SHORT).show();
 						setUserIsLoggedOut(null);
 						setButtonsAsLoggedOut();
 						return true;
-					case S_REQUEST_CREATE_NEW_USER_FINISHED:
-						controller.sendMessage(V_REQUEST_LOGIN, new User(createName.getText().toString(), 
+					case RESPONSE_CREATE_NEW_USER_FINISHED:
+						controller.sendMessage(REQUEST_LOGIN, new User(createName.getText().toString(), 
 								createPassConfirm.getText().toString()));
 						return true;
-					case S_REQUEST_CREATE_NEW_USER_STARTED:
+					case RESPONSE_CREATE_NEW_USER_STARTED:
 						Toast.makeText(getApplicationContext(), "Creando usuario", Toast.LENGTH_LONG).show();
 						return true;
-					case S_REQUEST_CREATE_NEW_USER_FAILED:
+					case RESPONSE_CREATE_NEW_USER_FAILED:
 						Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
 						return true;
 				}
@@ -227,7 +228,7 @@ public class LoginActivity extends Activity
 	{
 		super.onResume();
 		controller.registerMVCComponent(connector);
-		controller.sendMessage(V_REQUEST_IS_LOGGED);
+		controller.sendMessage(REQUEST_IS_LOGGED);
 	}
 	
 

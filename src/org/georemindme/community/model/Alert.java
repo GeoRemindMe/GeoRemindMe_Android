@@ -20,12 +20,13 @@ public class Alert implements Serializable
 	private double	latitude;
 	private double	longitude;
 	private String	description;
+	private String address;
 	
 	
 	public Alert(long id, long id_server, long done_when, long ends,
 			long starts, long created, boolean done, String name,
 			String description, boolean active, long modified, double latitude,
-			double longitude)
+			double longitude, String address)
 	{
 		this.id = id;
 		this.id_server = id_server;
@@ -40,6 +41,7 @@ public class Alert implements Serializable
 		this.modified = modified;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.address = address;
 	}
 	
 
@@ -49,6 +51,7 @@ public class Alert implements Serializable
 		this.latitude = this.longitude = 0;
 		this.done = this.active = false;
 		this.name = this.description = "";
+		this.address = "";
 	}
 	
 
@@ -293,6 +296,16 @@ public class Alert implements Serializable
 	public void setLongitude(double longitude)
 	{
 		this.longitude = longitude;
+	}
+	
+	public void setAddress(String address)
+	{
+		this.address = address;
+	}
+	
+	public String getAddress()
+	{
+		return address;
 	}
 	
 	public boolean hasSameContent(Alert a)

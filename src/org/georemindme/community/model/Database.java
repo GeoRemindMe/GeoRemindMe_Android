@@ -82,7 +82,7 @@ public class Database
 		
 	}
 	
-	private static Database	instance;
+	private static Database		instance;
 	
 	public static final String	DATABASE_ACTION_ALERTS_UPDATED			= "DATABASE_ACTION_ALERTS_UPDATED";
 	public static final String	DATABASE_ACTION_ALERT_DONE				= "DATABASE_ACTION_ALERT_DONE";
@@ -122,6 +122,7 @@ public class Database
 	public static final String	ALERT_RANGE								= "alert_range";
 	public static final String	ALERT_X									= "alert_x";
 	public static final String	ALERT_Y									= "alert_y";
+	public static final String	ALERT_ADDRESS							= "alert_address";
 	public static final String	ALERT_DELETED							= "alert_deleted";
 	
 	// Error table fields.
@@ -198,7 +199,9 @@ public class Database
 																				+ LONGITUDE
 																				+ " real not null, "
 																				+ ALERT_DELETED
-																				+ " real not null default 0"
+																				+ " real not null default 0, "
+																				+ ALERT_ADDRESS
+																				+ " text"
 																				+ ")";
 	
 	private static final String	CREATE_ERROR_TABLE						= "create table "
@@ -211,6 +214,8 @@ public class Database
 																				+ ERROR_DATE
 																				+ " real not null"
 																				+ ")";
+	
+	
 	public static Database getDatabaseInstance(Context context)
 	{
 		if (instance == null)
@@ -218,13 +223,13 @@ public class Database
 		
 		return instance;
 	}
-	private final Context		context;
-	private DatabaseHelper		dbHelper;
+	
+	private final Context	context;
+	private DatabaseHelper	dbHelper;
+	
+	private SQLiteDatabase	db;
 	
 	
-	private SQLiteDatabase		db;
-	
-
 	private Database(Context ctx)
 	{
 		context = ctx;
@@ -273,6 +278,7 @@ public class Database
 		this.close();
 	}
 	
+
 	public synchronized void addError(Error e)
 	{
 		this.open();
@@ -286,6 +292,7 @@ public class Database
 		this.close();
 	}
 	
+
 	public synchronized Cursor getAllErrors()
 	{
 		this.open();
@@ -297,6 +304,7 @@ public class Database
 		c = db.rawQuery(sql, null);
 		return c;
 	}
+	
 
 	public synchronized void changeAlertActive(boolean active, long id)
 	{
@@ -330,7 +338,7 @@ public class Database
 	{
 		dbHelper.close();
 	}
-
+	
 
 	private synchronized void deleteAlert(Alert a)
 	{
@@ -407,8 +415,17 @@ public class Database
 			double lat = c.getDouble(c.getColumnIndex(Database.LATITUDE));
 			double lng = c.getDouble(c.getColumnIndex(Database.LONGITUDE));
 			
+			String address = "";
+			try
+			{
+				address = c.getString(c.getColumnIndex(Database.ALERT_ADDRESS));
+			}
+			catch (Exception e)
+			{
+			}
+			
 			// Log.v("Antes de crear la alerta", "");
-			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng);
+			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng, address);
 			c.close();
 			return a;
 		}
@@ -540,11 +557,12 @@ public class Database
 		return c;
 	}
 	
+
 	public Alert getAlertWithID(long id)
 	{
 		this.open();
-		String sql = "Select * from " + ALERT_TABLE + " where " + _ID
-				+ " = " + id;
+		String sql = "Select * from " + ALERT_TABLE + " where " + _ID + " = "
+				+ id;
 		// Log.v("getAlertByServerID", sql);
 		Cursor c = db.rawQuery(sql, null);
 		if (c != null)
@@ -564,8 +582,15 @@ public class Database
 			double lat = c.getDouble(c.getColumnIndex(Database.LATITUDE));
 			double lng = c.getDouble(c.getColumnIndex(Database.LONGITUDE));
 			
+			String address = "";
+			try
+			{
+				address = c.getString(c.getColumnIndex(Database.ALERT_ADDRESS));
+			}
+			catch(Exception e)
+			{}
 			// Log.v("Antes de crear la alerta", "");
-			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng);
+			Alert a = new Alert(0, 0l, 0l, end, start, 0l, done_b, name, description, true, 0, lat, lng, address);
 			c.close();
 			return a;
 		}
@@ -573,6 +598,7 @@ public class Database
 		return null;
 	}
 	
+
 	public Cursor getAlertsWithID(ArrayList ids)
 	{
 		this.open();
@@ -745,7 +771,7 @@ public class Database
 		cv.put(ALERT_NAME, a.getName());
 		cv.put(LATITUDE, a.getLatitude());
 		cv.put(LONGITUDE, a.getLongitude());
-		
+		cv.put(ALERT_ADDRESS, a.getAddress());
 		if (db.update(ALERT_TABLE, cv, SERVER_ID + " = ?", new String[] { ""
 				+ a.getIdServer() }) == 0)
 		{

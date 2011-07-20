@@ -9,12 +9,12 @@ import org.georemindme.community.controller.NotificationCenter;
 import org.georemindme.community.controller.PreferencesController;
 import org.georemindme.community.model.Alert;
 import org.georemindme.community.model.Time;
-import org.georemindme.community.mvcandroidframework.view.MVCViewComponent;
 import org.georemindme.community.view.custom.DummyMap;
 import org.georemindme.community.view.custom.MyPositionLayer;
 import org.georemindme.community.view.custom.PickTimeDateDialog;
 import org.georemindme.community.view.custom.PickTimeDateDialog.PickTimeDateSetListener;
 
+import com.franciscojavierfernandez.android.libraries.mvcframework.view.MVCViewComponent;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -48,11 +48,24 @@ import android.widget.Toast;
 import static org.georemindme.community.controller.ControllerProtocol.*;
 
 
+/**
+ * Actividad empleada para la creación de nuevas alertas y el editado de las
+ * mismas.
+ * 
+ * @author franciscojavierfernandeztoro
+ * @version 1.0
+ */
 public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		PickTimeDateSetListener
 {
-	
+	/**
+	 * Instancia del controlador de la aplicación.
+	 */
 	private Controller			controller			= null;
+	
+	/**
+	 * Componente capaz de recibir mensajes del controlador.
+	 */
 	private MVCViewComponent	connector			= null;
 	
 	private static final int	PICK_DATE_START		= 1;
@@ -77,14 +90,16 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 	private Time				start;
 	private Time				end;
 	
-	private String				lastAddress			= null;
-	private Location			lastLocation		= null;
+	private String				actual_address		= null;
+	private Location			actual_location		= null;
+	
+	private String				selected_address	= null;
+	private Location			selected_location	= null;
+	
 	private GeoPoint			gp					= null;
 	
-	private boolean				userSetNewLocation	= false;
-	
-	private static final int	EDIT				= 0;
-	private static final int	ADD					= 1;
+	private static final int	EDITING_MODE		= 0;
+	private static final int	CREATION_MODE		= 1;
 	
 	private int					mode;
 	private Alert				alert				= null;
@@ -94,6 +109,8 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.addtaskactivity);
+		
+		_initUIComponents();
 		
 		controller = Controller.getInstace(getApplicationContext());
 		connector = new MVCViewComponent(controller)
@@ -105,33 +122,60 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 				// TODO Auto-generated method stub
 				switch (msg.what)
 				{
-					case LS_GETTING_ADDRESS_STARTED:
+					case RESPONSE_GETTING_ADDRESS_STARTED:
 						addressView.setText(R.string.address_finding_your_address);
 						return true;
-					case LS_GETTING_ADDRESS_FAILED:
+						
+					case RESPONSE_GETTING_ADDRESS_FAILED:
 						addressView.setText(R.string.address_error_finding_your_address);
 						return true;
-					case LS_GETTING_ADDRESS_FINISHED:
+						
+					case RESPONSE_GETTING_ADDRESS_FINISHED:
+						String address_to_show = getString(R.string.address_not_available_right_now);
 						if (msg.obj != null)
 						{
-							lastAddress = ((Address) msg.obj).getAddressLine(0);
-							addressView.setText(getString(R.string.address) + ": "
-									+ lastAddress);
+							switch (mode)
+							{
+								case EDITING_MODE:
+									if (selected_address == null
+											|| selected_address.equals(""))
+									{
+										selected_address = ((Address) msg.obj).getAddressLine(0);
+									}
+									address_to_show = selected_address;
+									break;
+								case CREATION_MODE:
+									actual_address = ((Address) msg.obj).getAddressLine(0);
+									address_to_show = actual_address;
+									break;
+							}
+							
 						}
 						else
-							addressView.setText(R.string.address_not_available_right_now);
-						return true;
-					case LS_LOCATION_CHANGED:
-					case C_LAST_LOCATION:
-						if (!userSetNewLocation)
 						{
-							controller.sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
-							lastLocation = (Location) msg.obj;
-							setPosition();
+							actual_address = getString(R.string.address_not_available_right_now);
+							address_to_show = actual_address;
 						}
+						
+						addressView.setText(getString(R.string.address) + ": "
+								+ address_to_show);
 						return true;
-					case C_ALERT_CHANGED:
-					case C_ALERT_SAVED:
+						
+					case RESPONSE_LOCATION_CHANGED:
+					case RESPONSE_LAST_LOCATION:
+						boolean actual_location_was_empty;
+						if (actual_location == null)
+							actual_location_was_empty = true;
+						else
+							actual_location_was_empty = false;
+						actual_location = (Location) msg.obj;
+						
+						if (actual_location_was_empty && mode == CREATION_MODE)
+							setPosition(actual_location);
+						return true;
+						
+					case RESPONSE_ALERT_CHANGED:
+					case RESPONSE_ALERT_SAVED:
 
 						finish();
 						return true;
@@ -141,7 +185,125 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 			}
 		};
 		
+		if (savedInstanceState != null)
+		{
+			// Hay datos guardados anterioremente.
+			_setSavedInstanceStateData(savedInstanceState);
+			
+		}
+		else
+		{
+			// Aqui tengo que meter la comprobación de si vienen datos para que
+			// entre en modo EDIT.
+			Bundle data = getIntent().getExtras();
+			if (data != null)
+			{
+				_setModeEdit(data);
+				
+				Controller.getInstace(getApplicationContext()).removeNotification(alert.getId());
+			}
+			else
+			{
+				setdoneButton.setVisibility(View.GONE);
+				mode = CREATION_MODE;
+				// alert = new Alert();
+				
+				start = new Time();
+				end = new Time();
+			}
+			
+			if (actual_address == null)
+			{
+				controller.sendMessage(REQUEST_LAST_KNOW_ADDRESS);
+			}
+			else
+			{
+				addressView.setText(actual_address);
+			}
+			
+			if (actual_location == null)
+			{
+				controller.sendMessage(REQUEST_LAST_LOCATION);
+			}
+			else
+			{
+				setPosition(actual_location);
+			}
+			
+		}
 		
+		mapController.setZoom(PreferencesController.getZoom());
+	}
+	
+
+	private void _setModeEdit(Bundle data)
+	{
+		setdoneButton.setVisibility(View.VISIBLE);
+		mode = EDITING_MODE;
+		alert = (Alert) data.get("ALERT");
+		
+		name.setText(alert.getName());
+		description.setText(alert.getDescription());
+		long s = alert.getStarts();
+		if (s == 0)
+			start = new Time();
+		else
+			start = new Time(s);
+		
+		long e = alert.getEnds();
+		if (e == 0)
+			end = new Time();
+		else
+			end = new Time(e);
+		
+		if (alert.isDone())
+			setdoneButton.setText(getString(R.string.set_pending));
+		else
+			setdoneButton.setText(getString(R.string.set_done));
+		
+		selected_address = alert.getAddress();
+		selected_location = new Location("unknown");
+		selected_location.setLatitude(alert.getLatitude());
+		selected_location.setLongitude(alert.getLongitude());
+		
+		if (selected_address.equals(""))
+			controller.sendMessage(REQUEST_ADDRESS, new Double[] {
+					alert.getLatitude(), alert.getLongitude() });
+	}
+	
+
+	private void _setSavedInstanceStateData(Bundle savedInstanceState)
+	{
+		// TODO Auto-generated method stub
+		mode = savedInstanceState.getInt("MODE");
+		switch (mode)
+		{
+			case EDITING_MODE:
+				selected_location = new Location("unknown");
+				selected_location.setLatitude(savedInstanceState.getDouble("LATITUDE"));
+				selected_location.setLongitude(savedInstanceState.getDouble("LONGITUDE"));
+				selected_address = savedInstanceState.getString("ADDRESS");
+				addressView.setText(selected_address);
+				setPosition(selected_location);
+				break;
+			case CREATION_MODE:
+				actual_location = new Location("unknown");
+				actual_location.setLatitude(savedInstanceState.getDouble("LATITUDE"));
+				actual_location.setLongitude(savedInstanceState.getDouble("LONGITUDE"));
+				actual_address = savedInstanceState.getString("ADDRESS");
+				addressView.setText(actual_address);
+				setPosition(actual_location);
+				break;
+		}
+		
+		start = (Time) savedInstanceState.getSerializable("START");
+		end = (Time) savedInstanceState.getSerializable("END");
+		
+	}
+	
+
+	private void _initUIComponents()
+	{
 		dashboardButton = (ImageButton) findViewById(R.id.homeButton);
 		dashboardButton.setOnClickListener(this);
 		saveButton = (Button) findViewById(R.id.addtaskactivity_okButton);
@@ -161,92 +323,6 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		
 		name = (EditText) findViewById(R.id.nameEditText);
 		description = (EditText) findViewById(R.id.descriptionEditText);
-		
-		if (savedInstanceState != null)
-		{
-			userSetNewLocation = savedInstanceState.getBoolean("USERSETLOCATION");
-			lastLocation = new Location("unknown");
-			lastLocation.setLatitude(savedInstanceState.getDouble("LATITUDE"));
-			lastLocation.setLongitude(savedInstanceState.getDouble("LONGITUDE"));
-			lastAddress = savedInstanceState.getString("ADDRESS");
-			
-			start = (Time) savedInstanceState.getSerializable("START");
-			end = (Time) savedInstanceState.getSerializable("END");
-			
-			addressView.setText(lastAddress);
-			setPosition();
-			
-		}
-		else
-		{
-			// Aqui tengo que meter la comprobación de si vienen datos para que
-			// entre en modo EDIT.
-			Bundle data = getIntent().getExtras();
-			if (data != null)
-			{
-				setdoneButton.setVisibility(View.VISIBLE);
-				mode = EDIT;
-				alert = (Alert) data.get("ALERT");
-				
-				name.setText(alert.getName());
-				description.setText(alert.getDescription());
-				long s = alert.getStarts();
-				if (s == 0)
-					start = new Time();
-				else
-					start = new Time(s);
-				
-				long e = alert.getEnds();
-				if (e == 0)
-					end = new Time();
-				else
-					end = new Time(e);
-				
-				if (alert.isDone())
-					setdoneButton.setText(getString(R.string.set_pending));
-				else
-					setdoneButton.setText(getString(R.string.set_done));
-				// Así evito cambios de localización en la actividad.
-				userSetNewLocation = true;
-				lastAddress = "";
-				lastLocation = new Location("unknown");
-				lastLocation.setLatitude(alert.getLatitude());
-				lastLocation.setLongitude(alert.getLongitude());
-				controller.sendMessage(V_REQUEST_ADDRESS, new Double[]{alert.getLatitude(), alert.getLongitude()});
-				
-				Controller.getInstace(getApplicationContext()).removeNotification(alert.getId());
-			}
-			else
-			{
-				setdoneButton.setVisibility(View.GONE);
-				mode = ADD;
-				alert = new Alert();
-				
-				start = new Time();
-				end = new Time();
-			}
-			
-			if (lastAddress == null)
-			{
-				controller.sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
-			}
-			else
-			{
-				addressView.setText(lastAddress);
-			}
-			
-			if (lastLocation == null)
-			{
-				controller.sendMessage(V_REQUEST_LAST_LOCATION);
-			}
-			else
-			{
-				setPosition();
-			}
-			
-		}
-		
-		mapController.setZoom(PreferencesController.getZoom());
 	}
 	
 
@@ -256,31 +332,58 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		
 		controller.registerMVCComponent(connector);
 		
-		if (lastAddress == null)
+		if (actual_address == null)
 		{
-			if (mode != EDIT)
-				controller.sendMessage(V_REQUEST_LAST_KNOWN_ADDRESS);
+			if (mode != EDITING_MODE)
+				controller.sendMessage(REQUEST_LAST_KNOW_ADDRESS);
 		}
 		else
 		{
-			addressView.setText(lastAddress);
+			if (selected_address == null)
+				addressView.setText(actual_address);
+			else
+				addressView.setText(selected_address);
 		}
 		
-		setPosition();
+		switch (mode)
+		{
+			case EDITING_MODE:
+				setPosition(selected_location);
+				break;
+			case CREATION_MODE:
+				setPosition(actual_location);
+				break;
+		}
+		
 	}
 	
 
 	public void onSaveInstanceState(Bundle b)
 	{
-		if (lastLocation != null)
+		switch (mode)
 		{
-			b.putBoolean("USERSETLOCATION", userSetNewLocation);
-			b.putDouble("LATITUDE", lastLocation.getLatitude());
-			b.putDouble("LONGITUDE", lastLocation.getLongitude());
-			b.putString("ADDRESS", lastAddress);
-			b.putSerializable("START", start);
-			b.putSerializable("END", end);
+			case EDITING_MODE:
+				if (selected_location != null)
+				{
+					b.putDouble("LATITUDE", selected_location.getLatitude());
+					b.putDouble("LONGITUDE", selected_location.getLongitude());
+					b.putString("ADDRESS", selected_address);
+				}
+				break;
+			case CREATION_MODE:
+				if (actual_location != null)
+				{
+					b.putDouble("LATITUDE", actual_location.getLatitude());
+					b.putDouble("LONGITUDE", actual_location.getLongitude());
+					b.putString("ADDRESS", actual_address);
+				}
+				break;
 		}
+		b.putInt("MODE", mode);
+		
+		b.putSerializable("START", start);
+		b.putSerializable("END", end);
+		
 		super.onSaveInstanceState(b);
 	}
 	
@@ -315,16 +418,19 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					alert.setName(name.getText().toString());
 					alert.setDescription(description.getText().toString());
 					
-					if (lastLocation != null)
+					if (selected_location != null)
 					{
-						double latitude = lastLocation.getLatitude();
-						double longitude = lastLocation.getLongitude();
+						double latitude = selected_location.getLatitude();
+						double longitude = selected_location.getLongitude();
 						
+						alert.setAddress(selected_address);
 						alert.setLatitude(latitude);
 						alert.setLongitude(longitude);
 					}
 					else
 					{
+						//AQUI TENGO QUE CONTROLAR LO DE AÑADIR UNA DIRECCIÓN A PELO.
+						//VAYA MOVIDA....
 						AlertDialog.Builder builder = new AlertDialog.Builder(this);
 						builder.setMessage(R.string.location_not_available);
 						builder.setCancelable(true);
@@ -342,7 +448,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 						});
 						builder.create().show();
 					}
-					if (mode == ADD)
+					if (mode == CREATION_MODE)
 					{
 						alert.setIdServer(0);
 						alert.setDone_when(0);
@@ -351,11 +457,11 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 						alert.setActive(true);
 						alert.setCreated(System.currentTimeMillis() / 1000);
 						
-						controller.sendMessage(V_REQUEST_SAVE_ALERT, alert);
+						controller.sendMessage(REQUEST_SAVE_ALERT, alert);
 					}
-					else if (mode == EDIT)
+					else if (mode == EDITING_MODE)
 					{
-						controller.sendMessage(V_REQUEST_UPDATE_ALERT, alert);
+						controller.sendMessage(REQUEST_UPDATE_ALERT, alert);
 					}
 					
 				}
@@ -398,7 +504,7 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 					data[0] = true;
 				
 				data[1] = alert.getId();
-				controller.sendMessage(V_REQUEST_CHANGE_ALERT_DONE, data);
+				controller.sendMessage(REQUEST_CHANGE_ALERT_DONE, data);
 				break;
 			case R.id.startButton:
 				showDialog(PICK_DATE_START);
@@ -449,18 +555,18 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		Log.v("Time", time.log());
 	}
-		
+	
 
-	public void setPosition()
+	public void setPosition(Location l)
 	{
-		if (lastLocation != null)
+		if (l != null)
 		{
-			GeoPoint gp = new GeoPoint((int) (lastLocation.getLatitude() * 1E6), (int) (lastLocation.getLongitude() * 1E6));
+			GeoPoint gp = new GeoPoint((int) (l.getLatitude() * 1E6), (int) (l.getLongitude() * 1E6));
 			mapController.animateTo(gp);
 			mapController.setCenter(gp);
 			
-			OverlayItem overlayitem = new OverlayItem(gp, "My Position", "Actual location");
-			positionOverlay = new MyPositionLayer(getResources().getDrawable(R.drawable.icon), overlayitem, null);
+			OverlayItem overlayitem = new OverlayItem(gp, "", "");
+			positionOverlay = new MyPositionLayer(getResources().getDrawable(R.drawable.blue_small), overlayitem, null);
 			
 			map.getOverlays().clear();
 			map.getOverlays().add(positionOverlay);
@@ -482,15 +588,27 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		Bundle b = new Bundle();
 		if (alert == null)
 		{
-			b.putDouble("LATITUDE", lastLocation.getLatitude());
-			b.putDouble("LONGITUDE", lastLocation.getLongitude());
+			if(selected_location != null)
+			{
+				b.putDouble("LATITUDE", selected_location.getLatitude());
+				b.putDouble("LONGITUDE", selected_location.getLongitude());
+				b.putString("ADDRESS", selected_address);
+			}
+			else if (actual_location != null)
+			{
+				b.putDouble("LATITUDE", actual_location.getLatitude());
+				b.putDouble("LONGITUDE", actual_location.getLongitude());
+				b.putString("ADDRESS", actual_address);
+			}
+			else
+				Log.w("LOCALIZACION ACTUAL: ", "No existe");
 		}
 		else
 		{
 			b.putDouble("LATITUDE", alert.getLatitude());
 			b.putDouble("LONGITUDE", alert.getLongitude());
+			b.putString("ADDRESS", alert.getAddress());
 		}
-		i.putExtra("MODE_FROM_INTENT", MapDialogActivity.MODE_EDIT);
 		i.putExtras(b);
 		/*
 		 * if (mode == EDIT) { Bundle b = new Bundle(); b.putDouble("LATITUDE",
@@ -510,20 +628,20 @@ public class AddAlarmActivity extends MapActivity implements OnClickListener,
 		{
 			if (resultCode == RESULT_OK)
 			{
-				userSetNewLocation = true;
+				mode = EDITING_MODE;
 				
 				Bundle b = data.getExtras();
-				lastLocation.setLatitude(b.getDouble("LATITUDE"));
-				lastLocation.setLongitude(b.getDouble("LONGITUDE"));
-				
-				lastAddress = b.getString("ADDRESS");
-				
-				setPosition();
-				addressView.setText(lastAddress);
-			}
-			else
-			{
-				userSetNewLocation = false;
+				if (b != null)
+				{
+					selected_location = new Location("unknown");
+					selected_location.setLatitude(b.getDouble("LATITUDE"));
+					selected_location.setLongitude(b.getDouble("LONGITUDE"));
+					
+					selected_address = b.getString("ADDRESS");
+					
+					setPosition(selected_location);
+					addressView.setText(selected_address);
+				}
 			}
 		}
 	}
