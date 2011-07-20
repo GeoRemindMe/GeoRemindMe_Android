@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/name"
+	/>
+	<EditText
+		android:id="@+id/registeractivity_username"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/new_user_name"
+	/>
+	
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/password"
+	/>
+	<EditText
+		android:id="@+id/registeractivity_password"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/user_password"
+	/>
+	<Button
+		android:id="@+id/registeractitivy_login"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/create_new_user"
+	/>
+</LinearLayout>
